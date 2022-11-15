@@ -70,21 +70,29 @@ class ClassMapperTarget extends MapperTarget {
   }
 
   ParameterConfig getParameterConfig(ParameterElement param) {
-    if (param is FieldFormalParameterElement) {
-      return FieldParameterConfig(param, param.field!);
+    var dec = param.declaration;
+
+    if (dec is FieldFormalParameterElement) {
+      return FieldParameterConfig(param, dec.field!);
     }
 
-    if (param is SuperFormalParameterElement) {
-      if (param.superConstructorParameter == null) {
+    if (dec is SuperFormalParameterElement) {
+      if (dec.superConstructorParameter == null) {
         return UnresolvedParameterConfig(
           param,
           'Cannot resolve formal super parameter',
         );
       }
-      return SuperParameterConfig(
-        param,
-        superTarget!.getParameterConfig(param.superConstructorParameter!),
-      );
+      var superConfig =
+          superTarget!.getParameterConfig(dec.superConstructorParameter!);
+      if (superConfig is UnresolvedParameterConfig) {
+        return UnresolvedParameterConfig(
+          param,
+          'Problem in super constructor: ${superConfig.message}',
+        );
+      } else {
+        return SuperParameterConfig(param, superConfig);
+      }
     }
 
     var getter = element.getGetter(param.name);
