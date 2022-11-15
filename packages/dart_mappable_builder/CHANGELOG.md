@@ -1,3 +1,7 @@
+# 1.2.1
+
+- Fixed bug with unresolved super parameters.
+
 # 1.2.0
 
 - Added support for `2.17` super parameters
