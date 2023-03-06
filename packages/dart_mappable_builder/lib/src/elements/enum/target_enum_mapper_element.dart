@@ -20,4 +20,6 @@ class TargetEnumMapperElement extends EnumMapperElement {
 
   late int? defaultValue =
       annotation?.getField('defaultValue')!.getField('index')?.toIntValue();
+
+  late String? customProperty = annotation?.getField('customProperty')?.toStringValue();
 }
