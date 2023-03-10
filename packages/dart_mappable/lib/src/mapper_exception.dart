@@ -26,9 +26,9 @@ class MapperException implements Exception {
   }
 
   /// Exception when passing an unexpected type to a decoder
-  factory MapperException.unexpectedType(
-      Type actual, String expected) {
-    return MapperException._('Expected a value of type $expected, but got type $actual.');
+  factory MapperException.unexpectedType(Type actual, String expected) {
+    return MapperException._(
+        'Expected a value of type $expected, but got type $actual.');
   }
 
   /// Exception when getting an unexpected type from an encoder
@@ -72,11 +72,6 @@ class MapperException implements Exception {
     return MapperException._('Cannot resolve type from property "$type". '
         'Invalid or unregistered type.');
   }
-
-  /// Checks if this is an unsupported operation exception
-  bool isUnsupportedOrUnallowed() =>
-      message.startsWith('Unsupported operation') ||
-      message.startsWith('The Mappable mixin');
 }
 
 /// Method indicator used for exceptions
@@ -88,11 +83,6 @@ class _ChainedMapperException implements MapperException {
   final MapperMethod method;
   final String hint;
   final Object error;
-
-  @override
-  bool isUnsupportedOrUnallowed() => error is MapperException
-      ? (error as MapperException).isUnsupportedOrUnallowed()
-      : false;
 
   String get chainedMessage {
     var e = error;

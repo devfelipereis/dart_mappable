@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element
 
-part of 'basic_serialization_test.dart';
+part of 'unmapped_props_hook_test.dart';
 
 class AMapper extends ClassMapperBase<A> {
   AMapper._();
@@ -11,7 +11,6 @@ class AMapper extends ClassMapperBase<A> {
   static AMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = AMapper._());
-      BMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -24,24 +23,20 @@ class AMapper extends ClassMapperBase<A> {
   @override
   final String id = 'A';
 
-  static String _$a(A v) => v.a;
-  static int _$b(A v) => v.b;
-  static double? _$c(A v) => v.c;
-  static bool _$d(A v) => v.d;
-  static B? _$e(A v) => v.e;
+  static Map<String, dynamic> _$unmappedProps(A v) => v.unmappedProps;
+  static String? _$a(A v) => v.a;
 
   @override
   final Map<Symbol, Field<A, dynamic>> fields = const {
-    #a: Field<A, String>('a', _$a),
-    #b: Field<A, int>('b', _$b, opt: true, def: 0),
-    #c: Field<A, double?>('c', _$c, opt: true),
-    #d: Field<A, bool>('d', _$d),
-    #e: Field<A, B?>('e', _$e, opt: true),
+    #unmappedProps:
+        Field<A, Map<String, dynamic>>('unmappedProps', _$unmappedProps),
+    #a: Field<A, String?>('a', _$a),
   };
 
+  @override
+  final MappingHook hook = const UnmappedPropertiesHook('unmappedProps');
   static A _instantiate(DecodingData data) {
-    return A(data.get(#a),
-        b: data.get(#b), c: data.get(#c), d: data.get(#d), e: data.get(#e));
+    return A(data.get(#unmappedProps), data.get(#a));
   }
 
   @override
@@ -94,7 +89,9 @@ typedef ACopyWithBound = A;
 
 abstract class ACopyWith<$R, $In extends A, $Out extends A>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call({String? a, int? b, double? c, bool? d, B? e});
+  MapCopyWith<$R, String, dynamic, ObjectCopyWith<$R, dynamic, dynamic>>
+      get unmappedProps;
+  $R call({Map<String, dynamic>? unmappedProps, String? a});
   ACopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends A>(
       Then<A, $Out2> t, Then<$Out2, $R2> t2);
 }
@@ -106,72 +103,24 @@ class _ACopyWithImpl<$R, $Out extends A> extends ClassCopyWithBase<$R, A, $Out>
   @override
   late final ClassMapperBase<A> $mapper = AMapper.ensureInitialized();
   @override
-  $R call({String? a, int? b, Object? c = $none, bool? d, Object? e = $none}) =>
+  MapCopyWith<$R, String, dynamic, ObjectCopyWith<$R, dynamic, dynamic>>
+      get unmappedProps => MapCopyWith(
+          $value.unmappedProps,
+          (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(unmappedProps: v));
+  @override
+  $R call({Map<String, dynamic>? unmappedProps, Object? a = $none}) =>
       $apply(FieldCopyWithData({
-        if (a != null) #a: a,
-        if (b != null) #b: b,
-        if (c != $none) #c: c,
-        if (d != null) #d: d,
-        if (e != $none) #e: e
+        if (unmappedProps != null) #unmappedProps: unmappedProps,
+        if (a != $none) #a: a
       }));
   @override
-  A $make(CopyWithData data) => A(data.get(#a, or: $value.a),
-      b: data.get(#b, or: $value.b),
-      c: data.get(#c, or: $value.c),
-      d: data.get(#d, or: $value.d),
-      e: data.get(#e, or: $value.e));
+  A $make(CopyWithData data) => A(
+      data.get(#unmappedProps, or: $value.unmappedProps),
+      data.get(#a, or: $value.a));
 
   @override
   ACopyWith<$R2, A, $Out2> $chain<$R2, $Out2 extends A>(
           Then<A, $Out2> t, Then<$Out2, $R2> t2) =>
       _ACopyWithImpl($value, t, t2);
-}
-
-class BMapper extends EnumMapper<B> {
-  BMapper._();
-  static BMapper? _instance;
-  static BMapper ensureInitialized() {
-    if (_instance == null) {
-      MapperContainer.globals.use(_instance = BMapper._());
-    }
-    return _instance!;
-  }
-
-  static B fromValue(dynamic value) {
-    ensureInitialized();
-    return MapperContainer.globals.fromValue(value);
-  }
-
-  @override
-  B decode(dynamic value) {
-    switch (value) {
-      case 'a':
-        return B.a;
-      case 'bB':
-        return B.bB;
-      case 'ccCc':
-        return B.ccCc;
-      default:
-        return B.values[0];
-    }
-  }
-
-  @override
-  dynamic encode(B self) {
-    switch (self) {
-      case B.a:
-        return 'a';
-      case B.bB:
-        return 'bB';
-      case B.ccCc:
-        return 'ccCc';
-    }
-  }
-}
-
-extension BMapperExtension on B {
-  String toValue() {
-    BMapper.ensureInitialized();
-    return MapperContainer.globals.toValue(this) as String;
-  }
 }
