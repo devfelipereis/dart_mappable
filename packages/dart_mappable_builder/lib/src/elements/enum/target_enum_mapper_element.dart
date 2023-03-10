@@ -38,6 +38,9 @@ class TargetEnumMapperElement extends EnumMapperElement {
   late final int? defaultValue =
       annotation.value?.read('defaultValue')!.read('index')?.toIntValue();
 
+  late final String? customProperty =
+      annotation.value?.read('customProperty')?.toStringValue();
+
   late final List<FieldElement> fields =
       element.fields.where((f) => f.isEnumConstant).toList();
 

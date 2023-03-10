@@ -77,7 +77,7 @@ class GenerateMethods {
 /// or [ValuesMode.indexed] to map each enum value to its index as [int].
 ///
 /// {@category Enums}
-enum ValuesMode { named, indexed }
+enum ValuesMode { named, indexed, customProperty }
 
 /// Used to annotate an enum in order to generate mapping code.
 ///
@@ -87,6 +87,7 @@ class MappableEnum {
     this.mode = ValuesMode.named,
     this.caseStyle,
     this.defaultValue,
+    this.customProperty,
   });
 
   /// The mode used for encoding the enum values.
@@ -102,6 +103,8 @@ class MappableEnum {
   ///
   /// Must be a value of the annotated enum.
   final Object? defaultValue;
+
+  final String? customProperty;
 }
 
 /// Used to annotate an enum value in order to define a custom encoded value.
