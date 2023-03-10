@@ -81,8 +81,9 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
     return '  @override\n'
         '  ${target.prefixedClassName} decode(dynamic value) {\n'
         '    return ${target.prefixedClassName}.values.firstWhere(\n'
-        '      (element) => element.${target.customProperty} == value),\n'
-        '      orElse: () => throw MapperException.unknownEnumValue(value);'
+        '      (element) => element.${target.customProperty} == value,\n'
+        '      orElse: () => throw MapperException.unknownEnumValue(value),\n'
+        '    );\n'
         '  }\n\n';
   }
 
