@@ -82,7 +82,7 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
         '  ${target.prefixedClassName} decode(dynamic value) {\n'
         '    return ${target.prefixedClassName}.values.firstWhere(\n'
         '      (element) => element.${target.customProperty} == value),\n'
-        '      orElse: () => throw MapperException.unknownEnumValue(value),'
+        '      orElse: () => throw MapperException.unknownEnumValue(value);'
         '  }\n\n';
   }
 
