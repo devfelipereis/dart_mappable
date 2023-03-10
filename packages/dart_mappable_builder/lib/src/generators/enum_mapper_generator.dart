@@ -43,7 +43,6 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
         '    mappers: {${target.mapperName}()},\n'
         '  );\n\n'
         '  static final fromValue = container.fromValue<${target.prefixedClassName}>;\n\n'
-        '  @override\n'
         '  $decode '
         '  $encode '
         '}\n\n'
@@ -63,7 +62,8 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
   }
 
   String _generateDefaultEncode(List<MapEntry<String, Object>> values) {
-    return '  dynamic encode(${target.prefixedClassName} self) {\n'
+    return '  @override\n'
+        '  dynamic encode(${target.prefixedClassName} self) {\n'
         '    switch (self) {\n'
         '      ${values.map((v) => "case ${target.prefixedClassName}.${v.key}: return ${v.value};").join("\n      ")}\n'
         '    }\n'
@@ -71,7 +71,8 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
   }
 
   String _generateEncodeByCustomProperty() {
-    return '  dynamic encode(${target.prefixedClassName} self) {\n'
+    return '  @override\n'
+        '  dynamic encode(${target.prefixedClassName} self) {\n'
         '    return self.token;\n'
         '  }\n';
   }
