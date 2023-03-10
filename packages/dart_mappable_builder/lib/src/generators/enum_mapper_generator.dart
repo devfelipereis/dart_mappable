@@ -14,7 +14,6 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
   Future<String> generate() async {
     bool hasAllStringValues = target.mode == ValuesMode.named;
     bool useCustomProperty = target.mode == ValuesMode.customProperty;
-
     var values = await Future.wait(target.element.fields //
         .where((f) => f.isEnumConstant)
         .mapIndexed((i, f) async {
@@ -39,15 +38,26 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
 
     return ''
         'class ${target.mapperName} extends EnumMapper<${target.prefixedClassName}> {\n'
-        '  static MapperContainer container = MapperContainer(\n'
-        '    mappers: {${target.mapperName}()},\n'
-        '  );\n\n'
-        '  static final fromValue = container.fromValue<${target.prefixedClassName}>;\n\n'
+        '  ${target.mapperName}._();\n'
+        '  static ${target.mapperName}? _instance;\n'
+        '  static ${target.mapperName} ensureInitialized() {\n'
+        '    if (_instance == null) {\n'
+        '      MapperContainer.globals.use(_instance = ${target.mapperName}._());\n'
+        '    }\n'
+        '    return _instance!;\n'
+        '  }\n\n'
+        '  static ${target.prefixedClassName} fromValue(dynamic value) {\n'
+        '    ensureInitialized();\n'
+        '    return MapperContainer.globals.fromValue(value);\n'
+        '  }\n\n'
         '  $decode '
         '  $encode '
         '}\n\n'
         'extension ${target.mapperName}Extension on ${target.prefixedClassName} {\n'
-        '  ${hasAllStringValues ? 'String' : 'dynamic'} toValue() => ${target.mapperName}.container.toValue(this)${hasAllStringValues ? ' as String' : ''};\n'
+        '  ${hasAllStringValues ? 'String' : 'dynamic'} toValue() {\n'
+        '    ${target.mapperName}.ensureInitialized();\n'
+        '    return MapperContainer.globals.toValue(this)${hasAllStringValues ? ' as String' : ''};\n'
+        '  }\n'
         '}';
   }
 
