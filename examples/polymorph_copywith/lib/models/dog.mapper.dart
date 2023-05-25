@@ -7,6 +7,7 @@ part of 'dog.dart';
 
 class DogMapper extends SubClassMapperBase<Dog> {
   DogMapper._();
+
   static DogMapper? _instance;
   static DogMapper ensureInitialized() {
     if (_instance == null) {
@@ -26,14 +27,17 @@ class DogMapper extends SubClassMapperBase<Dog> {
   final String id = 'Dog';
 
   static String _$name(Dog v) => v.name;
+  static const Field<Dog, String> _f$name = Field('name', _$name);
   static int _$age(Dog v) => v.age;
+  static const Field<Dog, int> _f$age = Field('age', _$age);
   static Person _$owner(Dog v) => v.owner;
+  static const Field<Dog, Person> _f$owner = Field('owner', _$owner);
 
   @override
   final Map<Symbol, Field<Dog, dynamic>> fields = const {
-    #name: Field<Dog, String>('name', _$name),
-    #age: Field<Dog, int>('age', _$age),
-    #owner: Field<Dog, Person>('owner', _$owner),
+    #name: _f$name,
+    #age: _f$age,
+    #owner: _f$owner,
   };
 
   @override
@@ -44,7 +48,7 @@ class DogMapper extends SubClassMapperBase<Dog> {
   late final ClassMapperBase superMapper = AnimalMapper.ensureInitialized();
 
   static Dog _instantiate(DecodingData data) {
-    return Dog(data.get(#name), data.get(#age), data.get(#owner));
+    return Dog(data.dec(_f$name), data.dec(_f$age), data.dec(_f$owner));
   }
 
   @override
@@ -88,25 +92,20 @@ mixin DogMappable {
   }
 }
 
-extension DogValueCopy<$R, $Out extends Animal>
-    on ObjectCopyWith<$R, Dog, $Out> {
+extension DogValueCopy<$R, $Out> on ObjectCopyWith<$R, Dog, $Out> {
   DogCopyWith<$R, Dog, $Out> get $asDog =>
       $base.as((v, t, t2) => _DogCopyWithImpl(v, t, t2));
 }
 
-typedef DogCopyWithBound = Animal;
-
-abstract class DogCopyWith<$R, $In extends Dog, $Out extends Animal>
+abstract class DogCopyWith<$R, $In extends Dog, $Out>
     implements AnimalCopyWith<$R, $In, $Out> {
   PersonCopyWith<$R, Person, Person> get owner;
   @override
   $R call({String? name, int? age, Person? owner});
-  DogCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Animal>(
-      Then<Dog, $Out2> t, Then<$Out2, $R2> t2);
+  DogCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _DogCopyWithImpl<$R, $Out extends Animal>
-    extends ClassCopyWithBase<$R, Dog, $Out>
+class _DogCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Dog, $Out>
     implements DogCopyWith<$R, Dog, $Out> {
   _DogCopyWithImpl(super.value, super.then, super.then2);
 
@@ -114,7 +113,7 @@ class _DogCopyWithImpl<$R, $Out extends Animal>
   late final ClassMapperBase<Dog> $mapper = DogMapper.ensureInitialized();
   @override
   PersonCopyWith<$R, Person, Person> get owner =>
-      $value.owner.copyWith.$chain($identity, (v) => call(owner: v));
+      $value.owner.copyWith.$chain((v) => call(owner: v));
   @override
   $R call({String? name, int? age, Person? owner}) => $apply(FieldCopyWithData({
         if (name != null) #name: name,
@@ -126,7 +125,6 @@ class _DogCopyWithImpl<$R, $Out extends Animal>
       data.get(#age, or: $value.age), data.get(#owner, or: $value.owner));
 
   @override
-  DogCopyWith<$R2, Dog, $Out2> $chain<$R2, $Out2 extends Animal>(
-          Then<Dog, $Out2> t, Then<$Out2, $R2> t2) =>
-      _DogCopyWithImpl($value, t, t2);
+  DogCopyWith<$R2, Dog, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _DogCopyWithImpl($value, $cast, t);
 }

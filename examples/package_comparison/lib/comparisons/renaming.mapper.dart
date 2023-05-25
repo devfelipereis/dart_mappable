@@ -7,6 +7,7 @@ part of 'renaming.dart';
 
 class PersonBMapper extends ClassMapperBase<PersonB> {
   PersonBMapper._();
+
   static PersonBMapper? _instance;
   static PersonBMapper ensureInitialized() {
     if (_instance == null) {
@@ -24,18 +25,21 @@ class PersonBMapper extends ClassMapperBase<PersonB> {
   final String id = 'PersonB';
 
   static String _$firstName(PersonB v) => v.firstName;
+  static const Field<PersonB, String> _f$firstName =
+      Field('firstName', _$firstName, key: 'first_name');
   static String _$lastName(PersonB v) => v.lastName;
+  static const Field<PersonB, String> _f$lastName =
+      Field('lastName', _$lastName, key: 'surName');
 
   @override
   final Map<Symbol, Field<PersonB, dynamic>> fields = const {
-    #firstName:
-        Field<PersonB, String>('firstName', _$firstName, key: 'first_name'),
-    #lastName: Field<PersonB, String>('lastName', _$lastName, key: 'surName'),
+    #firstName: _f$firstName,
+    #lastName: _f$lastName,
   };
 
   static PersonB _instantiate(DecodingData data) {
     return PersonB(
-        firstName: data.get(#firstName), lastName: data.get(#lastName));
+        firstName: data.dec(_f$firstName), lastName: data.dec(_f$lastName));
   }
 
   @override
@@ -79,22 +83,18 @@ mixin PersonBMappable {
   }
 }
 
-extension PersonBValueCopy<$R, $Out extends PersonB>
-    on ObjectCopyWith<$R, PersonB, $Out> {
+extension PersonBValueCopy<$R, $Out> on ObjectCopyWith<$R, PersonB, $Out> {
   PersonBCopyWith<$R, PersonB, $Out> get $asPersonB =>
       $base.as((v, t, t2) => _PersonBCopyWithImpl(v, t, t2));
 }
 
-typedef PersonBCopyWithBound = PersonB;
-
-abstract class PersonBCopyWith<$R, $In extends PersonB, $Out extends PersonB>
+abstract class PersonBCopyWith<$R, $In extends PersonB, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   $R call({String? firstName, String? lastName});
-  PersonBCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends PersonB>(
-      Then<PersonB, $Out2> t, Then<$Out2, $R2> t2);
+  PersonBCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _PersonBCopyWithImpl<$R, $Out extends PersonB>
+class _PersonBCopyWithImpl<$R, $Out>
     extends ClassCopyWithBase<$R, PersonB, $Out>
     implements PersonBCopyWith<$R, PersonB, $Out> {
   _PersonBCopyWithImpl(super.value, super.then, super.then2);
@@ -113,7 +113,6 @@ class _PersonBCopyWithImpl<$R, $Out extends PersonB>
       lastName: data.get(#lastName, or: $value.lastName));
 
   @override
-  PersonBCopyWith<$R2, PersonB, $Out2> $chain<$R2, $Out2 extends PersonB>(
-          Then<PersonB, $Out2> t, Then<$Out2, $R2> t2) =>
-      _PersonBCopyWithImpl($value, t, t2);
+  PersonBCopyWith<$R2, PersonB, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _PersonBCopyWithImpl($value, $cast, t);
 }

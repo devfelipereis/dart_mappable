@@ -15,10 +15,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: dart-lang/setup-dart@v1.3
+        with:
+          sdk: 2.19.6
 
       - name: Bootstrap
         run: |
-          dart pub global activate melos 2.9.0
+          dart pub global activate melos
           dart pub global activate coverage
           melos bootstrap
           

@@ -7,6 +7,7 @@ part of 'main.dart';
 
 class AMapper extends ClassMapperBase<A> {
   AMapper._();
+
   static AMapper? _instance;
   static AMapper ensureInitialized() {
     if (_instance == null) {
@@ -25,14 +26,15 @@ class AMapper extends ClassMapperBase<A> {
   final String id = 'A';
 
   static IList<B> _$list(A v) => v.list;
+  static const Field<A, IList<B>> _f$list = Field('list', _$list);
 
   @override
   final Map<Symbol, Field<A, dynamic>> fields = const {
-    #list: Field<A, IList<B>>('list', _$list),
+    #list: _f$list,
   };
 
   static A _instantiate(DecodingData data) {
-    return A(data.get(#list));
+    return A(data.dec(_f$list));
   }
 
   @override
@@ -76,21 +78,18 @@ mixin AMappable {
   }
 }
 
-extension AValueCopy<$R, $Out extends A> on ObjectCopyWith<$R, A, $Out> {
+extension AValueCopy<$R, $Out> on ObjectCopyWith<$R, A, $Out> {
   ACopyWith<$R, A, $Out> get $asA =>
       $base.as((v, t, t2) => _ACopyWithImpl(v, t, t2));
 }
 
-typedef ACopyWithBound = A;
-
-abstract class ACopyWith<$R, $In extends A, $Out extends A>
+abstract class ACopyWith<$R, $In extends A, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   $R call({IList<B>? list});
-  ACopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends A>(
-      Then<A, $Out2> t, Then<$Out2, $R2> t2);
+  ACopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _ACopyWithImpl<$R, $Out extends A> extends ClassCopyWithBase<$R, A, $Out>
+class _ACopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, A, $Out>
     implements ACopyWith<$R, A, $Out> {
   _ACopyWithImpl(super.value, super.then, super.then2);
 
@@ -103,13 +102,13 @@ class _ACopyWithImpl<$R, $Out extends A> extends ClassCopyWithBase<$R, A, $Out>
   A $make(CopyWithData data) => A(data.get(#list, or: $value.list));
 
   @override
-  ACopyWith<$R2, A, $Out2> $chain<$R2, $Out2 extends A>(
-          Then<A, $Out2> t, Then<$Out2, $R2> t2) =>
-      _ACopyWithImpl($value, t, t2);
+  ACopyWith<$R2, A, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _ACopyWithImpl($value, $cast, t);
 }
 
 class BMapper extends ClassMapperBase<B> {
   BMapper._();
+
   static BMapper? _instance;
   static BMapper ensureInitialized() {
     if (_instance == null) {
@@ -127,14 +126,15 @@ class BMapper extends ClassMapperBase<B> {
   final String id = 'B';
 
   static String _$str(B v) => v.str;
+  static const Field<B, String> _f$str = Field('str', _$str);
 
   @override
   final Map<Symbol, Field<B, dynamic>> fields = const {
-    #str: Field<B, String>('str', _$str),
+    #str: _f$str,
   };
 
   static B _instantiate(DecodingData data) {
-    return B(data.get(#str));
+    return B(data.dec(_f$str));
   }
 
   @override
@@ -178,21 +178,18 @@ mixin BMappable {
   }
 }
 
-extension BValueCopy<$R, $Out extends B> on ObjectCopyWith<$R, B, $Out> {
+extension BValueCopy<$R, $Out> on ObjectCopyWith<$R, B, $Out> {
   BCopyWith<$R, B, $Out> get $asB =>
       $base.as((v, t, t2) => _BCopyWithImpl(v, t, t2));
 }
 
-typedef BCopyWithBound = B;
-
-abstract class BCopyWith<$R, $In extends B, $Out extends B>
+abstract class BCopyWith<$R, $In extends B, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   $R call({String? str});
-  BCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends B>(
-      Then<B, $Out2> t, Then<$Out2, $R2> t2);
+  BCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _BCopyWithImpl<$R, $Out extends B> extends ClassCopyWithBase<$R, B, $Out>
+class _BCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, B, $Out>
     implements BCopyWith<$R, B, $Out> {
   _BCopyWithImpl(super.value, super.then, super.then2);
 
@@ -205,7 +202,6 @@ class _BCopyWithImpl<$R, $Out extends B> extends ClassCopyWithBase<$R, B, $Out>
   B $make(CopyWithData data) => B(data.get(#str, or: $value.str));
 
   @override
-  BCopyWith<$R2, B, $Out2> $chain<$R2, $Out2 extends B>(
-          Then<B, $Out2> t, Then<$Out2, $R2> t2) =>
-      _BCopyWithImpl($value, t, t2);
+  BCopyWith<$R2, B, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _BCopyWithImpl($value, $cast, t);
 }

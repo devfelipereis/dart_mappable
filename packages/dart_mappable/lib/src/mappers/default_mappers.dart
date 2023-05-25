@@ -1,11 +1,10 @@
-import 'package:collection/collection.dart';
-
 import '../mapper_exception.dart';
 import '../mapper_utils.dart';
 import 'mapper_base.dart';
 import 'mapper_mixins.dart';
 import 'simple_mapper.dart';
 
+/// The mapper implementation used for all primitive types.
 class PrimitiveMapper<T extends Object> extends MapperBase<T>
     with PrimitiveMethodsMixin<T> {
   const PrimitiveMapper([T Function(Object value)? decoder, this.exactType])
@@ -23,21 +22,27 @@ class PrimitiveMapper<T extends Object> extends MapperBase<T>
   static T _cast<T>(v) => v as T;
 
   @override
-  T decoder(DecodingContext<Object> context) {
-    return _decoder(context.value);
+  T decoder(Object value, DecodingContext context) {
+    return _decoder(value);
   }
 
   @override
-  Object encoder(EncodingContext<Object> context) {
-    return context.value;
+  Object encoder(T value, EncodingContext context) {
+    return value;
   }
 }
 
+/// The mapper interface used for all concrete enum mappers.
+///
 /// {@category Custom Mappers}
 abstract class EnumMapper<T extends Enum> extends SimpleMapper<T> {
   const EnumMapper();
 }
 
+/// A mapper that encodes a [DateTime] object into a formatted iso string and
+/// vice versa.
+///
+/// It can also decode numbers in unix milliseconds time.
 class DateTimeMapper extends SimpleMapper<DateTime> {
   const DateTimeMapper();
 
@@ -58,107 +63,49 @@ class DateTimeMapper extends SimpleMapper<DateTime> {
   }
 }
 
-/// {@category Custom Mappers}
-class IterableMapper<I extends Iterable> extends MapperBase<I>
-    with MapperEqualityMixin<I> {
-  IterableMapper(this.fromIterable, this.typeFactory);
-
-  final Iterable<U> Function<U>(Iterable<U> iterable) fromIterable;
-
-  @override
-  final Function typeFactory;
-
-  @override
-  bool includeTypeId<V>(v) => false;
-
-  @override
-  I decoder(DecodingContext context) {
-    return context.checked<Iterable>().call1(<T>(o) {
-      return fromIterable(o.value.map((v) {
-        return o.container.$dec<T>(v, 'item');
-      })) as I;
-    });
-  }
-
-  @override
-  Object encoder(EncodingContext<Object> context) {
-    return context.checked<I>().call1(<T>(o) =>
-        o.value.map((v) => o.container.$enc<T>(v as T, 'item')).toList());
-  }
-
-  @override
-  Equality equality(Equality child) => IterableEquality(child);
-
-  @override
-  String stringify(MappingContext<Object> context) =>
-      '(${context.checked<I>().value.map((e) => context.container.asString(e)).join(', ')})';
-}
-
-/// {@category Custom Mappers}
-class MapMapper<M extends Map> extends MapperBase<M>
-    with MapperEqualityMixin<M> {
-  MapMapper(this.fromMap, this.typeFactory);
-
-  Map<K, V> Function<K, V>(Map<K, V> map) fromMap;
-  @override
-  final Function typeFactory;
-
-  @override
-  bool includeTypeId<V>(v) => false;
-
-  @override
-  M decoder(DecodingContext context) {
-    return context.checked<Map>().call2(<K, V>(o) {
-      return fromMap(o.value.map((key, value) {
-        return MapEntry(o.container.$dec<K>(key, 'key'),
-            o.container.$dec<V>(value, 'value'));
-      })) as M;
-    });
-  }
-
-  @override
-  Object encoder(EncodingContext<Object> context) {
-    return context.checked<M>().call2(<K, V>(o) => o.value.map((key, value) {
-          return MapEntry(o.container.toValue<K>(key as K),
-              o.container.toValue<V>(value as V));
-        }));
-  }
-
-  @override
-  Equality equality(Equality child) => MapEquality(keys: child, values: child);
-
-  @override
-  String stringify(MappingContext<Object> context) =>
-      '{${context.checked<M>().value.entries.map((e) => '${context.container.asString(e.key)}: '
-          '${context.container.asString(e.value)}').join(', ')}}';
-}
-
+/// The decoding function of a serializable class (`fromJson`) with one generic type parameter.
 typedef SerializableDecoder1<T, V> = T Function<A>(V, A Function(Object?));
+
+/// The encoding function of a serializable class (`toJson`) with one generic type parameter.
 typedef SerializableEncoder1<T> = Object Function(Object? Function(dynamic))
     Function(T);
 
+/// The type factory definition for a generic type with one type argument.
+typedef TypeFactory1 = Object? Function<A>(Object? Function<V>() f);
+
+/// The decoding function of a serializable class (`fromJson`) with two generic type parameters.
 typedef SerializableDecoder2<T, V> = T Function<A, B>(
     V, A Function(Object?), B Function(Object?));
+
+/// The encoding function of a serializable class (`toJson`) with two generic type parameters.
 typedef SerializableEncoder2<T> = Object Function(
         Object? Function(dynamic), Object? Function(dynamic))
     Function(T);
 
+/// The type factory definition for a generic type with two type arguments.
+typedef TypeFactory2 = Object? Function<A, B>(Object? Function<V>() f);
+
+/// A mapper for handling classes that comply with the json_serializable format.
+///
+/// This mapper expects a `fromJson` and `toJson` method on a given class.
+///
+/// {@category Migration and Compatibility}
 class SerializableMapper<T extends Object, V extends Object>
-    extends MapperBase<T> {
-  late T Function(DecodingContext<V> context) _decoder;
-  late Object Function(EncodingContext<T> context) _encoder;
+    extends MapperBase<T> with PrimitiveMethodsMixin<T> {
+  late T Function(V value, DecodingContext context) _decoder;
+  late Object Function(T value, EncodingContext context) _encoder;
 
   @override
   late Function typeFactory;
 
   @override
-  bool includeTypeId<W>(v) => MapperBase.matchesStaticType<W>(v);
+  bool includeTypeId<W>(v) => MapperBase.checkStaticType<W>(v);
 
   SerializableMapper({
     required T Function(V) decode,
     required Object Function() Function(T) encode,
-  })  : _decoder = ((c) => decode(c.value)),
-        _encoder = ((c) => encode(c.value)()),
+  })  : _decoder = ((v, c) => decode(v)),
+        _encoder = ((v, c) => encode(v)()),
         typeFactory = ((f) => f<T>());
 
   SerializableMapper.arg1({
@@ -166,10 +113,10 @@ class SerializableMapper<T extends Object, V extends Object>
     required SerializableEncoder1<T> encode,
     required TypeFactory1 type,
   }) {
-    _decoder = ((c) =>
-        c.call1(<A>(c) => decode<A>(c.value, c.container.fromValue<A>)));
-    _encoder = ((c) => c.call1(
-        <A>(c) => encode(c.value)((o) => c.container.toValue<A>(o as A)))!);
+    _decoder = ((v, c) =>
+        c.callWith1(<A>(_) => decode<A>(v, c.container.fromValue<A>)));
+    _encoder = ((v, c) => c.callWith1(
+        <A>(_) => encode(v)((o) => c.container.toValue<A>(o as A)))!);
     typeFactory = type;
   }
 
@@ -178,21 +125,21 @@ class SerializableMapper<T extends Object, V extends Object>
     required SerializableEncoder2<T> encode,
     required TypeFactory2 type,
   }) {
-    _decoder = ((c) => c.call2(<A, B>(c) => decode<A, B>(
-        c.value, c.container.fromValue<A>, c.container.fromValue<B>)));
-    _encoder = ((c) => c.call2(<A, B>(c) => encode(c.value)(
+    _decoder = ((v, c) => c.callWith2(<A, B>(_) =>
+        decode<A, B>(v, c.container.fromValue<A>, c.container.fromValue<B>)));
+    _encoder = ((v, c) => c.callWith2(<A, B>(_) => encode(v)(
         (o) => c.container.toValue<A>(o as A),
         (o) => c.container.toValue<B>(o as B))));
     typeFactory = type;
   }
 
   @override
-  T decoder(DecodingContext<Object> context) {
-    return _decoder(context.checked<V>());
+  T decoder(Object value, DecodingContext context) {
+    return _decoder(value.checked<V>(), context);
   }
 
   @override
-  Object encoder(EncodingContext<Object> context) {
-    return _encoder(context.checked<T>());
+  Object encoder(T value, EncodingContext context) {
+    return _encoder(value, context);
   }
 }

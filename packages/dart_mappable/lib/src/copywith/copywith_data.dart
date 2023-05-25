@@ -1,7 +1,7 @@
 import '../../dart_mappable.dart';
 
 abstract class CopyWithData {
-  V get<V>(Symbol name, {V or});
+  V get<V>(Symbol name, {Object? or});
 }
 
 class FieldCopyWithData extends CopyWithData {
@@ -38,16 +38,16 @@ class MergeCopyWithData extends CopyWithData {
 
 class DeltaCopyWithData extends CopyWithData {
   DeltaCopyWithData(this.mapper, this.value)
-      : context = DecodingContext(value, container: MapperContainer.globals);
+      : context = DecodingContext(container: MapperContainer.globals);
 
   final ClassMapperBase mapper;
   final Map<String, dynamic> value;
-  final DecodingContext<Map<String, dynamic>> context;
+  final DecodingContext context;
 
   @override
   V get<V>(Symbol name, {Object? or = $none}) {
-    if (value[mapper.fields[name]!.key] != null || or == $none) {
-      return mapper.fields[name]!.decode(context);
+    if (value.containsKey(mapper.fields[name]!.key) || or == $none) {
+      return mapper.fields[name]!.decode(value, context);
     } else {
       return or as V;
     }

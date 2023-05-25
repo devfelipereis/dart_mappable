@@ -8,7 +8,13 @@ funding:
   - https://github.com/sponsors/schultek
 
 environment:
-  sdk: '>=2.17.0 <3.0.0'
+  sdk: '>=2.17.0 <4.0.0'
+
+topics:
+  - json
+  - data-class
+  - codegen
+  - build-runner
 
 dependencies:
   collection: ^1.15.0

@@ -7,6 +7,7 @@ part of 'copy_with_test.dart';
 
 class PersonMapper extends ClassMapperBase<Person> {
   PersonMapper._();
+
   static PersonMapper? _instance;
   static PersonMapper ensureInitialized() {
     if (_instance == null) {
@@ -25,16 +26,18 @@ class PersonMapper extends ClassMapperBase<Person> {
   final String id = 'Person';
 
   static String _$name(Person v) => v.name;
+  static const Field<Person, String> _f$name = Field('name', _$name);
   static Car _$car(Person v) => v.car;
+  static const Field<Person, Car> _f$car = Field('car', _$car);
 
   @override
   final Map<Symbol, Field<Person, dynamic>> fields = const {
-    #name: Field<Person, String>('name', _$name),
-    #car: Field<Person, Car>('car', _$car),
+    #name: _f$name,
+    #car: _f$car,
   };
 
   static Person _instantiate(DecodingData data) {
-    return Person(data.get(#name), data.get(#car));
+    return Person(data.dec(_f$name), data.dec(_f$car));
   }
 
   @override
@@ -78,24 +81,19 @@ mixin PersonMappable {
   }
 }
 
-extension PersonValueCopy<$R, $Out extends Person>
-    on ObjectCopyWith<$R, Person, $Out> {
+extension PersonValueCopy<$R, $Out> on ObjectCopyWith<$R, Person, $Out> {
   PersonCopyWith<$R, Person, $Out> get $asPerson =>
       $base.as((v, t, t2) => _PersonCopyWithImpl(v, t, t2));
 }
 
-typedef PersonCopyWithBound = Person;
-
-abstract class PersonCopyWith<$R, $In extends Person, $Out extends Person>
+abstract class PersonCopyWith<$R, $In extends Person, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   CarCopyWith<$R, Car, Car> get car;
   $R call({String? name, Car? car});
-  PersonCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Person>(
-      Then<Person, $Out2> t, Then<$Out2, $R2> t2);
+  PersonCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _PersonCopyWithImpl<$R, $Out extends Person>
-    extends ClassCopyWithBase<$R, Person, $Out>
+class _PersonCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Person, $Out>
     implements PersonCopyWith<$R, Person, $Out> {
   _PersonCopyWithImpl(super.value, super.then, super.then2);
 
@@ -103,7 +101,7 @@ class _PersonCopyWithImpl<$R, $Out extends Person>
   late final ClassMapperBase<Person> $mapper = PersonMapper.ensureInitialized();
   @override
   CarCopyWith<$R, Car, Car> get car =>
-      $value.car.copyWith.$chain($identity, (v) => call(car: v));
+      $value.car.copyWith.$chain((v) => call(car: v));
   @override
   $R call({String? name, Car? car}) => $apply(FieldCopyWithData(
       {if (name != null) #name: name, if (car != null) #car: car}));
@@ -112,13 +110,13 @@ class _PersonCopyWithImpl<$R, $Out extends Person>
       Person(data.get(#name, or: $value.name), data.get(#car, or: $value.car));
 
   @override
-  PersonCopyWith<$R2, Person, $Out2> $chain<$R2, $Out2 extends Person>(
-          Then<Person, $Out2> t, Then<$Out2, $R2> t2) =>
-      _PersonCopyWithImpl($value, t, t2);
+  PersonCopyWith<$R2, Person, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _PersonCopyWithImpl($value, $cast, t);
 }
 
 class CarMapper extends ClassMapperBase<Car> {
   CarMapper._();
+
   static CarMapper? _instance;
   static CarMapper ensureInitialized() {
     if (_instance == null) {
@@ -137,16 +135,18 @@ class CarMapper extends ClassMapperBase<Car> {
   final String id = 'Car';
 
   static Brand? _$brand(Car v) => v.brand;
+  static const Field<Car, Brand> _f$brand = Field('brand', _$brand);
   static String _$model(Car v) => v.model;
+  static const Field<Car, String> _f$model = Field('model', _$model);
 
   @override
   final Map<Symbol, Field<Car, dynamic>> fields = const {
-    #brand: Field<Car, Brand?>('brand', _$brand),
-    #model: Field<Car, String>('model', _$model),
+    #brand: _f$brand,
+    #model: _f$model,
   };
 
   static Car _instantiate(DecodingData data) {
-    return Car(data.get(#brand), data.get(#model));
+    return Car(data.dec(_f$brand), data.dec(_f$model));
   }
 
   @override
@@ -190,23 +190,19 @@ mixin CarMappable {
   }
 }
 
-extension CarValueCopy<$R, $Out extends Car> on ObjectCopyWith<$R, Car, $Out> {
+extension CarValueCopy<$R, $Out> on ObjectCopyWith<$R, Car, $Out> {
   CarCopyWith<$R, Car, $Out> get $asCar =>
       $base.as((v, t, t2) => _CarCopyWithImpl(v, t, t2));
 }
 
-typedef CarCopyWithBound = Car;
-
-abstract class CarCopyWith<$R, $In extends Car, $Out extends Car>
+abstract class CarCopyWith<$R, $In extends Car, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   BrandCopyWith<$R, Brand, Brand>? get brand;
   $R call({Brand? brand, String? model});
-  CarCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Car>(
-      Then<Car, $Out2> t, Then<$Out2, $R2> t2);
+  CarCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _CarCopyWithImpl<$R, $Out extends Car>
-    extends ClassCopyWithBase<$R, Car, $Out>
+class _CarCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Car, $Out>
     implements CarCopyWith<$R, Car, $Out> {
   _CarCopyWithImpl(super.value, super.then, super.then2);
 
@@ -214,7 +210,7 @@ class _CarCopyWithImpl<$R, $Out extends Car>
   late final ClassMapperBase<Car> $mapper = CarMapper.ensureInitialized();
   @override
   BrandCopyWith<$R, Brand, Brand>? get brand =>
-      $value.brand?.copyWith.$chain($identity, (v) => call(brand: v));
+      $value.brand?.copyWith.$chain((v) => call(brand: v));
   @override
   $R call({Object? brand = $none, String? model}) => $apply(FieldCopyWithData(
       {if (brand != $none) #brand: brand, if (model != null) #model: model}));
@@ -223,13 +219,13 @@ class _CarCopyWithImpl<$R, $Out extends Car>
       data.get(#brand, or: $value.brand), data.get(#model, or: $value.model));
 
   @override
-  CarCopyWith<$R2, Car, $Out2> $chain<$R2, $Out2 extends Car>(
-          Then<Car, $Out2> t, Then<$Out2, $R2> t2) =>
-      _CarCopyWithImpl($value, t, t2);
+  CarCopyWith<$R2, Car, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _CarCopyWithImpl($value, $cast, t);
 }
 
 class BrandMapper extends ClassMapperBase<Brand> {
   BrandMapper._();
+
   static BrandMapper? _instance;
   static BrandMapper ensureInitialized() {
     if (_instance == null) {
@@ -247,14 +243,15 @@ class BrandMapper extends ClassMapperBase<Brand> {
   final String id = 'Brand';
 
   static dynamic _$name(Brand v) => v.name;
+  static const Field<Brand, dynamic> _f$name = Field('name', _$name);
 
   @override
   final Map<Symbol, Field<Brand, dynamic>> fields = const {
-    #name: Field<Brand, dynamic>('name', _$name),
+    #name: _f$name,
   };
 
   static Brand _instantiate(DecodingData data) {
-    return Brand(data.get(#name));
+    return Brand(data.dec(_f$name));
   }
 
   @override
@@ -298,23 +295,18 @@ mixin BrandMappable {
   }
 }
 
-extension BrandValueCopy<$R, $Out extends Brand>
-    on ObjectCopyWith<$R, Brand, $Out> {
+extension BrandValueCopy<$R, $Out> on ObjectCopyWith<$R, Brand, $Out> {
   BrandCopyWith<$R, Brand, $Out> get $asBrand =>
       $base.as((v, t, t2) => _BrandCopyWithImpl(v, t, t2));
 }
 
-typedef BrandCopyWithBound = Brand;
-
-abstract class BrandCopyWith<$R, $In extends Brand, $Out extends Brand>
+abstract class BrandCopyWith<$R, $In extends Brand, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   $R call({dynamic name});
-  BrandCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Brand>(
-      Then<Brand, $Out2> t, Then<$Out2, $R2> t2);
+  BrandCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _BrandCopyWithImpl<$R, $Out extends Brand>
-    extends ClassCopyWithBase<$R, Brand, $Out>
+class _BrandCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Brand, $Out>
     implements BrandCopyWith<$R, Brand, $Out> {
   _BrandCopyWithImpl(super.value, super.then, super.then2);
 
@@ -327,13 +319,13 @@ class _BrandCopyWithImpl<$R, $Out extends Brand>
   Brand $make(CopyWithData data) => Brand(data.get(#name, or: $value.name));
 
   @override
-  BrandCopyWith<$R2, Brand, $Out2> $chain<$R2, $Out2 extends Brand>(
-          Then<Brand, $Out2> t, Then<$Out2, $R2> t2) =>
-      _BrandCopyWithImpl($value, t, t2);
+  BrandCopyWith<$R2, Brand, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _BrandCopyWithImpl($value, $cast, t);
 }
 
 class DealershipMapper extends ClassMapperBase<Dealership> {
   DealershipMapper._();
+
   static DealershipMapper? _instance;
   static DealershipMapper ensureInitialized() {
     if (_instance == null) {
@@ -354,16 +346,19 @@ class DealershipMapper extends ClassMapperBase<Dealership> {
   final String id = 'Dealership';
 
   static List<Car> _$cars(Dealership v) => v.cars;
+  static const Field<Dealership, List<Car>> _f$cars = Field('cars', _$cars);
   static Map<Brand, Person?> _$salesRep(Dealership v) => v.salesRep;
+  static const Field<Dealership, Map<Brand, Person?>> _f$salesRep =
+      Field('salesRep', _$salesRep);
 
   @override
   final Map<Symbol, Field<Dealership, dynamic>> fields = const {
-    #cars: Field<Dealership, List<Car>>('cars', _$cars),
-    #salesRep: Field<Dealership, Map<Brand, Person?>>('salesRep', _$salesRep),
+    #cars: _f$cars,
+    #salesRep: _f$salesRep,
   };
 
   static Dealership _instantiate(DecodingData data) {
-    return Dealership(data.get(#cars), data.get(#salesRep));
+    return Dealership(data.dec(_f$cars), data.dec(_f$salesRep));
   }
 
   @override
@@ -407,25 +402,22 @@ mixin DealershipMappable {
   }
 }
 
-extension DealershipValueCopy<$R, $Out extends Dealership>
+extension DealershipValueCopy<$R, $Out>
     on ObjectCopyWith<$R, Dealership, $Out> {
   DealershipCopyWith<$R, Dealership, $Out> get $asDealership =>
       $base.as((v, t, t2) => _DealershipCopyWithImpl(v, t, t2));
 }
 
-typedef DealershipCopyWithBound = Dealership;
-
-abstract class DealershipCopyWith<$R, $In extends Dealership,
-    $Out extends Dealership> implements ClassCopyWith<$R, $In, $Out> {
+abstract class DealershipCopyWith<$R, $In extends Dealership, $Out>
+    implements ClassCopyWith<$R, $In, $Out> {
   ListCopyWith<$R, Car, CarCopyWith<$R, Car, Car>> get cars;
   MapCopyWith<$R, Brand, Person?, PersonCopyWith<$R, Person, Person>?>
       get salesRep;
   $R call({List<Car>? cars, Map<Brand, Person?>? salesRep});
-  DealershipCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Dealership>(
-      Then<Dealership, $Out2> t, Then<$Out2, $R2> t2);
+  DealershipCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _DealershipCopyWithImpl<$R, $Out extends Dealership>
+class _DealershipCopyWithImpl<$R, $Out>
     extends ClassCopyWithBase<$R, Dealership, $Out>
     implements DealershipCopyWith<$R, Dealership, $Out> {
   _DealershipCopyWithImpl(super.value, super.then, super.then2);
@@ -435,15 +427,11 @@ class _DealershipCopyWithImpl<$R, $Out extends Dealership>
       DealershipMapper.ensureInitialized();
   @override
   ListCopyWith<$R, Car, CarCopyWith<$R, Car, Car>> get cars => ListCopyWith(
-      $value.cars,
-      (v, t) => v.copyWith.$chain<$R, Car>($identity, t),
-      (v) => call(cars: v));
+      $value.cars, (v, t) => v.copyWith.$chain(t), (v) => call(cars: v));
   @override
   MapCopyWith<$R, Brand, Person?, PersonCopyWith<$R, Person, Person>?>
-      get salesRep => MapCopyWith(
-          $value.salesRep,
-          (v, t) => v?.copyWith.$chain<$R, Person>($identity, t),
-          (v) => call(salesRep: v));
+      get salesRep => MapCopyWith($value.salesRep,
+          (v, t) => v?.copyWith.$chain(t), (v) => call(salesRep: v));
   @override
   $R call({List<Car>? cars, Map<Brand, Person?>? salesRep}) =>
       $apply(FieldCopyWithData({
@@ -456,14 +444,14 @@ class _DealershipCopyWithImpl<$R, $Out extends Dealership>
       data.get(#salesRep, or: $value.salesRep));
 
   @override
-  DealershipCopyWith<$R2, Dealership, $Out2>
-      $chain<$R2, $Out2 extends Dealership>(
-              Then<Dealership, $Out2> t, Then<$Out2, $R2> t2) =>
-          _DealershipCopyWithImpl($value, t, t2);
+  DealershipCopyWith<$R2, Dealership, $Out2> $chain<$R2, $Out2>(
+          Then<$Out2, $R2> t) =>
+      _DealershipCopyWithImpl($value, $cast, t);
 }
 
 class ItemListMapper extends ClassMapperBase<ItemList> {
   ItemListMapper._();
+
   static ItemListMapper? _instance;
   static ItemListMapper ensureInitialized() {
     if (_instance == null) {
@@ -488,10 +476,12 @@ class ItemListMapper extends ClassMapperBase<ItemList> {
 
   static List<dynamic> _$items(ItemList v) => v.items;
   static dynamic _arg$items<T>(f) => f<List<T>>();
+  static const Field<ItemList, List<dynamic>> _f$items =
+      Field('items', _$items, arg: _arg$items);
 
   @override
   final Map<Symbol, Field<ItemList, dynamic>> fields = const {
-    #items: Field<ItemList, List<dynamic>>('items', _$items, arg: _arg$items),
+    #items: _f$items,
   };
 
   static ItemList<T> _instantiate<T>(DecodingData data) {
@@ -517,18 +507,16 @@ mixin ItemListMappable<T> {
   ItemListCopyWith<ItemList<T>, ItemList<T>, ItemList<T>, T> get copyWith;
 }
 
-typedef ItemListCopyWithBound = ItemList;
-
-abstract class ItemListCopyWith<$R, $In extends ItemList<T>,
-    $Out extends ItemList, T> implements ClassCopyWith<$R, $In, $Out> {
+abstract class ItemListCopyWith<$R, $In extends ItemList<T>, $Out, T>
+    implements ClassCopyWith<$R, $In, $Out> {
   ListCopyWith<$R, T, ObjectCopyWith<$R, T, T>?> get items;
   $R call({List<T>? items});
-  ItemListCopyWith<$R2, $In, $Out2, T> $chain<$R2, $Out2 extends ItemList>(
-      Then<ItemList<T>, $Out2> t, Then<$Out2, $R2> t2);
+  ItemListCopyWith<$R2, $In, $Out2, T> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
 class BrandListMapper extends SubClassMapperBase<BrandList> {
   BrandListMapper._();
+
   static BrandListMapper? _instance;
   static BrandListMapper ensureInitialized() {
     if (_instance == null) {
@@ -548,10 +536,12 @@ class BrandListMapper extends SubClassMapperBase<BrandList> {
   final String id = 'BrandList';
 
   static List<Brand?> _$items(BrandList v) => v.items;
+  static const Field<BrandList, List<Brand?>> _f$items =
+      Field('items', _$items, key: 'brands');
 
   @override
   final Map<Symbol, Field<BrandList, dynamic>> fields = const {
-    #items: Field<BrandList, List<Brand?>>('items', _$items, key: 'brands'),
+    #items: _f$items,
   };
 
   @override
@@ -561,8 +551,13 @@ class BrandListMapper extends SubClassMapperBase<BrandList> {
   @override
   late final ClassMapperBase superMapper = ItemListMapper.ensureInitialized();
 
+  @override
+  DecodingContext inherit(DecodingContext context) {
+    return context.inherit(args: []);
+  }
+
   static BrandList _instantiate(DecodingData data) {
-    return BrandList(data.get(#brands));
+    return BrandList(data.dec(_f$items));
   }
 
   @override
@@ -606,25 +601,21 @@ mixin BrandListMappable {
   }
 }
 
-extension BrandListValueCopy<$R, $Out extends ItemList>
-    on ObjectCopyWith<$R, BrandList, $Out> {
+extension BrandListValueCopy<$R, $Out> on ObjectCopyWith<$R, BrandList, $Out> {
   BrandListCopyWith<$R, BrandList, $Out> get $asBrandList =>
       $base.as((v, t, t2) => _BrandListCopyWithImpl(v, t, t2));
 }
 
-typedef BrandListCopyWithBound = ItemList;
-
-abstract class BrandListCopyWith<$R, $In extends BrandList,
-    $Out extends ItemList> implements ItemListCopyWith<$R, $In, $Out, Brand?> {
+abstract class BrandListCopyWith<$R, $In extends BrandList, $Out>
+    implements ItemListCopyWith<$R, $In, $Out, Brand?> {
   @override
   ListCopyWith<$R, Brand?, BrandCopyWith<$R, Brand, Brand>?> get items;
   @override
-  $R call({List<Brand?>? items});
-  BrandListCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends ItemList>(
-      Then<BrandList, $Out2> t, Then<$Out2, $R2> t2);
+  $R call({covariant List<Brand?>? items});
+  BrandListCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _BrandListCopyWithImpl<$R, $Out extends ItemList>
+class _BrandListCopyWithImpl<$R, $Out>
     extends ClassCopyWithBase<$R, BrandList, $Out>
     implements BrandListCopyWith<$R, BrandList, $Out> {
   _BrandListCopyWithImpl(super.value, super.then, super.then2);
@@ -635,9 +626,7 @@ class _BrandListCopyWithImpl<$R, $Out extends ItemList>
   @override
   ListCopyWith<$R, Brand?, BrandCopyWith<$R, Brand, Brand>?> get items =>
       ListCopyWith(
-          $value.items,
-          (v, t) => v?.copyWith.$chain<$R, Brand>($identity, t),
-          (v) => call(items: v));
+          $value.items, (v, t) => v?.copyWith.$chain(t), (v) => call(items: v));
   @override
   $R call({Object? items = $none}) =>
       $apply(FieldCopyWithData({if (items != $none) #items: items}));
@@ -646,13 +635,14 @@ class _BrandListCopyWithImpl<$R, $Out extends ItemList>
       BrandList(data.get(#items, or: $value.items));
 
   @override
-  BrandListCopyWith<$R2, BrandList, $Out2> $chain<$R2, $Out2 extends ItemList>(
-          Then<BrandList, $Out2> t, Then<$Out2, $R2> t2) =>
-      _BrandListCopyWithImpl($value, t, t2);
+  BrandListCopyWith<$R2, BrandList, $Out2> $chain<$R2, $Out2>(
+          Then<$Out2, $R2> t) =>
+      _BrandListCopyWithImpl($value, $cast, t);
 }
 
 class NamedItemListMapper extends SubClassMapperBase<NamedItemList> {
   NamedItemListMapper._();
+
   static NamedItemListMapper? _instance;
   static NamedItemListMapper ensureInitialized() {
     if (_instance == null) {
@@ -673,14 +663,16 @@ class NamedItemListMapper extends SubClassMapperBase<NamedItemList> {
   Function get typeFactory => <T>(f) => f<NamedItemList<T>>();
 
   static String _$name(NamedItemList v) => v.name;
+  static const Field<NamedItemList, String> _f$name = Field('name', _$name);
   static List<dynamic> _$items(NamedItemList v) => v.items;
   static dynamic _arg$items<T>(f) => f<List<T>>();
+  static const Field<NamedItemList, List<dynamic>> _f$items =
+      Field('items', _$items, arg: _arg$items);
 
   @override
   final Map<Symbol, Field<NamedItemList, dynamic>> fields = const {
-    #name: Field<NamedItemList, String>('name', _$name),
-    #items:
-        Field<NamedItemList, List<dynamic>>('items', _$items, arg: _arg$items),
+    #name: _f$name,
+    #items: _f$items,
   };
 
   @override
@@ -691,7 +683,7 @@ class NamedItemListMapper extends SubClassMapperBase<NamedItemList> {
   late final ClassMapperBase superMapper = ItemListMapper.ensureInitialized();
 
   static NamedItemList<T> _instantiate<T>(DecodingData data) {
-    return NamedItemList(data.get(#name), data.get(#items));
+    return NamedItemList(data.dec(_f$name), data.dec(_f$items));
   }
 
   @override
@@ -737,25 +729,23 @@ mixin NamedItemListMappable<T> {
   }
 }
 
-extension NamedItemListValueCopy<$R, $Out extends ItemList, T>
+extension NamedItemListValueCopy<$R, $Out, T>
     on ObjectCopyWith<$R, NamedItemList<T>, $Out> {
   NamedItemListCopyWith<$R, NamedItemList<T>, $Out, T> get $asNamedItemList =>
       $base.as((v, t, t2) => _NamedItemListCopyWithImpl(v, t, t2));
 }
 
-typedef NamedItemListCopyWithBound = ItemList;
-
-abstract class NamedItemListCopyWith<$R, $In extends NamedItemList<T>,
-    $Out extends ItemList, T> implements ItemListCopyWith<$R, $In, $Out, T> {
+abstract class NamedItemListCopyWith<$R, $In extends NamedItemList<T>, $Out, T>
+    implements ItemListCopyWith<$R, $In, $Out, T> {
   @override
   ListCopyWith<$R, T, ObjectCopyWith<$R, T, T>> get items;
   @override
-  $R call({String? name, List<T>? items});
-  NamedItemListCopyWith<$R2, $In, $Out2, T> $chain<$R2, $Out2 extends ItemList>(
-      Then<NamedItemList<T>, $Out2> t, Then<$Out2, $R2> t2);
+  $R call({String? name, covariant List<T>? items});
+  NamedItemListCopyWith<$R2, $In, $Out2, T> $chain<$R2, $Out2>(
+      Then<$Out2, $R2> t);
 }
 
-class _NamedItemListCopyWithImpl<$R, $Out extends ItemList, T>
+class _NamedItemListCopyWithImpl<$R, $Out, T>
     extends ClassCopyWithBase<$R, NamedItemList<T>, $Out>
     implements NamedItemListCopyWith<$R, NamedItemList<T>, $Out, T> {
   _NamedItemListCopyWithImpl(super.value, super.then, super.then2);
@@ -776,14 +766,14 @@ class _NamedItemListCopyWithImpl<$R, $Out extends ItemList, T>
       data.get(#name, or: $value.name), data.get(#items, or: $value.items));
 
   @override
-  NamedItemListCopyWith<$R2, NamedItemList<T>, $Out2, T>
-      $chain<$R2, $Out2 extends ItemList>(
-              Then<NamedItemList<T>, $Out2> t, Then<$Out2, $R2> t2) =>
-          _NamedItemListCopyWithImpl($value, t, t2);
+  NamedItemListCopyWith<$R2, NamedItemList<T>, $Out2, T> $chain<$R2, $Out2>(
+          Then<$Out2, $R2> t) =>
+      _NamedItemListCopyWithImpl($value, $cast, t);
 }
 
 class KeyedItemListMapper extends SubClassMapperBase<KeyedItemList> {
   KeyedItemListMapper._();
+
   static KeyedItemListMapper? _instance;
   static KeyedItemListMapper ensureInitialized() {
     if (_instance == null) {
@@ -805,14 +795,17 @@ class KeyedItemListMapper extends SubClassMapperBase<KeyedItemList> {
 
   static dynamic _$key(KeyedItemList v) => v.key;
   static dynamic _arg$key<K, T>(f) => f<K>();
+  static const Field<KeyedItemList, dynamic> _f$key =
+      Field('key', _$key, arg: _arg$key);
   static List<dynamic> _$items(KeyedItemList v) => v.items;
   static dynamic _arg$items<K, T>(f) => f<List<T>>();
+  static const Field<KeyedItemList, List<dynamic>> _f$items =
+      Field('items', _$items, arg: _arg$items);
 
   @override
   final Map<Symbol, Field<KeyedItemList, dynamic>> fields = const {
-    #key: Field<KeyedItemList, dynamic>('key', _$key, arg: _arg$key),
-    #items:
-        Field<KeyedItemList, List<dynamic>>('items', _$items, arg: _arg$items),
+    #key: _f$key,
+    #items: _f$items,
   };
 
   @override
@@ -823,12 +816,12 @@ class KeyedItemListMapper extends SubClassMapperBase<KeyedItemList> {
   late final ClassMapperBase superMapper = ItemListMapper.ensureInitialized();
 
   @override
-  DecodingContext<Object> inherit(DecodingContext<Object> context) {
+  DecodingContext inherit(DecodingContext context) {
     return context.inherit(args: [dynamic, context.arg(0)]);
   }
 
   static KeyedItemList<K, T> _instantiate<K, T>(DecodingData data) {
-    return KeyedItemList(data.get(#key), data.get(#items));
+    return KeyedItemList(data.dec(_f$key), data.dec(_f$items));
   }
 
   @override
@@ -876,27 +869,24 @@ mixin KeyedItemListMappable<K, T> {
   }
 }
 
-extension KeyedItemListValueCopy<$R, $Out extends ItemList, K, T>
+extension KeyedItemListValueCopy<$R, $Out, K, T>
     on ObjectCopyWith<$R, KeyedItemList<K, T>, $Out> {
   KeyedItemListCopyWith<$R, KeyedItemList<K, T>, $Out, K, T>
       get $asKeyedItemList =>
           $base.as((v, t, t2) => _KeyedItemListCopyWithImpl(v, t, t2));
 }
 
-typedef KeyedItemListCopyWithBound = ItemList;
-
-abstract class KeyedItemListCopyWith<$R, $In extends KeyedItemList<K, T>,
-    $Out extends ItemList, K, T> implements ItemListCopyWith<$R, $In, $Out, T> {
+abstract class KeyedItemListCopyWith<$R, $In extends KeyedItemList<K, T>, $Out,
+    K, T> implements ItemListCopyWith<$R, $In, $Out, T> {
   @override
   ListCopyWith<$R, T, ObjectCopyWith<$R, T, T>> get items;
   @override
-  $R call({K? key, List<T>? items});
-  KeyedItemListCopyWith<$R2, $In, $Out2, K, T>
-      $chain<$R2, $Out2 extends ItemList>(
-          Then<KeyedItemList<K, T>, $Out2> t, Then<$Out2, $R2> t2);
+  $R call({K? key, covariant List<T>? items});
+  KeyedItemListCopyWith<$R2, $In, $Out2, K, T> $chain<$R2, $Out2>(
+      Then<$Out2, $R2> t);
 }
 
-class _KeyedItemListCopyWithImpl<$R, $Out extends ItemList, K, T>
+class _KeyedItemListCopyWithImpl<$R, $Out, K, T>
     extends ClassCopyWithBase<$R, KeyedItemList<K, T>, $Out>
     implements KeyedItemListCopyWith<$R, KeyedItemList<K, T>, $Out, K, T> {
   _KeyedItemListCopyWithImpl(super.value, super.then, super.then2);
@@ -918,13 +908,13 @@ class _KeyedItemListCopyWithImpl<$R, $Out extends ItemList, K, T>
 
   @override
   KeyedItemListCopyWith<$R2, KeyedItemList<K, T>, $Out2, K, T>
-      $chain<$R2, $Out2 extends ItemList>(
-              Then<KeyedItemList<K, T>, $Out2> t, Then<$Out2, $R2> t2) =>
-          _KeyedItemListCopyWithImpl($value, t, t2);
+      $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+          _KeyedItemListCopyWithImpl($value, $cast, t);
 }
 
 class ComparableItemListMapper extends SubClassMapperBase<ComparableItemList> {
   ComparableItemListMapper._();
+
   static ComparableItemListMapper? _instance;
   static ComparableItemListMapper ensureInitialized() {
     if (_instance == null) {
@@ -948,12 +938,12 @@ class ComparableItemListMapper extends SubClassMapperBase<ComparableItemList> {
 
   static List<Comparable<dynamic>> _$items(ComparableItemList v) => v.items;
   static dynamic _arg$items<T extends Comparable<dynamic>>(f) => f<List<T>>();
+  static const Field<ComparableItemList, List<Comparable<dynamic>>> _f$items =
+      Field('items', _$items, arg: _arg$items);
 
   @override
   final Map<Symbol, Field<ComparableItemList, dynamic>> fields = const {
-    #items: Field<ComparableItemList, List<Comparable<dynamic>>>(
-        'items', _$items,
-        arg: _arg$items),
+    #items: _f$items,
   };
 
   @override
@@ -965,7 +955,7 @@ class ComparableItemListMapper extends SubClassMapperBase<ComparableItemList> {
 
   static ComparableItemList<T> _instantiate<T extends Comparable<dynamic>>(
       DecodingData data) {
-    return ComparableItemList(data.get(#items));
+    return ComparableItemList(data.dec(_f$items));
   }
 
   @override
@@ -1015,30 +1005,25 @@ mixin ComparableItemListMappable<T extends Comparable<dynamic>> {
   }
 }
 
-extension ComparableItemListValueCopy<$R, $Out extends ItemList,
-        T extends Comparable<dynamic>>
+extension ComparableItemListValueCopy<$R, $Out, T extends Comparable<dynamic>>
     on ObjectCopyWith<$R, ComparableItemList<T>, $Out> {
   ComparableItemListCopyWith<$R, ComparableItemList<T>, $Out, T>
       get $asComparableItemList =>
           $base.as((v, t, t2) => _ComparableItemListCopyWithImpl(v, t, t2));
 }
 
-typedef ComparableItemListCopyWithBound = ItemList;
-
 abstract class ComparableItemListCopyWith<$R, $In extends ComparableItemList<T>,
-        $Out extends ItemList, T extends Comparable<dynamic>>
+        $Out, T extends Comparable<dynamic>>
     implements ItemListCopyWith<$R, $In, $Out, T> {
   @override
   ListCopyWith<$R, T, ObjectCopyWith<$R, T, T>> get items;
   @override
-  $R call({List<T>? items});
-  ComparableItemListCopyWith<$R2, $In, $Out2, T>
-      $chain<$R2, $Out2 extends ItemList>(
-          Then<ComparableItemList<T>, $Out2> t, Then<$Out2, $R2> t2);
+  $R call({covariant List<T>? items});
+  ComparableItemListCopyWith<$R2, $In, $Out2, T> $chain<$R2, $Out2>(
+      Then<$Out2, $R2> t);
 }
 
-class _ComparableItemListCopyWithImpl<$R, $Out extends ItemList,
-        T extends Comparable<dynamic>>
+class _ComparableItemListCopyWithImpl<$R, $Out, T extends Comparable<dynamic>>
     extends ClassCopyWithBase<$R, ComparableItemList<T>, $Out>
     implements ComparableItemListCopyWith<$R, ComparableItemList<T>, $Out, T> {
   _ComparableItemListCopyWithImpl(super.value, super.then, super.then2);
@@ -1060,7 +1045,6 @@ class _ComparableItemListCopyWithImpl<$R, $Out extends ItemList,
 
   @override
   ComparableItemListCopyWith<$R2, ComparableItemList<T>, $Out2, T>
-      $chain<$R2, $Out2 extends ItemList>(
-              Then<ComparableItemList<T>, $Out2> t, Then<$Out2, $R2> t2) =>
-          _ComparableItemListCopyWithImpl($value, t, t2);
+      $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+          _ComparableItemListCopyWithImpl($value, $cast, t);
 }

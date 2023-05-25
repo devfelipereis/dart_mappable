@@ -7,6 +7,7 @@ part of 'custom_discriminator_test.dart';
 
 class AMapper extends ClassMapperBase<A> {
   AMapper._();
+
   static AMapper? _instance;
   static AMapper ensureInitialized() {
     if (_instance == null) {
@@ -50,17 +51,15 @@ mixin AMappable {
   ACopyWith<A, A, A> get copyWith;
 }
 
-typedef ACopyWithBound = A;
-
-abstract class ACopyWith<$R, $In extends A, $Out extends A>
+abstract class ACopyWith<$R, $In extends A, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   $R call();
-  ACopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends A>(
-      Then<A, $Out2> t, Then<$Out2, $R2> t2);
+  ACopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
 class BMapper extends SubClassMapperBase<B> {
   BMapper._();
+
   static BMapper? _instance;
   static BMapper ensureInitialized() {
     if (_instance == null) {
@@ -133,22 +132,19 @@ mixin BMappable {
   }
 }
 
-extension BValueCopy<$R, $Out extends A> on ObjectCopyWith<$R, B, $Out> {
+extension BValueCopy<$R, $Out> on ObjectCopyWith<$R, B, $Out> {
   BCopyWith<$R, B, $Out> get $asB =>
       $base.as((v, t, t2) => _BCopyWithImpl(v, t, t2));
 }
 
-typedef BCopyWithBound = A;
-
-abstract class BCopyWith<$R, $In extends B, $Out extends A>
+abstract class BCopyWith<$R, $In extends B, $Out>
     implements ACopyWith<$R, $In, $Out> {
   @override
   $R call();
-  BCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends A>(
-      Then<B, $Out2> t, Then<$Out2, $R2> t2);
+  BCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _BCopyWithImpl<$R, $Out extends A> extends ClassCopyWithBase<$R, B, $Out>
+class _BCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, B, $Out>
     implements BCopyWith<$R, B, $Out> {
   _BCopyWithImpl(super.value, super.then, super.then2);
 
@@ -160,13 +156,13 @@ class _BCopyWithImpl<$R, $Out extends A> extends ClassCopyWithBase<$R, B, $Out>
   B $make(CopyWithData data) => B();
 
   @override
-  BCopyWith<$R2, B, $Out2> $chain<$R2, $Out2 extends A>(
-          Then<B, $Out2> t, Then<$Out2, $R2> t2) =>
-      _BCopyWithImpl($value, t, t2);
+  BCopyWith<$R2, B, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _BCopyWithImpl($value, $cast, t);
 }
 
 class CMapper extends SubClassMapperBase<C> {
   CMapper._();
+
   static CMapper? _instance;
   static CMapper ensureInitialized() {
     if (_instance == null) {
@@ -239,22 +235,19 @@ mixin CMappable {
   }
 }
 
-extension CValueCopy<$R, $Out extends A> on ObjectCopyWith<$R, C, $Out> {
+extension CValueCopy<$R, $Out> on ObjectCopyWith<$R, C, $Out> {
   CCopyWith<$R, C, $Out> get $asC =>
       $base.as((v, t, t2) => _CCopyWithImpl(v, t, t2));
 }
 
-typedef CCopyWithBound = A;
-
-abstract class CCopyWith<$R, $In extends C, $Out extends A>
+abstract class CCopyWith<$R, $In extends C, $Out>
     implements ACopyWith<$R, $In, $Out> {
   @override
   $R call();
-  CCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends A>(
-      Then<C, $Out2> t, Then<$Out2, $R2> t2);
+  CCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _CCopyWithImpl<$R, $Out extends A> extends ClassCopyWithBase<$R, C, $Out>
+class _CCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, C, $Out>
     implements CCopyWith<$R, C, $Out> {
   _CCopyWithImpl(super.value, super.then, super.then2);
 
@@ -266,7 +259,6 @@ class _CCopyWithImpl<$R, $Out extends A> extends ClassCopyWithBase<$R, C, $Out>
   C $make(CopyWithData data) => C();
 
   @override
-  CCopyWith<$R2, C, $Out2> $chain<$R2, $Out2 extends A>(
-          Then<C, $Out2> t, Then<$Out2, $R2> t2) =>
-      _CCopyWithImpl($value, t, t2);
+  CCopyWith<$R2, C, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _CCopyWithImpl($value, $cast, t);
 }

@@ -2,7 +2,6 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
-import 'package:collection/collection.dart';
 import 'package:dart_mappable/dart_mappable.dart'
     show GenerateMethods, InitializerScope;
 import 'package:glob/glob.dart';
@@ -53,7 +52,7 @@ class MapperElementGroup {
   }
 
   Future<T> addMapper<T extends MapperElement>(T mapper) async {
-    await mapper.analyze;
+    await mapper.init();
     return targets[mapper.element] = mapper;
   }
 
@@ -99,33 +98,46 @@ class MapperElementGroup {
     }
   }
 
-  Future<void> analyzeElement(MapperElement target) async {
-    if (target is! ClassMapperElement) return;
+  Future<void> analyzeElement(MapperElement element) async {
+    if (element is! ClassMapperElement) return;
 
-    if (target.superTarget == null) {
-      ClassElement? superElement;
-      var supertype = target.element.supertype;
-      if (supertype == null || supertype.isDartCoreObject) {
-        supertype = target.element.interfaces.firstOrNull;
+    ClassElement? getElementFor(InterfaceType? t) {
+      if (t != null && !t.isDartCoreObject && t.element is ClassElement) {
+        return t.element as ClassElement;
       }
-      if (supertype != null && !supertype.isDartCoreObject) {
-        var element = supertype.element;
-        if (element is ClassElement) superElement = element;
-      }
+      return null;
+    }
 
+    if (element.extendsElement == null) {
+      var superElement = getElementFor(element.element.supertype);
       if (superElement != null) {
         ClassMapperElement superTarget =
             await getOrAddMapperForElement(superElement, orNone: true)
                 as ClassMapperElement;
 
-        target.superTarget = superTarget;
-        if (!superTarget.subTargets.contains(target)) {
-          superTarget.subTargets.add(target);
+        element.extendsElement = superTarget;
+        if (!superTarget.subElements.contains(element)) {
+          superTarget.subElements.add(element);
+        }
+      }
+    }
+    if (element.interfaceElements.isEmpty) {
+      for (var interface in element.element.interfaces) {
+        var interfaceElement = getElementFor(interface);
+        if (interfaceElement != null) {
+          ClassMapperElement interfaceTarget =
+              await getOrAddMapperForElement(interfaceElement, orNone: true)
+                  as ClassMapperElement;
+
+          element.interfaceElements.add(interfaceTarget);
+          if (!interfaceTarget.subElements.contains(element)) {
+            interfaceTarget.subElements.add(element);
+          }
         }
       }
     }
 
-    for (var elem in target.getSubClasses()) {
+    for (var elem in element.getSubClasses()) {
       ClassMapperElement? subMapper =
           await getOrAddMapperForElement(elem) as ClassMapperElement?;
 
@@ -134,9 +146,19 @@ class MapperElementGroup {
             'since it has no generated mapper.';
       }
 
-      subMapper.superTarget = target;
-      if (!target.subTargets.contains(subMapper)) {
-        target.subTargets.add(subMapper);
+      if (subMapper.element.supertype?.element == element.element) {
+        subMapper.extendsElement = element;
+      } else if (subMapper.element.interfaces
+          .map((i) => i.element)
+          .contains(element.element)) {
+        if (!subMapper.interfaceElements.contains(element)) {
+          subMapper.interfaceElements.add(element);
+        }
+      } else {
+        throw 'Cannot determine supertype ${element.className} of ${subMapper.className}.';
+      }
+      if (!element.subElements.contains(subMapper)) {
+        element.subElements.add(subMapper);
       }
     }
 
@@ -150,11 +172,11 @@ class MapperElementGroup {
       }
     }
 
-    for (var param in target.params) {
+    for (var param in element.params) {
       await checkType(param.parameter.type);
     }
 
-    for (var param in target.element.typeParameters) {
+    for (var param in element.element.typeParameters) {
       if (param.bound != null) {
         await getOrAddMapperForElement(param.bound!.element);
       }
@@ -190,14 +212,21 @@ class MapperElementGroup {
     return prefixes[elem] ?? '';
   }
 
-  String prefixedType(DartType t, {bool withNullability = true}) {
-    if (t is! InterfaceType) {
+  String prefixedType(DartType t,
+      {bool withNullability = true, bool resolveBounds = false}) {
+    if (t is TypeParameterType) {
+      if (resolveBounds) {
+        return prefixedType(t.bound, resolveBounds: resolveBounds);
+      }
+      return t.element.name;
+    } else if (t is! InterfaceType) {
       return t.getDisplayString(withNullability: withNullability);
     }
 
     var typeArgs = '';
     if (t.typeArguments.isNotEmpty) {
-      typeArgs = '<${t.typeArguments.map(prefixedType).join(', ')}>';
+      typeArgs =
+          '<${t.typeArguments.map((t) => prefixedType(t, resolveBounds: resolveBounds)).join(', ')}>';
     }
 
     var type = '${t.element.name}$typeArgs';

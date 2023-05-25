@@ -5,8 +5,51 @@
 
 part of 'unknown_interface.dart';
 
+class HOpacityMapper extends EnumMapper<HOpacity> {
+  HOpacityMapper._();
+
+  static HOpacityMapper? _instance;
+  static HOpacityMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = HOpacityMapper._());
+    }
+    return _instance!;
+  }
+
+  static HOpacity fromValue(dynamic value) {
+    ensureInitialized();
+    return MapperContainer.globals.fromValue(value);
+  }
+
+  @override
+  HOpacity decode(dynamic value) {
+    switch (value) {
+      case 'bzOpacityIntense':
+        return HOpacity.bzOpacityIntense;
+      default:
+        throw MapperException.unknownEnumValue(value);
+    }
+  }
+
+  @override
+  dynamic encode(HOpacity self) {
+    switch (self) {
+      case HOpacity.bzOpacityIntense:
+        return 'bzOpacityIntense';
+    }
+  }
+}
+
+extension HOpacityMapperExtension on HOpacity {
+  String toValue() {
+    HOpacityMapper.ensureInitialized();
+    return MapperContainer.globals.toValue(this) as String;
+  }
+}
+
 class DSOpacityDataMapper extends ClassMapperBase<DSOpacityData> {
   DSOpacityDataMapper._();
+
   static DSOpacityDataMapper? _instance;
   static DSOpacityDataMapper ensureInitialized() {
     if (_instance == null) {
@@ -24,18 +67,22 @@ class DSOpacityDataMapper extends ClassMapperBase<DSOpacityData> {
   final String id = 'DSOpacityData';
 
   static Map<BaseToken, double> _$data(DSOpacityData v) => v.data;
+  static const Field<DSOpacityData, Map<BaseToken, double>> _f$data = Field(
+      'data', _$data,
+      opt: true, def: const {HOpacity.bzOpacityIntense: 0.4});
   static double _$fallback(DSOpacityData v) => v.fallback;
+  static const Field<DSOpacityData, double> _f$fallback =
+      Field('fallback', _$fallback, opt: true, def: 0.0);
 
   @override
   final Map<Symbol, Field<DSOpacityData, dynamic>> fields = const {
-    #data: Field<DSOpacityData, Map<BaseToken, double>>('data', _$data,
-        opt: true, def: const {HOpacity.bzOpacityIntense: 0.4}),
-    #fallback: Field<DSOpacityData, double>('fallback', _$fallback,
-        opt: true, def: 0.0),
+    #data: _f$data,
+    #fallback: _f$fallback,
   };
 
   static DSOpacityData _instantiate(DecodingData data) {
-    return DSOpacityData(data: data.get(#data), fallback: data.get(#fallback));
+    return DSOpacityData(
+        data: data.dec(_f$data), fallback: data.dec(_f$fallback));
   }
 
   @override
@@ -80,25 +127,21 @@ mixin DSOpacityDataMappable {
   }
 }
 
-extension DSOpacityDataValueCopy<$R, $Out extends DSOpacityData>
+extension DSOpacityDataValueCopy<$R, $Out>
     on ObjectCopyWith<$R, DSOpacityData, $Out> {
   DSOpacityDataCopyWith<$R, DSOpacityData, $Out> get $asDSOpacityData =>
       $base.as((v, t, t2) => _DSOpacityDataCopyWithImpl(v, t, t2));
 }
 
-typedef DSOpacityDataCopyWithBound = DSOpacityData;
-
-abstract class DSOpacityDataCopyWith<$R, $In extends DSOpacityData,
-    $Out extends DSOpacityData> implements ClassCopyWith<$R, $In, $Out> {
+abstract class DSOpacityDataCopyWith<$R, $In extends DSOpacityData, $Out>
+    implements ClassCopyWith<$R, $In, $Out> {
   MapCopyWith<$R, BaseToken, double, ObjectCopyWith<$R, double, double>>
       get data;
   $R call({Map<BaseToken, double>? data, double? fallback});
-  DSOpacityDataCopyWith<$R2, $In, $Out2>
-      $chain<$R2, $Out2 extends DSOpacityData>(
-          Then<DSOpacityData, $Out2> t, Then<$Out2, $R2> t2);
+  DSOpacityDataCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _DSOpacityDataCopyWithImpl<$R, $Out extends DSOpacityData>
+class _DSOpacityDataCopyWithImpl<$R, $Out>
     extends ClassCopyWithBase<$R, DSOpacityData, $Out>
     implements DSOpacityDataCopyWith<$R, DSOpacityData, $Out> {
   _DSOpacityDataCopyWithImpl(super.value, super.then, super.then2);
@@ -122,49 +165,7 @@ class _DSOpacityDataCopyWithImpl<$R, $Out extends DSOpacityData>
       fallback: data.get(#fallback, or: $value.fallback));
 
   @override
-  DSOpacityDataCopyWith<$R2, DSOpacityData, $Out2>
-      $chain<$R2, $Out2 extends DSOpacityData>(
-              Then<DSOpacityData, $Out2> t, Then<$Out2, $R2> t2) =>
-          _DSOpacityDataCopyWithImpl($value, t, t2);
-}
-
-class HOpacityMapper extends EnumMapper<HOpacity> {
-  HOpacityMapper._();
-  static HOpacityMapper? _instance;
-  static HOpacityMapper ensureInitialized() {
-    if (_instance == null) {
-      MapperContainer.globals.use(_instance = HOpacityMapper._());
-    }
-    return _instance!;
-  }
-
-  static HOpacity fromValue(dynamic value) {
-    ensureInitialized();
-    return MapperContainer.globals.fromValue(value);
-  }
-
-  @override
-  HOpacity decode(dynamic value) {
-    switch (value) {
-      case 'bzOpacityIntense':
-        return HOpacity.bzOpacityIntense;
-      default:
-        throw MapperException.unknownEnumValue(value);
-    }
-  }
-
-  @override
-  dynamic encode(HOpacity self) {
-    switch (self) {
-      case HOpacity.bzOpacityIntense:
-        return 'bzOpacityIntense';
-    }
-  }
-}
-
-extension HOpacityMapperExtension on HOpacity {
-  String toValue() {
-    HOpacityMapper.ensureInitialized();
-    return MapperContainer.globals.toValue(this) as String;
-  }
+  DSOpacityDataCopyWith<$R2, DSOpacityData, $Out2> $chain<$R2, $Out2>(
+          Then<$Out2, $R2> t) =>
+      _DSOpacityDataCopyWithImpl($value, $cast, t);
 }

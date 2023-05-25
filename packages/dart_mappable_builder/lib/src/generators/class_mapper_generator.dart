@@ -12,37 +12,37 @@ import 'equals_generator.dart';
 import 'tostring_generator.dart';
 
 abstract class MapperGenerator<T extends MapperElement> {
-  final T target;
+  final T element;
 
-  MapperGenerator(this.target);
+  MapperGenerator(this.element);
 
   Future<String> generate();
 }
 
 /// Generates code for a specific class
 class ClassMapperGenerator extends MapperGenerator<TargetClassMapperElement> {
-  ClassMapperGenerator(super.target);
+  ClassMapperGenerator(super.element);
 
   @override
   Future<String> generate() async {
     var output = StringBuffer();
 
-    var encoderGen = EncoderGenerator(target);
-    var decoderGen = DecoderGenerator(target);
-    var stringifyGen = ToStringGenerator(target);
-    var equalsGen = EqualsGenerator(target);
-    var copyGen = CopyWithGenerator(target);
+    var encoderGen = EncoderGenerator(element);
+    var decoderGen = DecoderGenerator(element);
+    var stringifyGen = ToStringGenerator(element);
+    var equalsGen = EqualsGenerator(element);
+    var copyGen = CopyWithGenerator(element);
 
-    var isSubClass = await target.isDiscriminatingSubclass;
+    output.write('''
+      class ${element.mapperName} extends ${element.isDiscriminatingSubclass ? 'Sub' : ''}ClassMapperBase<${element.prefixedClassName}> {
+        ${element.mapperName}._();
+        
+        static ${element.mapperName}? _instance;
+        static ${element.mapperName} ensureInitialized() {
+          if (_instance == null) {   
+    ''');
 
-    output.write(
-        'class ${target.mapperName} extends ${isSubClass ? 'Sub' : ''}ClassMapperBase<${target.prefixedClassName}> {\n'
-        '  ${target.mapperName}._();\n'
-        '  static ${target.mapperName}? _instance;\n'
-        '  static ${target.mapperName} ensureInitialized() {\n'
-        '    if (_instance == null) {\n');
-
-    var typesConfigs = target.typesConfigs;
+    var typesConfigs = element.typesConfigs;
     if (typesConfigs.isNotEmpty) {
       for (var t in typesConfigs) {
         output.write('      MapperBase.addType<$t>();\n');
@@ -50,23 +50,27 @@ class ClassMapperGenerator extends MapperGenerator<TargetClassMapperElement> {
     }
 
     output.write(
-        '      MapperContainer.globals.use(_instance = ${target.mapperName}._());\n');
+        '      MapperContainer.globals.use(_instance = ${element.mapperName}._());\n');
 
-    if (isSubClass) {
-      var prefix =
-          target.parent.prefixOfElement(target.superTarget!.annotatedElement);
+    if (element.isDiscriminatingSubclass) {
+      var s = element.superElement!;
+      var prefix = element.parent.prefixOfElement(s.annotatedElement);
       output.write(
-          '      $prefix${target.superTarget!.mapperName}.ensureInitialized().addSubMapper(_instance!);\n');
+          '      $prefix${s.mapperName}.ensureInitialized().addSubMapper(_instance!);\n');
+    } else if (element.isSubclass) {
+      var s = element.superElement!;
+      var prefix = element.parent.prefixOfElement(s.annotatedElement);
+      output.write('      $prefix${s.mapperName}.ensureInitialized();\n');
     }
 
-    var customMappers = await target.customMappers;
+    var customMappers = element.customMappers;
     if (customMappers.isNotEmpty) {
       for (var t in customMappers) {
         output.write('      MapperContainer.globals.use($t);\n');
       }
     }
 
-    var linked = target.linkedElements;
+    var linked = element.linkedElements;
     if (linked.isNotEmpty) {
       for (var l in linked.values) {
         output.write('      $l.ensureInitialized();\n');
@@ -83,63 +87,67 @@ class ClassMapperGenerator extends MapperGenerator<TargetClassMapperElement> {
 
     output.write('\n'
         '  @override\n'
-        "  final String id = '${target.uniqueId}';\n");
+        "  final String id = '${element.uniqueId}';\n");
 
-    if (target.typeParamsList.isNotEmpty) {
+    if (element.typeParamsList.isNotEmpty) {
       output.write(decoderGen.generateTypeFactory());
     }
 
     output.write('\n');
 
-    var fields = target.fields;
+    var fields = element.fields;
 
     for (var f in fields) {
       output.write(
-          '  static ${f.staticType} _\$${f.field.name}(${target.prefixedClassName} v) => v.${f.field.name};\n');
+          '  static ${f.staticGetterType} _\$${f.field.name}(${element.prefixedClassName} v) => v.${f.field.name};\n');
       if (f.generic) {
         output.write(
-            '  static dynamic _arg\$${f.field.name}${target.typeParamsDeclaration}(f) => f<${f.type}>();\n');
+            '  static dynamic _arg\$${f.field.name}${element.typeParamsDeclaration}(f) => f<${f.argType}>();\n');
       }
+      output.write(
+          "  static const Field<${element.prefixedClassName}, ${f.staticArgType}> _f\$${f.field.name} = Field('${f.field.name}', _\$${f.field.name}${f.key}${f.mode}${f.opt}${await f.def}${f.arg}${await f.hook});\n");
     }
 
     output.write(
-        '\n  @override\n  final Map<Symbol, Field<${target.prefixedClassName}, dynamic>> fields = const {\n');
+        '\n  @override\n  final Map<Symbol, Field<${element.prefixedClassName}, dynamic>> fields = const {\n');
 
     for (var f in fields) {
-      output.write(
-          "    #${f.field.name}: Field<${target.prefixedClassName}, ${f.staticType}>('${f.field.name}', _\$${f.field.name}${f.key}${f.mode}${f.opt}${await f.def}${f.arg}${await f.hook}),\n");
+      output.write('    #${f.field.name}: _f\$${f.field.name},\n');
     }
 
     output.write('  };\n');
 
-    if (target.ignoreNull) {
+    if (element.ignoreNull) {
       output.write('  @override\n  final bool ignoreNull = true;\n');
     }
 
-    if (isSubClass) {
+    if (element.isDiscriminatingSubclass) {
       output.write(await decoderGen.generateDiscriminatorFields());
       output.write(decoderGen.generateInheritOverride());
     }
 
     output.write(await decoderGen.generateInstantiateMethod());
 
-    if (target.shouldGenerate(GenerateMethods.decode)) {
+    var fromJsonName = element.options.renameMethods['fromJson'] ?? 'fromJson';
+    var fromMapName = element.options.renameMethods['fromMap'] ?? 'fromMap';
+
+    if (element.shouldGenerate(GenerateMethods.decode)) {
       output.write('\n'
-          '  static ${target.prefixedDecodingClassName}${target.typeParams} fromMap${target.typeParamsDeclaration}(Map<String, dynamic> map) {\n'
-          '    return _guard((c) => c.fromMap<${target.prefixedDecodingClassName}${target.typeParams}>(map));\n'
+          '  static ${element.prefixedDecodingClassName}${element.typeParams} $fromMapName${element.typeParamsDeclaration}(Map<String, dynamic> map) {\n'
+          '    return _guard((c) => c.fromMap<${element.prefixedDecodingClassName}${element.typeParams}>(map));\n'
           '  }\n'
-          '  static ${target.prefixedDecodingClassName}${target.typeParams} fromJson${target.typeParamsDeclaration}(String json) {\n'
-          '    return _guard((c) => c.fromJson<${target.prefixedDecodingClassName}${target.typeParams}>(json));\n'
+          '  static ${element.prefixedDecodingClassName}${element.typeParams} $fromJsonName${element.typeParamsDeclaration}(String json) {\n'
+          '    return _guard((c) => c.fromJson<${element.prefixedDecodingClassName}${element.typeParams}>(json));\n'
           '  }\n');
     }
 
     output.write('}\n\n');
 
-    if (target.generateAsMixin) {
+    if (element.generateAsMixin) {
       await _checkMixinUsed();
 
       output.write(
-          'mixin ${target.uniqueClassName}Mappable${target.typeParamsDeclaration} {\n');
+          'mixin ${element.uniqueClassName}Mappable${element.typeParamsDeclaration} {\n');
       output.writeAll([
         encoderGen.generateEncoderMixin(),
         copyGen.generateCopyWithMixin(),
@@ -149,7 +157,7 @@ class ClassMapperGenerator extends MapperGenerator<TargetClassMapperElement> {
       output.write('}');
     } else {
       output.write(
-          'extension ${target.mapperName}Extension${target.typeParamsDeclaration} on ${target.prefixedClassName}${target.typeParams} {\n');
+          'extension ${element.mapperName}Extension${element.typeParamsDeclaration} on ${element.prefixedClassName}${element.typeParams} {\n');
       output.writeAll([
         encoderGen.generateEncoderExtensions(),
         copyGen.generateCopyWithExtension(),
@@ -165,8 +173,8 @@ class ClassMapperGenerator extends MapperGenerator<TargetClassMapperElement> {
   }
 
   Future<void> _checkMixinUsed() async {
-    var className = target.className;
-    var mixinName = '${target.uniqueClassName}Mappable';
+    var className = element.className;
+    var mixinName = '${element.uniqueClassName}Mappable';
 
     void warnUnusedMixin(String classCode) {
       var pen = AnsiPen()..xterm(3);
@@ -178,11 +186,13 @@ class ClassMapperGenerator extends MapperGenerator<TargetClassMapperElement> {
       print('${pen2(classCode)}\n');
     }
 
-    var node = await target.element.getNode();
+    var node = await element.element.getNode();
     if (node is ClassDeclaration) {
-      var hasCopyWithMixin =
-          node.withClause?.mixinTypes.any((t) => t.name.name == mixinName) ??
-              false;
+      var hasCopyWithMixin = node.withClause?.mixinTypes.any((t) {
+            // ignore: deprecated_member_use
+            return t.name.name == mixinName;
+          }) ??
+          false;
 
       if (!hasCopyWithMixin) {
         var classDeclarationSource = 'class $className';
@@ -204,8 +214,10 @@ class ClassMapperGenerator extends MapperGenerator<TargetClassMapperElement> {
         warnUnusedMixin(classDeclarationSource);
       }
     } else if (node is ClassTypeAlias) {
-      var hasCopyWithMixin =
-          node.withClause.mixinTypes.any((t) => t.name.name == mixinName);
+      var hasCopyWithMixin = node.withClause.mixinTypes.any((t) {
+        // ignore: deprecated_member_use
+        return t.name.name == mixinName;
+      });
 
       if (!hasCopyWithMixin) {
         var classDeclarationSource = 'class $className';

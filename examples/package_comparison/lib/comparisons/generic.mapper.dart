@@ -7,6 +7,7 @@ part of 'generic.dart';
 
 class BoxCMapper extends ClassMapperBase<BoxC> {
   BoxCMapper._();
+
   static BoxCMapper? _instance;
   static BoxCMapper ensureInitialized() {
     if (_instance == null) {
@@ -27,14 +28,16 @@ class BoxCMapper extends ClassMapperBase<BoxC> {
 
   static dynamic _$content(BoxC v) => v.content;
   static dynamic _arg$content<T>(f) => f<T>();
+  static const Field<BoxC, dynamic> _f$content =
+      Field('content', _$content, arg: _arg$content);
 
   @override
   final Map<Symbol, Field<BoxC, dynamic>> fields = const {
-    #content: Field<BoxC, dynamic>('content', _$content, arg: _arg$content),
+    #content: _f$content,
   };
 
   static BoxC<T> _instantiate<T>(DecodingData data) {
-    return BoxC(content: data.get(#content));
+    return BoxC(content: data.dec(_f$content));
   }
 
   @override
@@ -78,22 +81,18 @@ mixin BoxCMappable<T> {
   }
 }
 
-extension BoxCValueCopy<$R, $Out extends BoxC, T>
-    on ObjectCopyWith<$R, BoxC<T>, $Out> {
+extension BoxCValueCopy<$R, $Out, T> on ObjectCopyWith<$R, BoxC<T>, $Out> {
   BoxCCopyWith<$R, BoxC<T>, $Out, T> get $asBoxC =>
       $base.as((v, t, t2) => _BoxCCopyWithImpl(v, t, t2));
 }
 
-typedef BoxCCopyWithBound = BoxC;
-
-abstract class BoxCCopyWith<$R, $In extends BoxC<T>, $Out extends BoxC, T>
+abstract class BoxCCopyWith<$R, $In extends BoxC<T>, $Out, T>
     implements ClassCopyWith<$R, $In, $Out> {
   $R call({T? content});
-  BoxCCopyWith<$R2, $In, $Out2, T> $chain<$R2, $Out2 extends BoxC>(
-      Then<BoxC<T>, $Out2> t, Then<$Out2, $R2> t2);
+  BoxCCopyWith<$R2, $In, $Out2, T> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _BoxCCopyWithImpl<$R, $Out extends BoxC, T>
+class _BoxCCopyWithImpl<$R, $Out, T>
     extends ClassCopyWithBase<$R, BoxC<T>, $Out>
     implements BoxCCopyWith<$R, BoxC<T>, $Out, T> {
   _BoxCCopyWithImpl(super.value, super.then, super.then2);
@@ -108,13 +107,13 @@ class _BoxCCopyWithImpl<$R, $Out extends BoxC, T>
       BoxC(content: data.get(#content, or: $value.content));
 
   @override
-  BoxCCopyWith<$R2, BoxC<T>, $Out2, T> $chain<$R2, $Out2 extends BoxC>(
-          Then<BoxC<T>, $Out2> t, Then<$Out2, $R2> t2) =>
-      _BoxCCopyWithImpl($value, t, t2);
+  BoxCCopyWith<$R2, BoxC<T>, $Out2, T> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _BoxCCopyWithImpl($value, $cast, t);
 }
 
 class ContentCMapper extends ClassMapperBase<ContentC> {
   ContentCMapper._();
+
   static ContentCMapper? _instance;
   static ContentCMapper ensureInitialized() {
     if (_instance == null) {
@@ -132,14 +131,15 @@ class ContentCMapper extends ClassMapperBase<ContentC> {
   final String id = 'ContentC';
 
   static String _$data(ContentC v) => v.data;
+  static const Field<ContentC, String> _f$data = Field('data', _$data);
 
   @override
   final Map<Symbol, Field<ContentC, dynamic>> fields = const {
-    #data: Field<ContentC, String>('data', _$data),
+    #data: _f$data,
   };
 
   static ContentC _instantiate(DecodingData data) {
-    return ContentC(data.get(#data));
+    return ContentC(data.dec(_f$data));
   }
 
   @override
@@ -183,22 +183,18 @@ mixin ContentCMappable {
   }
 }
 
-extension ContentCValueCopy<$R, $Out extends ContentC>
-    on ObjectCopyWith<$R, ContentC, $Out> {
+extension ContentCValueCopy<$R, $Out> on ObjectCopyWith<$R, ContentC, $Out> {
   ContentCCopyWith<$R, ContentC, $Out> get $asContentC =>
       $base.as((v, t, t2) => _ContentCCopyWithImpl(v, t, t2));
 }
 
-typedef ContentCCopyWithBound = ContentC;
-
-abstract class ContentCCopyWith<$R, $In extends ContentC, $Out extends ContentC>
+abstract class ContentCCopyWith<$R, $In extends ContentC, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   $R call({String? data});
-  ContentCCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends ContentC>(
-      Then<ContentC, $Out2> t, Then<$Out2, $R2> t2);
+  ContentCCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _ContentCCopyWithImpl<$R, $Out extends ContentC>
+class _ContentCCopyWithImpl<$R, $Out>
     extends ClassCopyWithBase<$R, ContentC, $Out>
     implements ContentCCopyWith<$R, ContentC, $Out> {
   _ContentCCopyWithImpl(super.value, super.then, super.then2);
@@ -214,7 +210,7 @@ class _ContentCCopyWithImpl<$R, $Out extends ContentC>
       ContentC(data.get(#data, or: $value.data));
 
   @override
-  ContentCCopyWith<$R2, ContentC, $Out2> $chain<$R2, $Out2 extends ContentC>(
-          Then<ContentC, $Out2> t, Then<$Out2, $R2> t2) =>
-      _ContentCCopyWithImpl($value, t, t2);
+  ContentCCopyWith<$R2, ContentC, $Out2> $chain<$R2, $Out2>(
+          Then<$Out2, $R2> t) =>
+      _ContentCCopyWithImpl($value, $cast, t);
 }

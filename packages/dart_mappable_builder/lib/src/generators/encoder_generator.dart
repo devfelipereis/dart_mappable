@@ -3,35 +3,44 @@ import 'package:dart_mappable/dart_mappable.dart';
 import '../elements/class/target_class_mapper_element.dart';
 
 class EncoderGenerator {
-  final TargetClassMapperElement target;
+  EncoderGenerator(this.element);
 
-  EncoderGenerator(this.target);
+  final TargetClassMapperElement element;
+
+  late final toJsonName = element.options.renameMethods['toJson'] ?? 'toJson';
+  late final toMapName = element.options.renameMethods['toMap'] ?? 'toMap';
 
   String generateEncoderMixin() {
-    if (!target.shouldGenerate(GenerateMethods.encode)) {
+    if (!element.shouldGenerate(GenerateMethods.encode)) {
       return '';
     }
-    if (target.isAbstract) {
-      return '  String toJson();\n'
-          '  Map<String, dynamic> toMap();\n';
+    if (element.isAbstract) {
+      return '''
+        String $toJsonName();
+        Map<String, dynamic> $toMapName();
+      ''';
     }
-    return '  String toJson() {\n'
-        '    return ${target.mapperName}._guard((c) => c.toJson(this as ${target.selfTypeParam}));\n'
-        '  }\n'
-        '  Map<String, dynamic> toMap() {\n'
-        '    return ${target.mapperName}._guard((c) => c.toMap(this as ${target.selfTypeParam}));\n'
-        '  }\n';
+    return '''
+      String $toJsonName() {
+        return ${element.mapperName}._guard((c) => c.toJson(this as ${element.selfTypeParam}));
+      }
+      Map<String, dynamic> $toMapName() {
+        return ${element.mapperName}._guard((c) => c.toMap(this as ${element.selfTypeParam}));
+      }
+    ''';
   }
 
   String generateEncoderExtensions() {
-    if (!target.shouldGenerate(GenerateMethods.encode)) {
+    if (!element.shouldGenerate(GenerateMethods.encode)) {
       return '';
     }
-    return '  String toJson() {\n'
-        '    return ${target.mapperName}._guard((c) => c.toJson(this));\n'
-        '  }\n'
-        '  Map<String, dynamic> toMap() {\n'
-        '    return ${target.mapperName}._guard((c) => c.toMap(this));\n'
-        '  }\n';
+    return '''
+      String $toJsonName() {
+        return ${element.mapperName}._guard((c) => c.toJson(this));
+      }
+      Map<String, dynamic> $toMapName() {
+        return ${element.mapperName}._guard((c) => c.toMap(this));
+      }
+    ''';
   }
 }

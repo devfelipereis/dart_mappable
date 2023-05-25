@@ -7,6 +7,7 @@ part of 'multi_poly_test.dart';
 
 class AnimalMapper extends ClassMapperBase<Animal> {
   AnimalMapper._();
+
   static AnimalMapper? _instance;
   static AnimalMapper ensureInitialized() {
     if (_instance == null) {
@@ -26,10 +27,11 @@ class AnimalMapper extends ClassMapperBase<Animal> {
   final String id = 'Animal';
 
   static String? _$name(Animal v) => v.name;
+  static const Field<Animal, String> _f$name = Field('name', _$name);
 
   @override
   final Map<Symbol, Field<Animal, dynamic>> fields = const {
-    #name: Field<Animal, String?>('name', _$name),
+    #name: _f$name,
   };
   @override
   final bool ignoreNull = true;
@@ -57,17 +59,15 @@ mixin AnimalMappable {
   AnimalCopyWith<Animal, Animal, Animal> get copyWith;
 }
 
-typedef AnimalCopyWithBound = Animal;
-
-abstract class AnimalCopyWith<$R, $In extends Animal, $Out extends Animal>
+abstract class AnimalCopyWith<$R, $In extends Animal, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   $R call({String? name});
-  AnimalCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Animal>(
-      Then<Animal, $Out2> t, Then<$Out2, $R2> t2);
+  AnimalCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
 class CatMapper extends SubClassMapperBase<Cat> {
   CatMapper._();
+
   static CatMapper? _instance;
   static CatMapper ensureInitialized() {
     if (_instance == null) {
@@ -87,10 +87,11 @@ class CatMapper extends SubClassMapperBase<Cat> {
   final String id = 'Cat';
 
   static String? _$name(Cat v) => v.name;
+  static const Field<Cat, String> _f$name = Field('name', _$name);
 
   @override
   final Map<Symbol, Field<Cat, dynamic>> fields = const {
-    #name: Field<Cat, String?>('name', _$name),
+    #name: _f$name,
   };
   @override
   final bool ignoreNull = true;
@@ -125,18 +126,16 @@ mixin CatMappable {
   CatCopyWith<Cat, Cat, Cat> get copyWith;
 }
 
-typedef CatCopyWithBound = Animal;
-
-abstract class CatCopyWith<$R, $In extends Cat, $Out extends Animal>
+abstract class CatCopyWith<$R, $In extends Cat, $Out>
     implements AnimalCopyWith<$R, $In, $Out> {
   @override
   $R call({String? name});
-  CatCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Animal>(
-      Then<Cat, $Out2> t, Then<$Out2, $R2> t2);
+  CatCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
 class SiameseMapper extends SubClassMapperBase<Siamese> {
   SiameseMapper._();
+
   static SiameseMapper? _instance;
   static SiameseMapper ensureInitialized() {
     if (_instance == null) {
@@ -155,10 +154,11 @@ class SiameseMapper extends SubClassMapperBase<Siamese> {
   final String id = 'Siamese';
 
   static String? _$name(Siamese v) => v.name;
+  static const Field<Siamese, String> _f$name = Field('name', _$name);
 
   @override
   final Map<Symbol, Field<Siamese, dynamic>> fields = const {
-    #name: Field<Siamese, String?>('name', _$name),
+    #name: _f$name,
   };
   @override
   final bool ignoreNull = true;
@@ -171,7 +171,7 @@ class SiameseMapper extends SubClassMapperBase<Siamese> {
   late final ClassMapperBase superMapper = CatMapper.ensureInitialized();
 
   static Siamese _instantiate(DecodingData data) {
-    return Siamese(data.get(#name));
+    return Siamese(data.dec(_f$name));
   }
 
   @override
@@ -215,23 +215,19 @@ mixin SiameseMappable {
   }
 }
 
-extension SiameseValueCopy<$R, $Out extends Animal>
-    on ObjectCopyWith<$R, Siamese, $Out> {
+extension SiameseValueCopy<$R, $Out> on ObjectCopyWith<$R, Siamese, $Out> {
   SiameseCopyWith<$R, Siamese, $Out> get $asSiamese =>
       $base.as((v, t, t2) => _SiameseCopyWithImpl(v, t, t2));
 }
 
-typedef SiameseCopyWithBound = Animal;
-
-abstract class SiameseCopyWith<$R, $In extends Siamese, $Out extends Animal>
+abstract class SiameseCopyWith<$R, $In extends Siamese, $Out>
     implements CatCopyWith<$R, $In, $Out> {
   @override
   $R call({String? name});
-  SiameseCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Animal>(
-      Then<Siamese, $Out2> t, Then<$Out2, $R2> t2);
+  SiameseCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _SiameseCopyWithImpl<$R, $Out extends Animal>
+class _SiameseCopyWithImpl<$R, $Out>
     extends ClassCopyWithBase<$R, Siamese, $Out>
     implements SiameseCopyWith<$R, Siamese, $Out> {
   _SiameseCopyWithImpl(super.value, super.then, super.then2);
@@ -246,13 +242,13 @@ class _SiameseCopyWithImpl<$R, $Out extends Animal>
   Siamese $make(CopyWithData data) => Siamese(data.get(#name, or: $value.name));
 
   @override
-  SiameseCopyWith<$R2, Siamese, $Out2> $chain<$R2, $Out2 extends Animal>(
-          Then<Siamese, $Out2> t, Then<$Out2, $R2> t2) =>
-      _SiameseCopyWithImpl($value, t, t2);
+  SiameseCopyWith<$R2, Siamese, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _SiameseCopyWithImpl($value, $cast, t);
 }
 
 class DogMapper extends SubClassMapperBase<Dog> {
   DogMapper._();
+
   static DogMapper? _instance;
   static DogMapper ensureInitialized() {
     if (_instance == null) {
@@ -272,10 +268,11 @@ class DogMapper extends SubClassMapperBase<Dog> {
   final String id = 'Dog';
 
   static String? _$name(Dog v) => v.name;
+  static const Field<Dog, String> _f$name = Field('name', _$name);
 
   @override
   final Map<Symbol, Field<Dog, dynamic>> fields = const {
-    #name: Field<Dog, String?>('name', _$name),
+    #name: _f$name,
   };
   @override
   final bool ignoreNull = true;
@@ -288,7 +285,7 @@ class DogMapper extends SubClassMapperBase<Dog> {
   late final ClassMapperBase superMapper = AnimalMapper.ensureInitialized();
 
   static Dog _instantiate(DecodingData data) {
-    return Dog(data.get(#name));
+    return Dog(data.dec(_f$name));
   }
 
   @override
@@ -332,24 +329,19 @@ mixin DogMappable {
   }
 }
 
-extension DogValueCopy<$R, $Out extends Animal>
-    on ObjectCopyWith<$R, Dog, $Out> {
+extension DogValueCopy<$R, $Out> on ObjectCopyWith<$R, Dog, $Out> {
   DogCopyWith<$R, Dog, $Out> get $asDog =>
       $base.as((v, t, t2) => _DogCopyWithImpl(v, t, t2));
 }
 
-typedef DogCopyWithBound = Animal;
-
-abstract class DogCopyWith<$R, $In extends Dog, $Out extends Animal>
+abstract class DogCopyWith<$R, $In extends Dog, $Out>
     implements AnimalCopyWith<$R, $In, $Out> {
   @override
   $R call({String? name});
-  DogCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Animal>(
-      Then<Dog, $Out2> t, Then<$Out2, $R2> t2);
+  DogCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _DogCopyWithImpl<$R, $Out extends Animal>
-    extends ClassCopyWithBase<$R, Dog, $Out>
+class _DogCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Dog, $Out>
     implements DogCopyWith<$R, Dog, $Out> {
   _DogCopyWithImpl(super.value, super.then, super.then2);
 
@@ -362,13 +354,13 @@ class _DogCopyWithImpl<$R, $Out extends Animal>
   Dog $make(CopyWithData data) => Dog(data.get(#name, or: $value.name));
 
   @override
-  DogCopyWith<$R2, Dog, $Out2> $chain<$R2, $Out2 extends Animal>(
-          Then<Dog, $Out2> t, Then<$Out2, $R2> t2) =>
-      _DogCopyWithImpl($value, t, t2);
+  DogCopyWith<$R2, Dog, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _DogCopyWithImpl($value, $cast, t);
 }
 
 class ShepherdMapper extends SubClassMapperBase<Shepherd> {
   ShepherdMapper._();
+
   static ShepherdMapper? _instance;
   static ShepherdMapper ensureInitialized() {
     if (_instance == null) {
@@ -387,10 +379,11 @@ class ShepherdMapper extends SubClassMapperBase<Shepherd> {
   final String id = 'Shepherd';
 
   static String? _$name(Shepherd v) => v.name;
+  static const Field<Shepherd, String> _f$name = Field('name', _$name);
 
   @override
   final Map<Symbol, Field<Shepherd, dynamic>> fields = const {
-    #name: Field<Shepherd, String?>('name', _$name),
+    #name: _f$name,
   };
   @override
   final bool ignoreNull = true;
@@ -403,7 +396,7 @@ class ShepherdMapper extends SubClassMapperBase<Shepherd> {
   late final ClassMapperBase superMapper = DogMapper.ensureInitialized();
 
   static Shepherd _instantiate(DecodingData data) {
-    return Shepherd(data.get(#name));
+    return Shepherd(data.dec(_f$name));
   }
 
   @override
@@ -447,23 +440,19 @@ mixin ShepherdMappable {
   }
 }
 
-extension ShepherdValueCopy<$R, $Out extends Animal>
-    on ObjectCopyWith<$R, Shepherd, $Out> {
+extension ShepherdValueCopy<$R, $Out> on ObjectCopyWith<$R, Shepherd, $Out> {
   ShepherdCopyWith<$R, Shepherd, $Out> get $asShepherd =>
       $base.as((v, t, t2) => _ShepherdCopyWithImpl(v, t, t2));
 }
 
-typedef ShepherdCopyWithBound = Animal;
-
-abstract class ShepherdCopyWith<$R, $In extends Shepherd, $Out extends Animal>
+abstract class ShepherdCopyWith<$R, $In extends Shepherd, $Out>
     implements DogCopyWith<$R, $In, $Out> {
   @override
   $R call({String? name});
-  ShepherdCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Animal>(
-      Then<Shepherd, $Out2> t, Then<$Out2, $R2> t2);
+  ShepherdCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _ShepherdCopyWithImpl<$R, $Out extends Animal>
+class _ShepherdCopyWithImpl<$R, $Out>
     extends ClassCopyWithBase<$R, Shepherd, $Out>
     implements ShepherdCopyWith<$R, Shepherd, $Out> {
   _ShepherdCopyWithImpl(super.value, super.then, super.then2);
@@ -479,13 +468,14 @@ class _ShepherdCopyWithImpl<$R, $Out extends Animal>
       Shepherd(data.get(#name, or: $value.name));
 
   @override
-  ShepherdCopyWith<$R2, Shepherd, $Out2> $chain<$R2, $Out2 extends Animal>(
-          Then<Shepherd, $Out2> t, Then<$Out2, $R2> t2) =>
-      _ShepherdCopyWithImpl($value, t, t2);
+  ShepherdCopyWith<$R2, Shepherd, $Out2> $chain<$R2, $Out2>(
+          Then<$Out2, $R2> t) =>
+      _ShepherdCopyWithImpl($value, $cast, t);
 }
 
 class HumanMapper extends ClassMapperBase<Human> {
   HumanMapper._();
+
   static HumanMapper? _instance;
   static HumanMapper ensureInitialized() {
     if (_instance == null) {
@@ -504,14 +494,15 @@ class HumanMapper extends ClassMapperBase<Human> {
   final String id = 'Human';
 
   static Cat _$cat(Human v) => v.cat;
+  static const Field<Human, Cat> _f$cat = Field('cat', _$cat);
 
   @override
   final Map<Symbol, Field<Human, dynamic>> fields = const {
-    #cat: Field<Human, Cat>('cat', _$cat),
+    #cat: _f$cat,
   };
 
   static Human _instantiate(DecodingData data) {
-    return Human(data.get(#cat));
+    return Human(data.dec(_f$cat));
   }
 
   @override
@@ -555,24 +546,19 @@ mixin HumanMappable {
   }
 }
 
-extension HumanValueCopy<$R, $Out extends Human>
-    on ObjectCopyWith<$R, Human, $Out> {
+extension HumanValueCopy<$R, $Out> on ObjectCopyWith<$R, Human, $Out> {
   HumanCopyWith<$R, Human, $Out> get $asHuman =>
       $base.as((v, t, t2) => _HumanCopyWithImpl(v, t, t2));
 }
 
-typedef HumanCopyWithBound = Human;
-
-abstract class HumanCopyWith<$R, $In extends Human, $Out extends Human>
+abstract class HumanCopyWith<$R, $In extends Human, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   CatCopyWith<$R, Cat, Cat> get cat;
   $R call({Cat? cat});
-  HumanCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Human>(
-      Then<Human, $Out2> t, Then<$Out2, $R2> t2);
+  HumanCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _HumanCopyWithImpl<$R, $Out extends Human>
-    extends ClassCopyWithBase<$R, Human, $Out>
+class _HumanCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Human, $Out>
     implements HumanCopyWith<$R, Human, $Out> {
   _HumanCopyWithImpl(super.value, super.then, super.then2);
 
@@ -580,7 +566,7 @@ class _HumanCopyWithImpl<$R, $Out extends Human>
   late final ClassMapperBase<Human> $mapper = HumanMapper.ensureInitialized();
   @override
   CatCopyWith<$R, Cat, Cat> get cat =>
-      $value.cat.copyWith.$chain($identity, (v) => call(cat: v));
+      $value.cat.copyWith.$chain((v) => call(cat: v));
   @override
   $R call({Cat? cat}) =>
       $apply(FieldCopyWithData({if (cat != null) #cat: cat}));
@@ -588,7 +574,6 @@ class _HumanCopyWithImpl<$R, $Out extends Human>
   Human $make(CopyWithData data) => Human(data.get(#cat, or: $value.cat));
 
   @override
-  HumanCopyWith<$R2, Human, $Out2> $chain<$R2, $Out2 extends Human>(
-          Then<Human, $Out2> t, Then<$Out2, $R2> t2) =>
-      _HumanCopyWithImpl($value, t, t2);
+  HumanCopyWith<$R2, Human, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _HumanCopyWithImpl($value, $cast, t);
 }

@@ -7,6 +7,7 @@ part of 'animal.dart';
 
 class AnimalMapper extends ClassMapperBase<Animal> {
   AnimalMapper._();
+
   static AnimalMapper? _instance;
   static AnimalMapper ensureInitialized() {
     if (_instance == null) {
@@ -26,10 +27,11 @@ class AnimalMapper extends ClassMapperBase<Animal> {
   final String id = 'Animal';
 
   static String _$name(Animal v) => v.name;
+  static const Field<Animal, String> _f$name = Field('name', _$name);
 
   @override
   final Map<Symbol, Field<Animal, dynamic>> fields = const {
-    #name: Field<Animal, String>('name', _$name),
+    #name: _f$name,
   };
 
   static Animal _instantiate(DecodingData data) {
@@ -55,11 +57,8 @@ mixin AnimalMappable {
   AnimalCopyWith<Animal, Animal, Animal> get copyWith;
 }
 
-typedef AnimalCopyWithBound = Animal;
-
-abstract class AnimalCopyWith<$R, $In extends Animal, $Out extends Animal>
+abstract class AnimalCopyWith<$R, $In extends Animal, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   $R call({String? name});
-  AnimalCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Animal>(
-      Then<Animal, $Out2> t, Then<$Out2, $R2> t2);
+  AnimalCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }

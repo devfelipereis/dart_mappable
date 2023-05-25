@@ -7,6 +7,7 @@ part of 'duplicate_names_test.dart';
 
 class BoxMapper extends ClassMapperBase<Box> {
   BoxMapper._();
+
   static BoxMapper? _instance;
   static BoxMapper ensureInitialized() {
     if (_instance == null) {
@@ -27,17 +28,20 @@ class BoxMapper extends ClassMapperBase<Box> {
   Function get typeFactory => <T extends Content>(f) => f<Box<T>>();
 
   static int _$size(Box v) => v.size;
+  static const Field<Box, int> _f$size = Field('size', _$size);
   static Content _$contents(Box v) => v.contents;
   static dynamic _arg$contents<T extends Content>(f) => f<T>();
+  static const Field<Box, Content> _f$contents =
+      Field('contents', _$contents, arg: _arg$contents);
 
   @override
   final Map<Symbol, Field<Box, dynamic>> fields = const {
-    #size: Field<Box, int>('size', _$size),
-    #contents: Field<Box, Content>('contents', _$contents, arg: _arg$contents),
+    #size: _f$size,
+    #contents: _f$contents,
   };
 
   static Box<T> _instantiate<T extends Content>(DecodingData data) {
-    return Box(data.get(#size), contents: data.get(#contents));
+    return Box(data.dec(_f$size), contents: data.dec(_f$contents));
   }
 
   @override
@@ -81,22 +85,19 @@ mixin BoxMappable<T extends Content> {
   }
 }
 
-extension BoxValueCopy<$R, $Out extends Box, T extends Content>
+extension BoxValueCopy<$R, $Out, T extends Content>
     on ObjectCopyWith<$R, Box<T>, $Out> {
   BoxCopyWith<$R, Box<T>, $Out, T> get $asBox =>
       $base.as((v, t, t2) => _BoxCopyWithImpl(v, t, t2));
 }
 
-typedef BoxCopyWithBound = Box;
-
-abstract class BoxCopyWith<$R, $In extends Box<T>, $Out extends Box,
-    T extends Content> implements ClassCopyWith<$R, $In, $Out> {
+abstract class BoxCopyWith<$R, $In extends Box<T>, $Out, T extends Content>
+    implements ClassCopyWith<$R, $In, $Out> {
   $R call({int? size, T? contents});
-  BoxCopyWith<$R2, $In, $Out2, T> $chain<$R2, $Out2 extends Box>(
-      Then<Box<T>, $Out2> t, Then<$Out2, $R2> t2);
+  BoxCopyWith<$R2, $In, $Out2, T> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _BoxCopyWithImpl<$R, $Out extends Box, T extends Content>
+class _BoxCopyWithImpl<$R, $Out, T extends Content>
     extends ClassCopyWithBase<$R, Box<T>, $Out>
     implements BoxCopyWith<$R, Box<T>, $Out, T> {
   _BoxCopyWithImpl(super.value, super.then, super.then2);
@@ -113,13 +114,13 @@ class _BoxCopyWithImpl<$R, $Out extends Box, T extends Content>
       contents: data.get(#contents, or: $value.contents));
 
   @override
-  BoxCopyWith<$R2, Box<T>, $Out2, T> $chain<$R2, $Out2 extends Box>(
-          Then<Box<T>, $Out2> t, Then<$Out2, $R2> t2) =>
-      _BoxCopyWithImpl($value, t, t2);
+  BoxCopyWith<$R2, Box<T>, $Out2, T> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _BoxCopyWithImpl($value, $cast, t);
 }
 
 class ContentMapper extends ClassMapperBase<Content> {
   ContentMapper._();
+
   static ContentMapper? _instance;
   static ContentMapper ensureInitialized() {
     if (_instance == null) {
@@ -137,14 +138,15 @@ class ContentMapper extends ClassMapperBase<Content> {
   final String id = 'Content';
 
   static String _$data(Content v) => v.data;
+  static const Field<Content, String> _f$data = Field('data', _$data);
 
   @override
   final Map<Symbol, Field<Content, dynamic>> fields = const {
-    #data: Field<Content, String>('data', _$data),
+    #data: _f$data,
   };
 
   static Content _instantiate(DecodingData data) {
-    return Content(data.get(#data));
+    return Content(data.dec(_f$data));
   }
 
   @override
@@ -188,22 +190,18 @@ mixin ContentMappable {
   }
 }
 
-extension ContentValueCopy<$R, $Out extends Content>
-    on ObjectCopyWith<$R, Content, $Out> {
+extension ContentValueCopy<$R, $Out> on ObjectCopyWith<$R, Content, $Out> {
   ContentCopyWith<$R, Content, $Out> get $asContent =>
       $base.as((v, t, t2) => _ContentCopyWithImpl(v, t, t2));
 }
 
-typedef ContentCopyWithBound = Content;
-
-abstract class ContentCopyWith<$R, $In extends Content, $Out extends Content>
+abstract class ContentCopyWith<$R, $In extends Content, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   $R call({String? data});
-  ContentCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Content>(
-      Then<Content, $Out2> t, Then<$Out2, $R2> t2);
+  ContentCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _ContentCopyWithImpl<$R, $Out extends Content>
+class _ContentCopyWithImpl<$R, $Out>
     extends ClassCopyWithBase<$R, Content, $Out>
     implements ContentCopyWith<$R, Content, $Out> {
   _ContentCopyWithImpl(super.value, super.then, super.then2);
@@ -218,7 +216,6 @@ class _ContentCopyWithImpl<$R, $Out extends Content>
   Content $make(CopyWithData data) => Content(data.get(#data, or: $value.data));
 
   @override
-  ContentCopyWith<$R2, Content, $Out2> $chain<$R2, $Out2 extends Content>(
-          Then<Content, $Out2> t, Then<$Out2, $R2> t2) =>
-      _ContentCopyWithImpl($value, t, t2);
+  ContentCopyWith<$R2, Content, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _ContentCopyWithImpl($value, $cast, t);
 }

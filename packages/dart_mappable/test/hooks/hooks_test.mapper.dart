@@ -7,6 +7,7 @@ part of 'hooks_test.dart';
 
 class GameMapper extends ClassMapperBase<Game> {
   GameMapper._();
+
   static GameMapper? _instance;
   static GameMapper ensureInitialized() {
     if (_instance == null) {
@@ -26,18 +27,19 @@ class GameMapper extends ClassMapperBase<Game> {
   final String id = 'Game';
 
   static Player _$player(Game v) => v.player;
+  static const Field<Game, Player> _f$player = Field('player', _$player,
+      hook:
+          ChainedHook([PlayerHook(), UnmappedPropertiesHook('unmappedProps')]));
 
   @override
   final Map<Symbol, Field<Game, dynamic>> fields = const {
-    #player: Field<Game, Player>('player', _$player,
-        hook: ChainedHook(
-            [PlayerHook(), UnmappedPropertiesHook('unmappedProps')])),
+    #player: _f$player,
   };
 
   @override
   final MappingHook hook = const game.GameHook();
   static Game _instantiate(DecodingData data) {
-    return Game(data.get(#player));
+    return Game(data.dec(_f$player));
   }
 
   @override
@@ -81,24 +83,19 @@ mixin GameMappable {
   }
 }
 
-extension GameValueCopy<$R, $Out extends Game>
-    on ObjectCopyWith<$R, Game, $Out> {
+extension GameValueCopy<$R, $Out> on ObjectCopyWith<$R, Game, $Out> {
   GameCopyWith<$R, Game, $Out> get $asGame =>
       $base.as((v, t, t2) => _GameCopyWithImpl(v, t, t2));
 }
 
-typedef GameCopyWithBound = Game;
-
-abstract class GameCopyWith<$R, $In extends Game, $Out extends Game>
+abstract class GameCopyWith<$R, $In extends Game, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   PlayerCopyWith<$R, Player, Player> get player;
   $R call({Player? player});
-  GameCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Game>(
-      Then<Game, $Out2> t, Then<$Out2, $R2> t2);
+  GameCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _GameCopyWithImpl<$R, $Out extends Game>
-    extends ClassCopyWithBase<$R, Game, $Out>
+class _GameCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Game, $Out>
     implements GameCopyWith<$R, Game, $Out> {
   _GameCopyWithImpl(super.value, super.then, super.then2);
 
@@ -106,7 +103,7 @@ class _GameCopyWithImpl<$R, $Out extends Game>
   late final ClassMapperBase<Game> $mapper = GameMapper.ensureInitialized();
   @override
   PlayerCopyWith<$R, Player, Player> get player =>
-      $value.player.copyWith.$chain($identity, (v) => call(player: v));
+      $value.player.copyWith.$chain((v) => call(player: v));
   @override
   $R call({Player? player}) =>
       $apply(FieldCopyWithData({if (player != null) #player: player}));
@@ -114,17 +111,18 @@ class _GameCopyWithImpl<$R, $Out extends Game>
   Game $make(CopyWithData data) => Game(data.get(#player, or: $value.player));
 
   @override
-  GameCopyWith<$R2, Game, $Out2> $chain<$R2, $Out2 extends Game>(
-          Then<Game, $Out2> t, Then<$Out2, $R2> t2) =>
-      _GameCopyWithImpl($value, t, t2);
+  GameCopyWith<$R2, Game, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _GameCopyWithImpl($value, $cast, t);
 }
 
 class CardGameMapper extends ClassMapperBase<CardGame> {
   CardGameMapper._();
+
   static CardGameMapper? _instance;
   static CardGameMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = CardGameMapper._());
+      GameMapper.ensureInitialized();
       PlayerMapper.ensureInitialized();
     }
     return _instance!;
@@ -139,22 +137,23 @@ class CardGameMapper extends ClassMapperBase<CardGame> {
   final String id = 'CardGame';
 
   static Player _$player(CardGame v) => v.player;
+  static const Field<CardGame, Player> _f$player = Field('player', _$player,
+      hook: ChainedHook([
+        PlayerHook(),
+        UnmappedPropertiesHook('unmappedProps'),
+        game.CardPlayerHook()
+      ]));
 
   @override
   final Map<Symbol, Field<CardGame, dynamic>> fields = const {
-    #player: Field<CardGame, Player>('player', _$player,
-        hook: ChainedHook([
-          PlayerHook(),
-          UnmappedPropertiesHook('unmappedProps'),
-          game.CardPlayerHook()
-        ])),
+    #player: _f$player,
   };
 
   @override
   final MappingHook superHook = const game.GameHook();
 
   static CardGame _instantiate(DecodingData data) {
-    return CardGame(data.get(#player));
+    return CardGame(data.dec(_f$player));
   }
 
   @override
@@ -198,25 +197,21 @@ mixin CardGameMappable {
   }
 }
 
-extension CardGameValueCopy<$R, $Out extends Game>
-    on ObjectCopyWith<$R, CardGame, $Out> {
+extension CardGameValueCopy<$R, $Out> on ObjectCopyWith<$R, CardGame, $Out> {
   CardGameCopyWith<$R, CardGame, $Out> get $asCardGame =>
       $base.as((v, t, t2) => _CardGameCopyWithImpl(v, t, t2));
 }
 
-typedef CardGameCopyWithBound = Game;
-
-abstract class CardGameCopyWith<$R, $In extends CardGame, $Out extends Game>
+abstract class CardGameCopyWith<$R, $In extends CardGame, $Out>
     implements GameCopyWith<$R, $In, $Out> {
   @override
   PlayerCopyWith<$R, Player, Player> get player;
   @override
   $R call({Player? player});
-  CardGameCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Game>(
-      Then<CardGame, $Out2> t, Then<$Out2, $R2> t2);
+  CardGameCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _CardGameCopyWithImpl<$R, $Out extends Game>
+class _CardGameCopyWithImpl<$R, $Out>
     extends ClassCopyWithBase<$R, CardGame, $Out>
     implements CardGameCopyWith<$R, CardGame, $Out> {
   _CardGameCopyWithImpl(super.value, super.then, super.then2);
@@ -226,7 +221,7 @@ class _CardGameCopyWithImpl<$R, $Out extends Game>
       CardGameMapper.ensureInitialized();
   @override
   PlayerCopyWith<$R, Player, Player> get player =>
-      $value.player.copyWith.$chain($identity, (v) => call(player: v));
+      $value.player.copyWith.$chain((v) => call(player: v));
   @override
   $R call({Player? player}) =>
       $apply(FieldCopyWithData({if (player != null) #player: player}));
@@ -235,13 +230,14 @@ class _CardGameCopyWithImpl<$R, $Out extends Game>
       CardGame(data.get(#player, or: $value.player));
 
   @override
-  CardGameCopyWith<$R2, CardGame, $Out2> $chain<$R2, $Out2 extends Game>(
-          Then<CardGame, $Out2> t, Then<$Out2, $R2> t2) =>
-      _CardGameCopyWithImpl($value, t, t2);
+  CardGameCopyWith<$R2, CardGame, $Out2> $chain<$R2, $Out2>(
+          Then<$Out2, $R2> t) =>
+      _CardGameCopyWithImpl($value, $cast, t);
 }
 
 class PlayerMapper extends ClassMapperBase<Player> {
   PlayerMapper._();
+
   static PlayerMapper? _instance;
   static PlayerMapper ensureInitialized() {
     if (_instance == null) {
@@ -259,14 +255,15 @@ class PlayerMapper extends ClassMapperBase<Player> {
   final String id = 'Player';
 
   static String _$id(Player v) => v.id;
+  static const Field<Player, String> _f$id = Field('id', _$id);
 
   @override
   final Map<Symbol, Field<Player, dynamic>> fields = const {
-    #id: Field<Player, String>('id', _$id),
+    #id: _f$id,
   };
 
   static Player _instantiate(DecodingData data) {
-    return Player(data.get(#id));
+    return Player(data.dec(_f$id));
   }
 
   @override
@@ -310,23 +307,18 @@ mixin PlayerMappable {
   }
 }
 
-extension PlayerValueCopy<$R, $Out extends Player>
-    on ObjectCopyWith<$R, Player, $Out> {
+extension PlayerValueCopy<$R, $Out> on ObjectCopyWith<$R, Player, $Out> {
   PlayerCopyWith<$R, Player, $Out> get $asPlayer =>
       $base.as((v, t, t2) => _PlayerCopyWithImpl(v, t, t2));
 }
 
-typedef PlayerCopyWithBound = Player;
-
-abstract class PlayerCopyWith<$R, $In extends Player, $Out extends Player>
+abstract class PlayerCopyWith<$R, $In extends Player, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   $R call({String? id});
-  PlayerCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Player>(
-      Then<Player, $Out2> t, Then<$Out2, $R2> t2);
+  PlayerCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
-class _PlayerCopyWithImpl<$R, $Out extends Player>
-    extends ClassCopyWithBase<$R, Player, $Out>
+class _PlayerCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Player, $Out>
     implements PlayerCopyWith<$R, Player, $Out> {
   _PlayerCopyWithImpl(super.value, super.then, super.then2);
 
@@ -338,7 +330,6 @@ class _PlayerCopyWithImpl<$R, $Out extends Player>
   Player $make(CopyWithData data) => Player(data.get(#id, or: $value.id));
 
   @override
-  PlayerCopyWith<$R2, Player, $Out2> $chain<$R2, $Out2 extends Player>(
-          Then<Player, $Out2> t, Then<$Out2, $R2> t2) =>
-      _PlayerCopyWithImpl($value, t, t2);
+  PlayerCopyWith<$R2, Player, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _PlayerCopyWithImpl($value, $cast, t);
 }

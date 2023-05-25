@@ -7,6 +7,7 @@ part of 'main.dart';
 
 class UnionMapper extends ClassMapperBase<Union> {
   UnionMapper._();
+
   static UnionMapper? _instance;
   static UnionMapper ensureInitialized() {
     if (_instance == null) {
@@ -56,17 +57,15 @@ extension UnionMapperExtension on Union {
   }
 }
 
-typedef UnionCopyWithBound = Union;
-
-abstract class UnionCopyWith<$R, $In extends Union, $Out extends Union>
+abstract class UnionCopyWith<$R, $In extends Union, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   $R call();
-  UnionCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2 extends Union>(
-      Then<Union, $Out2> t, Then<$Out2, $R2> t2);
+  UnionCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
 class DataMapper extends SubClassMapperBase<Data> {
   DataMapper._();
+
   static DataMapper? _instance;
   static DataMapper ensureInitialized() {
     if (_instance == null) {
@@ -85,10 +84,12 @@ class DataMapper extends SubClassMapperBase<Data> {
   final String id = 'Data';
 
   static int _$value(Data v) => v.value;
+  static const Field<Data, int> _f$value =
+      Field('value', _$value, key: 'mykey');
 
   @override
   final Map<Symbol, Field<Data, dynamic>> fields = const {
-    #value: Field<Data, int>('value', _$value, key: 'mykey'),
+    #value: _f$value,
   };
 
   @override
@@ -99,7 +100,7 @@ class DataMapper extends SubClassMapperBase<Data> {
   late final ClassMapperBase superMapper = UnionMapper.ensureInitialized();
 
   static Data _instantiate(DecodingData data) {
-    return Data(data.get(#value));
+    return Data(data.dec(_f$value));
   }
 
   @override
@@ -126,6 +127,7 @@ extension DataMapperExtension on Data {
 
 class LoadingMapper extends SubClassMapperBase<Loading> {
   LoadingMapper._();
+
   static LoadingMapper? _instance;
   static LoadingMapper ensureInitialized() {
     if (_instance == null) {
@@ -144,10 +146,11 @@ class LoadingMapper extends SubClassMapperBase<Loading> {
   final String id = 'Loading';
 
   static int _$value(Loading v) => v.value;
+  static const Field<Loading, int> _f$value = Field('value', _$value);
 
   @override
   final Map<Symbol, Field<Loading, dynamic>> fields = const {
-    #value: Field<Loading, int>('value', _$value),
+    #value: _f$value,
   };
 
   @override
@@ -158,7 +161,7 @@ class LoadingMapper extends SubClassMapperBase<Loading> {
   late final ClassMapperBase superMapper = UnionMapper.ensureInitialized();
 
   static Loading _instantiate(DecodingData data) {
-    return Loading(data.get(#value));
+    return Loading(data.dec(_f$value));
   }
 
   @override
@@ -185,6 +188,7 @@ extension LoadingMapperExtension on Loading {
 
 class ErrorDetailsMapper extends SubClassMapperBase<ErrorDetails> {
   ErrorDetailsMapper._();
+
   static ErrorDetailsMapper? _instance;
   static ErrorDetailsMapper ensureInitialized() {
     if (_instance == null) {
@@ -203,12 +207,15 @@ class ErrorDetailsMapper extends SubClassMapperBase<ErrorDetails> {
   final String id = 'ErrorDetails';
 
   static int _$value(ErrorDetails v) => v.value;
+  static const Field<ErrorDetails, int> _f$value = Field('value', _$value);
   static String? _$message(ErrorDetails v) => v.message;
+  static const Field<ErrorDetails, String> _f$message =
+      Field('message', _$message, opt: true);
 
   @override
   final Map<Symbol, Field<ErrorDetails, dynamic>> fields = const {
-    #value: Field<ErrorDetails, int>('value', _$value),
-    #message: Field<ErrorDetails, String?>('message', _$message, opt: true),
+    #value: _f$value,
+    #message: _f$message,
   };
 
   @override
@@ -219,7 +226,7 @@ class ErrorDetailsMapper extends SubClassMapperBase<ErrorDetails> {
   late final ClassMapperBase superMapper = UnionMapper.ensureInitialized();
 
   static ErrorDetails _instantiate(DecodingData data) {
-    return ErrorDetails(data.get(#value), data.get(#message));
+    return ErrorDetails(data.dec(_f$value), data.dec(_f$message));
   }
 
   @override

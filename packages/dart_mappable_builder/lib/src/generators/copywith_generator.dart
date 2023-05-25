@@ -1,8 +1,9 @@
+import 'package:analyzer/dart/element/type.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
 import '../elements/class/target_class_mapper_element.dart';
-import '../elements/copy_param_element.dart';
-import '../elements/mapper_param_element.dart';
+import '../elements/param/copy_param_element.dart';
+import '../elements/param/mapper_param_element.dart';
 import '../utils.dart';
 
 class CopyWithGenerator {
@@ -15,34 +16,12 @@ class CopyWithGenerator {
   late String classTypeParams =
       element.element.typeParameters.map((p) => ', ${p.name}').join();
 
-  late bool hasSubConfigs = true; //element.subTargets.isNotEmpty;
-  late bool hasSuperTarget = element.superTarget != null &&
-      element.superTarget!.shouldGenerate(GenerateMethods.copy);
-  late bool hasSubOrSuperTargets = hasSubConfigs || hasSuperTarget;
+  late bool hasExtendsTarget = element.extendsElement != null &&
+      element.extendsElement!.shouldGenerate(GenerateMethods.copy);
+  late bool hasSuperTarget = element.superElement != null &&
+      element.superElement!.shouldGenerate(GenerateMethods.copy);
 
   late String selfTypeParam = element.selfTypeParam;
-  late String superPrefixedClassName = element.superPrefixedClassName;
-
-  late String selfSubTypeParam = hasSubConfigs ? ', $selfTypeParam' : '';
-  late String selfSuperTypeParam =
-      hasSubOrSuperTargets ? ', $selfTypeParam' : '';
-
-  late String subTypeParamDef =
-      hasSubConfigs ? ', \$In extends $selfTypeParam' : '';
-  late String subTypeParam = hasSubConfigs ? ', \$In' : '';
-  late String subOrSelfTypeParam =
-      hasSubConfigs ? ', \$In' : ', $selfTypeParam';
-
-  late String superTypeParamDef =
-      hasSubOrSuperTargets ? ', \$Out extends $superPrefixedClassName' : '';
-  late String superTypeParamDef2 =
-      hasSubOrSuperTargets ? ', \$Out2 extends $superPrefixedClassName' : '';
-  late String superTypeParam = hasSubOrSuperTargets ? ', \$Out' : '';
-  late String superTypeParam2 = hasSubOrSuperTargets ? ', \$Out2' : '';
-  late String superOrSelfTypeParam =
-      hasSubOrSuperTargets ? ', \$Out' : ', $selfTypeParam';
-  late String superOrSelfTypeParam2 =
-      hasSubOrSuperTargets ? '\$Out2' : selfTypeParam;
 
   String generateCopyWithExtension() {
     if (!element.shouldGenerate(GenerateMethods.copy)) return '';
@@ -55,29 +34,23 @@ class CopyWithGenerator {
 
   String generateCopyWithMixin() {
     if (!element.shouldGenerate(GenerateMethods.copy)) return '';
-    if (element.hasCallableConstructor || hasSubConfigs) {
-      return _generateCopyWithMixin();
-    } else {
-      return '';
-    }
+
+    return _generateCopyWithMixin();
   }
 
   String generateCopyWithClasses() {
     if (!element.shouldGenerate(GenerateMethods.copy)) return '';
-    if (element.hasCallableConstructor || hasSubConfigs) {
-      return '\n\n${_generateCopyWithClasses()}';
-    } else {
-      return '';
-    }
+
+    return '\n\n${_generateCopyWithClasses()}';
   }
 
   String _generateCopyWith() {
-    return '${element.uniqueClassName}CopyWith<$selfTypeParam$selfSubTypeParam$selfSuperTypeParam$classTypeParams> get copyWith => _${element.uniqueClassName}CopyWithImpl(this, \$identity, \$identity);';
+    return '${element.uniqueClassName}CopyWith<$selfTypeParam, $selfTypeParam, $selfTypeParam$classTypeParams> get copyWith => _${element.uniqueClassName}CopyWithImpl(this, \$identity, \$identity);';
   }
 
   String _generateCopyWithMixin() {
     var snippet =
-        '  ${element.uniqueClassName}CopyWith<$selfTypeParam$selfSubTypeParam$selfSuperTypeParam$classTypeParams> get copyWith';
+        '  ${element.uniqueClassName}CopyWith<$selfTypeParam, $selfTypeParam, $selfTypeParam$classTypeParams> get copyWith';
 
     if (element.hasCallableConstructor) {
       snippet +=
@@ -94,30 +67,41 @@ class CopyWithGenerator {
 
     if (element.hasCallableConstructor) {
       output.write(
-          'extension ${element.uniqueClassName}ValueCopy<\$R$superTypeParamDef$classTypeParamsDef> on ObjectCopyWith<\$R, $selfTypeParam$superOrSelfTypeParam> {\n'
-          '  ${element.uniqueClassName}CopyWith<\$R$selfSubTypeParam$superTypeParam$classTypeParams> get \$as${element.className} => \$base.as((v, t, t2) => _${element.uniqueClassName}CopyWithImpl(v, t, t2));\n'
+          'extension ${element.uniqueClassName}ValueCopy<\$R, \$Out$classTypeParamsDef> on ObjectCopyWith<\$R, $selfTypeParam, \$Out> {\n'
+          '  ${element.uniqueClassName}CopyWith<\$R, $selfTypeParam, \$Out$classTypeParams> get \$as${element.className} => \$base.as((v, t, t2) => _${element.uniqueClassName}CopyWithImpl(v, t, t2));\n'
           '}\n\n');
     }
 
-    var implementsStmt = '';
+    var implements = <String>[];
 
-    if (hasSuperTarget) {
+    if (hasExtendsTarget) {
       var superClassTypeParams =
           element.superTypeArgs.map((a) => ', $a').join();
-      implementsStmt =
-          ' implements ${element.superTarget!.uniqueClassName}CopyWith<\$R$subOrSelfTypeParam$superTypeParam$superClassTypeParams>';
-    } else {
-      implementsStmt =
-          ' implements ClassCopyWith<\$R$subOrSelfTypeParam$superOrSelfTypeParam>';
+      implements.add(
+          '${element.extendsElement!.uniqueClassName}CopyWith<\$R, \$In, \$Out$superClassTypeParams>');
     }
 
-    if (hasSubConfigs) {
-      output.write(
-          'typedef ${element.superPrefixedClassNameAlias} = $superPrefixedClassName;\n');
+    for (var interface in element.interfaceElements) {
+      if (interface.shouldGenerate(GenerateMethods.copy)) {
+        var interfaceTypeParams = element.element.interfaces
+            .firstWhere((t) => t.element == interface.element)
+            .typeArguments
+            .map((a) => ', ${element.parent.prefixedType(a)}')
+            .join();
+        implements.add(
+            '${interface.uniqueClassName}CopyWith<\$R, \$In, \$Out$interfaceTypeParams>');
+      }
     }
+
+    if (implements.isEmpty) {
+      implements.add('ClassCopyWith<\$R, \$In, \$Out>');
+    }
+
+    var implementsStmt =
+        implements.isEmpty ? '' : ' implements ${implements.join(', ')}';
 
     output.write(''
-        'abstract class ${element.uniqueClassName}CopyWith<\$R$subTypeParamDef$superTypeParamDef$classTypeParamsDef>$implementsStmt {\n');
+        'abstract class ${element.uniqueClassName}CopyWith<\$R, \$In extends $selfTypeParam, \$Out$classTypeParamsDef>$implementsStmt {\n');
 
     var copyParams = CopyParamElement.collectFrom(element.params, element);
 
@@ -131,15 +115,15 @@ class CopyWithGenerator {
         '  ${hasSuperTarget ? '@override ' : ''}\$R call(${_generateCopyWithParams()});\n');
 
     output.write(
-        '  ${element.uniqueClassName}CopyWith<\$R2$subTypeParam$superTypeParam2$classTypeParams> \$chain<\$R2$superTypeParamDef2>(Then<$selfTypeParam, $superOrSelfTypeParam2> t, Then<$superOrSelfTypeParam2, \$R2> t2);\n');
+        '  ${element.uniqueClassName}CopyWith<\$R2, \$In, \$Out2$classTypeParams> \$chain<\$R2, \$Out2>(Then<\$Out2, \$R2> t);\n');
 
     output.write('}\n');
 
     if (element.hasCallableConstructor) {
       output.write('\n'
-          'class _${element.uniqueClassName}CopyWithImpl<\$R$superTypeParamDef$classTypeParamsDef> '
-          'extends ClassCopyWithBase<\$R, $selfTypeParam$superOrSelfTypeParam> implements ${element.uniqueClassName}CopyWith'
-          '<\$R$selfSubTypeParam$superTypeParam$classTypeParams> {\n'
+          'class _${element.uniqueClassName}CopyWithImpl<\$R, \$Out$classTypeParamsDef> '
+          'extends ClassCopyWithBase<\$R, $selfTypeParam, \$Out> implements ${element.uniqueClassName}CopyWith'
+          '<\$R, $selfTypeParam, \$Out$classTypeParams> {\n'
           '  _${element.uniqueClassName}CopyWithImpl(super.value, super.then, super.then2);\n'
           '\n');
 
@@ -159,9 +143,9 @@ class CopyWithGenerator {
           '  @override $selfTypeParam \$make(CopyWithData data) => ${element.prefixedDecodingClassName}${element.constructor!.name != '' ? '.${element.constructor!.name}' : ''}(${_generateCopyWithConstructorParams()});\n');
 
       output.write('\n'
-          '  @override ${element.uniqueClassName}CopyWith<\$R2$selfSubTypeParam$superTypeParam2$classTypeParams> '
-          '\$chain<\$R2$superTypeParamDef2>(Then<$selfTypeParam, $superOrSelfTypeParam2> t, Then<$superOrSelfTypeParam2, \$R2> t2) '
-          '=> _${element.uniqueClassName}CopyWithImpl(\$value, t, t2);\n');
+          '  @override ${element.uniqueClassName}CopyWith<\$R2, $selfTypeParam, \$Out2$classTypeParams> '
+          '\$chain<\$R2, \$Out2>(Then<\$Out2, \$R2> t) '
+          '=> _${element.uniqueClassName}CopyWithImpl(\$value, \$cast, t);\n');
 
       output.write('}');
     }
@@ -180,18 +164,19 @@ class CopyWithGenerator {
 
       if (param is UnresolvedParamElement) {
         if (p.type.isNullable) {
-          var isDynamic = p.type.isDynamic;
+          var isDynamic = p.type is DynamicType;
           params.add('$type${isDynamic ? '' : '?'} ${p.name}');
         } else {
           params.add('required $type ${p.name}');
         }
       } else {
         var name = param.superName;
-        var isDynamic = p.type.isDynamic;
+        var isDynamic = p.type is DynamicType;
         if (implVersion && (p.type.isNullable || isDynamic)) {
           params.add('Object? $name = \$none');
         } else {
-          params.add('$type${isDynamic ? '' : '?'} $name');
+          params.add(
+              '${param.isCovariant && !implVersion ? 'covariant ' : ''}$type${isDynamic ? '' : '?'} $name');
         }
       }
     }
@@ -206,7 +191,7 @@ class CopyWithGenerator {
 
       if (param is! UnresolvedParamElement) {
         var p = param.parameter;
-        if (p.type.isNullable || p.type.isDynamic) {
+        if (p.type.isNullable || p.type is DynamicType) {
           str = 'if (${param.superName} != \$none) $str';
         } else {
           str = 'if (${param.superName} != null) $str';
@@ -220,7 +205,7 @@ class CopyWithGenerator {
 
   String _generateCopyWithConstructorParams() {
     List<String> params = [];
-    for (var param in element.copySafeParams) {
+    for (var param in element.params) {
       var p = param.parameter;
       var str = '';
 
