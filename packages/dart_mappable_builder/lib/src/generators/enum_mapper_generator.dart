@@ -12,17 +12,17 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
 
   @override
   Future<String> generate() async {
-    bool hasAllStringValues = target.mode == ValuesMode.named;
-    bool useCustomProperty = target.mode == ValuesMode.customProperty;
-    var values = await Future.wait(target.element.fields //
+    bool hasAllStringValues = element.mode == ValuesMode.named;
+    bool useCustomProperty = element.mode == ValuesMode.customProperty;
+    var values = await Future.wait(element.element.fields //
         .where((f) => f.isEnumConstant)
         .mapIndexed((i, f) async {
-      if (valueChecker.hasAnnotationOf(f)) {
+      if (enumValueChecker.hasAnnotationOf(f)) {
         hasAllStringValues = false;
         return MapEntry(f.name, await getAnnotatedValue(f));
       } else {
-        if (target.mode == ValuesMode.named) {
-          return MapEntry(f.name, "'${target.caseStyle.transform(f.name)}'");
+        if (element.mode == ValuesMode.named) {
+          return MapEntry(f.name, "'${element.caseStyle.transform(f.name)}'");
         } else {
           return MapEntry(f.name, i);
         }
@@ -37,25 +37,25 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
         : _generateDefaultEncode(values);
 
     return ''
-        'class ${target.mapperName} extends EnumMapper<${target.prefixedClassName}> {\n'
-        '  ${target.mapperName}._();\n'
-        '  static ${target.mapperName}? _instance;\n'
-        '  static ${target.mapperName} ensureInitialized() {\n'
+        'class ${element.mapperName} extends EnumMapper<${element.prefixedClassName}> {\n'
+        '  ${element.mapperName}._();\n'
+        '  static ${element.mapperName}? _instance;\n'
+        '  static ${element.mapperName} ensureInitialized() {\n'
         '    if (_instance == null) {\n'
-        '      MapperContainer.globals.use(_instance = ${target.mapperName}._());\n'
+        '      MapperContainer.globals.use(_instance = ${element.mapperName}._());\n'
         '    }\n'
         '    return _instance!;\n'
         '  }\n\n'
-        '  static ${target.prefixedClassName} fromValue(dynamic value) {\n'
+        '  static ${element.prefixedClassName} fromValue(dynamic value) {\n'
         '    ensureInitialized();\n'
         '    return MapperContainer.globals.fromValue(value);\n'
         '  }\n\n'
         '  $decode '
         '  $encode '
         '}\n\n'
-        'extension ${target.mapperName}Extension on ${target.prefixedClassName} {\n'
+        'extension ${element.mapperName}Extension on ${element.prefixedClassName} {\n'
         '  ${hasAllStringValues ? 'String' : 'dynamic'} toValue() {\n'
-        '    ${target.mapperName}.ensureInitialized();\n'
+        '    ${element.mapperName}.ensureInitialized();\n'
         '    return MapperContainer.globals.toValue(this)${hasAllStringValues ? ' as String' : ''};\n'
         '  }\n'
         '}';
@@ -63,9 +63,9 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
 
   String _generateDefaultDecode(List<MapEntry<String, Object>> values) {
     return '  @override\n'
-        '  ${target.prefixedClassName} decode(dynamic value) {\n'
+        '  ${element.prefixedClassName} decode(dynamic value) {\n'
         '    switch (value) {\n'
-        '      ${values.map((v) => "case ${v.value}: return ${target.prefixedClassName}.${v.key};").join("\n      ")}\n'
+        '      ${values.map((v) => "case ${v.value}: return ${element.prefixedClassName}.${v.key};").join("\n      ")}\n'
         '      default: ${_generateDefaultCase()}\n'
         '    }\n'
         '  }\n\n';
@@ -73,33 +73,33 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
 
   String _generateDefaultEncode(List<MapEntry<String, Object>> values) {
     return '  @override\n'
-        '  dynamic encode(${target.prefixedClassName} self) {\n'
+        '  dynamic encode(${element.prefixedClassName} self) {\n'
         '    switch (self) {\n'
-        '      ${values.map((v) => "case ${target.prefixedClassName}.${v.key}: return ${v.value};").join("\n      ")}\n'
+        '      ${values.map((v) => "case ${element.prefixedClassName}.${v.key}: return ${v.value};").join("\n      ")}\n'
         '    }\n'
         '  }\n';
   }
 
   String _generateEncodeByCustomProperty() {
     return '  @override\n'
-        '  dynamic encode(${target.prefixedClassName} self) {\n'
+        '  dynamic encode(${element.prefixedClassName} self) {\n'
         '    return self.token;\n'
         '  }\n';
   }
 
   String _generateDecodeByCustomProperty() {
     return '  @override\n'
-        '  ${target.prefixedClassName} decode(dynamic value) {\n'
-        '    return ${target.prefixedClassName}.values.firstWhere(\n'
-        '      (element) => element.${target.customProperty} == value,\n'
+        '  ${element.prefixedClassName} decode(dynamic value) {\n'
+        '    return ${element.prefixedClassName}.values.firstWhere(\n'
+        '      (element) => element.${element.customProperty} == value,\n'
         '      orElse: () => throw MapperException.unknownEnumValue(value),\n'
         '    );\n'
         '  }\n\n';
   }
 
   String _generateDefaultCase() {
-    if (target.defaultValue != null) {
-      return 'return ${target.prefixedClassName}.values[${target.defaultValue}];';
+    if (element.defaultValue != null) {
+      return 'return ${element.prefixedClassName}.values[${element.defaultValue}];';
     }
     return 'throw MapperException.unknownEnumValue(value);';
   }
