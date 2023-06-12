@@ -55,4 +55,7 @@ class TargetEnumMapperElement extends EnumMapperElement {
     var node = await getResolvedAnnotationNode(f, MappableValue, 0);
     return node!.toSource();
   }
+
+  late String? customProperty =
+      annotation?.getField('customProperty')?.toStringValue();
 }
