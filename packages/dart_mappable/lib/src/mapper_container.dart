@@ -219,6 +219,7 @@ class _MapperContainerBase implements MapperContainer, TypeProvider {
   }
 
   final Map<Type, MapperBase> _mappers = {};
+  final List<Map<String, MapperBase>> _lstMappers = [];
   final Map<String, Function> _types = {};
 
   final Set<_MapperContainerBase> _parents = {};
@@ -373,6 +374,26 @@ class _MapperContainerBase implements MapperContainer, TypeProvider {
     }
   }
 
+  MapperBase? _retryMapperForType(
+      Map<String, MapperBase> element, String type) {
+    if (element[type] != null) return element[type];
+    if (element[type.toString().replaceAll('?', '')] != null) {
+      return element[type.toString().replaceAll('?', '')];
+    }
+    return null;
+  }
+
+  (T?, Exception?) _retry<T>(
+      MapperBase mapper, Object value, DecodingContext context) {
+    try {
+      final result = mapper.decoder(value, context) as T;
+
+      return (result, null);
+    } catch (e) {
+      return (null, Exception());
+    }
+  }
+
   @override
   dynamic toValue<T>(T? value, [EncodingOptions? options]) {
     if (value == null) return null;
@@ -506,6 +527,7 @@ class _MapperContainerBase implements MapperContainer, TypeProvider {
   @override
   void useAll(Iterable<MapperBase> mappers) {
     _mappers.addEntries(mappers.map((m) => MapEntry(m.type, m)));
+    _lstMappers.addAll(mappers.map((m) => {m.type.toString(): m}));
     _invalidateCachedMappers();
   }
 
