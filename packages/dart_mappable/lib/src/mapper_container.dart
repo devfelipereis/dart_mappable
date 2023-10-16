@@ -171,6 +171,7 @@ class _MapperContainerBase implements MapperContainer, TypeProvider {
   }
 
   final Map<Type, MapperBase> _mappers = {};
+  final List<Map<String, MapperBase>> _lstMappers = [];
   final Map<String, Function> _types = {};
 
   final Set<_MapperContainerBase> _parents = {};
@@ -299,6 +300,29 @@ class _MapperContainerBase implements MapperContainer, TypeProvider {
         return mapper.decoder(
             value, DecodingContext(container: this, args: type.args)) as T;
       } catch (e, stacktrace) {
+        var mappers = _lstMappers
+            .where((element) => element[type.toString()] != null)
+            .toList();
+
+        if (mappers.isEmpty) {
+          mappers = _lstMappers
+              .where((element) =>
+                  element[type.toString().replaceAll('?', '')] != null)
+              .toList();
+        }
+
+        if (mappers.length > 1) {
+          for (var element in mappers) {
+            final mapper = _retryMapperForType(element, type.toString());
+            if (mapper == null) continue;
+            final (T? result, Exception? err) = _retry(mapper, value,
+                DecodingContext(container: this, args: type.args));
+
+            if (err != null || result == null) continue;
+            return result;
+          }
+        }
+
         Error.throwWithStackTrace(
           MapperException.chain(MapperMethod.decode, '($type)', e),
           stacktrace,
@@ -307,6 +331,26 @@ class _MapperContainerBase implements MapperContainer, TypeProvider {
     } else {
       throw MapperException.chain(
           MapperMethod.decode, '($type)', MapperException.unknownType(type));
+    }
+  }
+
+  MapperBase? _retryMapperForType(
+      Map<String, MapperBase> element, String type) {
+    if (element[type] != null) return element[type];
+    if (element[type.toString().replaceAll('?', '')] != null) {
+      return element[type.toString().replaceAll('?', '')];
+    }
+    return null;
+  }
+
+  (T?, Exception?) _retry<T>(
+      MapperBase mapper, Object value, DecodingContext context) {
+    try {
+      final result = mapper.decoder(value, context) as T;
+
+      return (result, null);
+    } catch (e) {
+      return (null, Exception());
     }
   }
 
@@ -473,6 +517,7 @@ class _MapperContainerBase implements MapperContainer, TypeProvider {
   @override
   void useAll(Iterable<MapperBase> mappers) {
     _mappers.addEntries(mappers.map((m) => MapEntry(m.type, m)));
+    _lstMappers.addAll(mappers.map((m) => {m.type.toString(): m}));
     _invalidateCachedMappers();
   }
 
