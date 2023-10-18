@@ -367,7 +367,37 @@ class _MapperContainerBase implements MapperContainer, TypeProvider {
 
     var mapper = _mapperForType(type);
     if (mapper != null) {
-      return mapper.decodeValue<T>(value, DecodingOptions(type: type), this);
+      try {
+        return mapper.decodeValue<T>(value, DecodingOptions(type: type), this);
+      } catch (e, stacktrace) {
+        var mappers = _lstMappers
+            .where((element) => element[type.toString()] != null)
+            .toList();
+
+        if (mappers.isEmpty) {
+          mappers = _lstMappers
+              .where((element) =>
+                  element[type.toString().replaceAll('?', '')] != null)
+              .toList();
+        }
+
+        if (mappers.length > 1) {
+          for (var element in mappers) {
+            final mapper = _retryMapperForType(element, type.toString());
+            if (mapper == null) continue;
+            final (T? result, Exception? err) = _retry(mapper, value,
+                DecodingContext(container: this, args: type.args));
+
+            if (err != null || result == null) continue;
+            return result;
+          }
+        }
+
+        Error.throwWithStackTrace(
+          MapperException.chain(MapperMethod.decode, '($type)', e),
+          stacktrace,
+        );
+      }
     } else {
       throw MapperException.chain(
           MapperMethod.decode, '($type)', MapperException.unknownType(type));
