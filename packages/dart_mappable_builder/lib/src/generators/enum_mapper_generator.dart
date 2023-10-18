@@ -1,3 +1,5 @@
+import 'package:dart_mappable/dart_mappable.dart';
+
 import '../elements/enum/target_enum_mapper_element.dart';
 import 'generator.dart';
 
@@ -49,6 +51,37 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
     }
     return 'throw MapperException.unknownEnumValue(value);';
   } 
+
+  String _generateDefaultDecode(List<MapEntry<String, dynamic>> values) {
+    return '  @override\n'
+        '  ${element.prefixedClassName} decode(dynamic value) {\n'
+        '    switch (value) {\n'
+        '      ${values.map((v) => "case ${v.value}: return ${element.prefixedClassName}.${v.key};").join("\n      ")}\n'
+        '      default: ${_generateDefaultCase()}\n'
+        '    }\n'
+        '  }\n\n';
+  }
+
+  String _generateDefaultEncode(List<MapEntry<String, dynamic>> values) {
+    return '  dynamic encode(${element.prefixedClassName} self) {\n'
+        '    switch (self) {\n'
+        '      ${values.map((v) => "case ${element.prefixedClassName}.${v.key}: return ${v.value};").join("\n      ")}\n'
+        '    }\n'
+        '  }\n';
+  }
+
+  String _generateEncodeByCustomProperty() {
+    return '  dynamic encode(${element.prefixedClassName} self) {\n'
+        '    return self.token;\n'
+        '  }\n';
+  }
+
+  String _generateDecodeByCustomProperty() {
+    return '  @override\n'
+        '  ${element.prefixedClassName} decode(dynamic value) {\n'
+        '    return ${element.prefixedClassName}.values.firstWhere((element) => element.${element.customProperty} == value);\n'
+        '  }\n\n';
+  }
 
   String _generateDefaultDecode(List<MapEntry<String, dynamic>> values) {
     return '  @override\n'
