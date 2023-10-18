@@ -1,158 +1,59 @@
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:analyzer/dart/element/type_visitor.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
 import '../../utils.dart';
-import '../class/class_mapper_element.dart';
-
-class IsGenericTypeVisitor extends UnifyingTypeVisitor<bool> {
-  @override
-  bool visitDartType(DartType type) {
-    return false;
-  }
-
-  @override
-  bool visitTypeParameterType(TypeParameterType type) {
-    return true;
-  }
-
-  @override
-  bool visitInterfaceType(InterfaceType type) {
-    return type.typeArguments.any((t) => t.accept(this));
-  }
-
-  @override
-  bool visitRecordType(RecordType type) {
-    return type.positionalFields.any((f) => f.type.accept(this)) ||
-        type.namedFields.any((f) => f.type.accept(this));
-  }
-}
-
-class MapperFieldElement {
-  final MapperParamElement? param;
-  final PropertyInducingElement? field;
-  final ClassMapperElement parent;
-
-  MapperFieldElement(this.param, this.field, this.parent)
-      : assert(param != null || field != null);
-
-  late String name = field?.name ?? param!.parameter.name;
-
-  late String getter = field != null ? '_\$$name' : 'null';
-
-  late bool generic = () {
-    return resolvedType.accept(IsGenericTypeVisitor());
-  }();
-
-  late String arg = () {
-    if (!generic) return '';
-
-    return ', arg: _arg\$$name';
-  }();
-
-  late DartType resolvedType = () {
-    if (field?.enclosingElement is InterfaceElement) {
-      var it = parent.element.thisType;
-      it = it.asInstanceOf(field!.enclosingElement as InterfaceElement)!;
-      var getter = it.getGetter(field!.name);
-      return getter!.type.returnType;
-    }
-    return field?.type ?? param!.parameter.type;
-  }();
-
-  late String staticGetterType = () {
-    return parent.parent.prefixedType(resolvedType, resolveBounds: true);
-  }();
-
-  late String argType = () {
-    return parent.parent.prefixedType(param?.parameter.type ?? resolvedType,
-        withNullability: false);
-  }();
-
-  late String staticArgType = () {
-    return parent.parent.prefixedType(param?.parameter.type ?? resolvedType,
-        withNullability: false, resolveBounds: true);
-  }();
-
-  late String mode = () {
-    if (param == null &&
-        field != null &&
-        !fieldChecker.hasAnnotationOf(field!)) {
-      return ', mode: FieldMode.member';
-    } else if (param != null && param!.accessor is! FieldElement) {
-      return ', mode: FieldMode.param';
-    } else {
-      return '';
-    }
-  }();
-
-  late String key = () {
-    var key = param?.jsonKey(parent.caseStyle) ?? name;
-    if (key != name) {
-      return ", key: '$key'";
-    } else {
-      return '';
-    }
-  }();
-
-  late String opt = (param?.parameter.isOptional ?? false) ? ', opt: true' : '';
-
-  late Future<String> def = () async {
-    if (param == null) return '';
-
-    var p = param!.parameter;
-
-    if (p.hasDefaultValue && p.defaultValueCode != 'null') {
-      return ', def: ${p.defaultValueCode}';
-    } else {
-      var node = await p.getNode();
-      if (node is DefaultFormalParameter &&
-          node.defaultValue.toString() != 'null') {
-        return ', def: ${node.defaultValue}';
-      }
-    }
-
-    return '';
-  }();
-
-  late Future<String> hook = () async {
-    var hook = await param?.getHook();
-    return hook != null ? ', hook: $hook' : '';
-  }();
-}
+import 'mapper_field_element.dart';
 
 abstract class MapperParamElement {
-  final ParameterElement parameter;
+  String get name;
 
-  MapperParamElement(this.parameter);
+  DartType get type;
 
-  String get superName => parameter.name;
+  String get superName => name;
 
   bool get isCovariant => false;
 
-  Future<String?> getHook() {
-    return _hookFor(parameter);
-  }
+  bool get isOptional => false;
 
-  PropertyInducingElement? get accessor;
+  ParameterElement? get parameter => null;
 
-  String? _keyFor(Element element) {
-    return fieldChecker
-        .firstAnnotationOf(element)
-        ?.getField('key')!
-        .toStringValue();
-  }
+  Future<String?> getHook();
 
-  String? get _paramKey => _keyFor(parameter);
+  PropertyInducingElement? get accessor => null;
 
-  String jsonKey(CaseStyle? caseStyle) {
-    return _paramKey ?? caseStyle.transform(parameter.name);
-  }
+  String? get key => annotation?.read('key')?.toStringValue();
+
+  DartObject? get annotation;
 }
 
-class FieldParamElement extends MapperParamElement {
+abstract class ClassMapperParamElement extends MapperParamElement {
+  @override
+  final ParameterElement parameter;
+
+  ClassMapperParamElement(this.parameter);
+
+  @override
+  String get name => parameter.name;
+
+  @override
+  DartType get type => parameter.type;
+
+  @override
+  bool get isOptional => parameter.isOptional;
+
+  @override
+  Future<String?> getHook() {
+    return hookFor(parameter);
+  }
+
+  @override
+  DartObject? get annotation => fieldChecker.firstAnnotationOf(parameter);
+}
+
+class FieldParamElement extends ClassMapperParamElement {
   final PropertyInducingElement field;
   final PropertyInducingElement? superField;
 
@@ -167,18 +68,19 @@ class FieldParamElement extends MapperParamElement {
 
   @override
   Future<String?> getHook() async {
-    return (await _hookFor(field)) ?? await super.getHook();
+    return (await hookFor(field)) ?? await super.getHook();
   }
 
   @override
   PropertyInducingElement get accessor => field;
 
   @override
-  String? get _paramKey => _keyFor(field) ?? super._paramKey;
+  DartObject? get annotation =>
+      super.annotation ?? fieldChecker.firstAnnotationOf(field);
 }
 
-class SuperParamElement extends MapperParamElement {
-  final MapperParamElement superParameter;
+class SuperParamElement extends ClassMapperParamElement {
+  final ClassMapperParamElement superParameter;
 
   SuperParamElement(ParameterElement parameter, this.superParameter)
       : super(parameter);
@@ -197,7 +99,7 @@ class SuperParamElement extends MapperParamElement {
   PropertyInducingElement? get accessor => superParameter.accessor;
 
   @override
-  String? get _paramKey => super._paramKey ?? superParameter._paramKey;
+  String? get key => super.key ?? superParameter.key;
 
   @override
   Future<String?> getHook() async {
@@ -229,7 +131,7 @@ class SuperParamElement extends MapperParamElement {
   }
 }
 
-class UnresolvedParamElement extends MapperParamElement {
+class UnresolvedParamElement extends ClassMapperParamElement {
   final String message;
 
   UnresolvedParamElement(ParameterElement parameter, this.message)
@@ -239,12 +141,37 @@ class UnresolvedParamElement extends MapperParamElement {
   PropertyInducingElement? get accessor => null;
 }
 
-Future<String?> _hookFor(Element element) async {
-  if (fieldChecker.hasAnnotationOf(element)) {
-    var node = await getResolvedAnnotationNode(element, MappableField, 'hook');
-    if (node != null) {
-      return node.toSource();
-    }
+class RecordMapperParamElement extends MapperParamElement {
+  RecordMapperParamElement(this.name, this.type, this.param, [this.typeArg]);
+
+  @override
+  final String name;
+  @override
+  final DartType type;
+  final RecordTypeAnnotationField? param;
+  final String? typeArg;
+
+  bool get isNamed => !name.startsWith(r'$');
+
+  bool get isGeneric => typeArg != null;
+
+  @override
+  Future<String?> getHook() async {
+    var node = getAnnotationProperty(param, MappableField, 'hook');
+    return node?.toSource();
   }
-  return null;
+
+  @override
+  DartObject? get annotation {
+    if (param == null) return null;
+    for (var e in param!.metadata) {
+      var o = e.elementAnnotation?.computeConstantValue();
+      if (o != null &&
+          o.type != null &&
+          fieldChecker.isAssignableFromType(o.type!)) {
+        return o;
+      }
+    }
+    return null;
+  }
 }

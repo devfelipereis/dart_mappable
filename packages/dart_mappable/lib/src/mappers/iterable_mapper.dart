@@ -4,8 +4,9 @@ import 'package:type_plus/type_plus.dart';
 import '../mapper_utils.dart';
 import 'mapper_base.dart';
 import 'mapper_mixins.dart';
+import 'mapping_context.dart';
 
-/// The default mapper for iterables like [List] and [Set].
+/// The default mapper for iterables like [List].
 ///
 /// {@category Custom Mappers}
 class IterableMapper<I extends Iterable> extends MapperBase<I>
@@ -38,6 +39,20 @@ class IterableMapper<I extends Iterable> extends MapperBase<I>
       '(${value.map((e) => context.container.asString(e)).join(', ')})';
 }
 
+/// The default mapper for [Set]s.
+///
+/// {@category Custom Mappers}
+class SetMapper<S extends Set> extends IterableMapper<S> {
+  SetMapper(super.fromIterable, super.typeFactory);
+
+  @override
+  Equality equality(Equality child) => SetEquality(child);
+
+  @override
+  String stringify(S value, MappingContext context) =>
+      '{${value.map((e) => context.container.asString(e)).join(', ')}}';
+}
+
 /// {@nodoc}
 class _IterableDecoder<I extends Iterable> {
   final IterableMapper<I> mapper;
@@ -52,7 +67,7 @@ class _IterableDecoder<I extends Iterable> {
 
   Iterable<T> _decode<T>() {
     return mapper.fromIterable(value.map((v) {
-      return context.container.$dec<T>(v, 'item');
+      return context.$dec<T>(v, 'item');
     }));
   }
 }
@@ -71,7 +86,7 @@ class _IterableEncoder<I extends Iterable> {
 
   Iterable<dynamic> _encode<T>() {
     return value
-        .map((v) => context.container.$enc<T>(v as T, 'item', context.options))
+        .map((v) => context.$enc<T>(v as T, 'item', context.options))
         .toList();
   }
 }

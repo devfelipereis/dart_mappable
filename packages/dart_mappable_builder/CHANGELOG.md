@@ -1,3 +1,44 @@
+# 4.0.0
+
+- Require `sdk: >=3.0.0`.
+- Added support for **Records**.
+
+  - Fields of a class can now be any record type.
+  - You can annotate toplevel record typedefs:
+
+    ```dart
+      @MappableRecord()
+      typedef Coordinates = ({double latitude, double longitude});
+    ```
+    
+  For a more detailed usage see the documentation.
+
+# 3.3.0
+
+- Make enum encoding explicitly typed.
+- Update analyzer to '>=5.11.0 <7.0.0'
+
+# 3.2.3
+
+- Respect keys and hooks for annotated getters.
+
+# 3.2.2
+
+- Handle even more cases for generic subclassing.
+
+# 3.2.1
+
+- Handle bounded nested type parameters in subclasses.
+
+# 3.2.0
+
+- Added support for annotating getters with `@MappableField`, which will then be included in the encoding,
+  equality checks, and stringification of that class.
+
+# 3.1.2
+
+- Fixed bug with broken mapper generation.
+
 # 3.1.1
 
 - Fixed supporting expressions in `@MappableClass.includeCustomMappers`.

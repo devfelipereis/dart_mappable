@@ -51,7 +51,7 @@ class BMapper extends EnumMapper<B> {
 extension BMapperExtension on B {
   String toValue() {
     BMapper.ensureInitialized();
-    return MapperContainer.globals.toValue(this) as String;
+    return MapperContainer.globals.toValue<B>(this) as String;
   }
 }
 
@@ -65,11 +65,6 @@ class AMapper extends ClassMapperBase<A> {
       BMapper.ensureInitialized();
     }
     return _instance!;
-  }
-
-  static T _guard<T>(T Function(MapperContainer) fn) {
-    ensureInitialized();
-    return fn(MapperContainer.globals);
   }
 
   @override
@@ -107,40 +102,40 @@ class AMapper extends ClassMapperBase<A> {
   final Function instantiate = _instantiate;
 
   static A fromMap(Map<String, dynamic> map) {
-    return _guard((c) => c.fromMap<A>(map));
+    return ensureInitialized().decodeMap<A>(map);
   }
 
   static A fromJson(String json) {
-    return _guard((c) => c.fromJson<A>(json));
+    return ensureInitialized().decodeJson<A>(json);
   }
 }
 
 mixin AMappable {
   String toJson() {
-    return AMapper._guard((c) => c.toJson(this as A));
+    return AMapper.ensureInitialized().encodeJson<A>(this as A);
   }
 
   Map<String, dynamic> toMap() {
-    return AMapper._guard((c) => c.toMap(this as A));
+    return AMapper.ensureInitialized().encodeMap<A>(this as A);
   }
 
   ACopyWith<A, A, A> get copyWith =>
       _ACopyWithImpl(this as A, $identity, $identity);
   @override
   String toString() {
-    return AMapper._guard((c) => c.asString(this));
+    return AMapper.ensureInitialized().stringifyValue(this as A);
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (runtimeType == other.runtimeType &&
-            AMapper._guard((c) => c.isEqual(this, other)));
+            AMapper.ensureInitialized().isValueEqual(this as A, other));
   }
 
   @override
   int get hashCode {
-    return AMapper._guard((c) => c.hash(this));
+    return AMapper.ensureInitialized().hashValue(this as A);
   }
 }
 

@@ -18,11 +18,6 @@ class AMapper extends ClassMapperBase<A> {
     return _instance!;
   }
 
-  static T _guard<T>(T Function(MapperContainer) fn) {
-    ensureInitialized();
-    return fn(MapperContainer.globals);
-  }
-
   @override
   final String id = 'A';
 
@@ -45,40 +40,40 @@ class AMapper extends ClassMapperBase<A> {
   final Function instantiate = _instantiate;
 
   static A fromMap(Map<String, dynamic> map) {
-    return _guard((c) => c.fromMap<A>(map));
+    return ensureInitialized().decodeMap<A>(map);
   }
 
   static A fromJson(String json) {
-    return _guard((c) => c.fromJson<A>(json));
+    return ensureInitialized().decodeJson<A>(json);
   }
 }
 
 mixin AMappable {
   String toJson() {
-    return AMapper._guard((c) => c.toJson(this as A));
+    return AMapper.ensureInitialized().encodeJson<A>(this as A);
   }
 
   Map<String, dynamic> toMap() {
-    return AMapper._guard((c) => c.toMap(this as A));
+    return AMapper.ensureInitialized().encodeMap<A>(this as A);
   }
 
   ACopyWith<A, A, A> get copyWith =>
       _ACopyWithImpl(this as A, $identity, $identity);
   @override
   String toString() {
-    return AMapper._guard((c) => c.asString(this));
+    return AMapper.ensureInitialized().stringifyValue(this as A);
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (runtimeType == other.runtimeType &&
-            AMapper._guard((c) => c.isEqual(this, other)));
+            AMapper.ensureInitialized().isValueEqual(this as A, other));
   }
 
   @override
   int get hashCode {
-    return AMapper._guard((c) => c.hash(this));
+    return AMapper.ensureInitialized().hashValue(this as A);
   }
 }
 
@@ -117,6 +112,101 @@ class _ACopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, A, $Out>
       _ACopyWithImpl($value, $cast, t);
 }
 
+class VMapper extends ClassMapperBase<V> {
+  VMapper._();
+
+  static VMapper? _instance;
+  static VMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = VMapper._());
+      WMapper.ensureInitialized();
+    }
+    return _instance!;
+  }
+
+  @override
+  final String id = 'V';
+
+  static int _$v(V v) => v.v;
+  static const Field<V, int> _f$v = Field('v', _$v);
+
+  @override
+  final Map<Symbol, Field<V, dynamic>> fields = const {
+    #v: _f$v,
+  };
+
+  static V _instantiate(DecodingData data) {
+    return V(data.dec(_f$v));
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static V fromMap(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<V>(map);
+  }
+
+  static V fromJson(String json) {
+    return ensureInitialized().decodeJson<V>(json);
+  }
+}
+
+mixin VMappable {
+  String toJson() {
+    return VMapper.ensureInitialized().encodeJson<V>(this as V);
+  }
+
+  Map<String, dynamic> toMap() {
+    return VMapper.ensureInitialized().encodeMap<V>(this as V);
+  }
+
+  VCopyWith<V, V, V> get copyWith =>
+      _VCopyWithImpl(this as V, $identity, $identity);
+  @override
+  String toString() {
+    return VMapper.ensureInitialized().stringifyValue(this as V);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (runtimeType == other.runtimeType &&
+            VMapper.ensureInitialized().isValueEqual(this as V, other));
+  }
+
+  @override
+  int get hashCode {
+    return VMapper.ensureInitialized().hashValue(this as V);
+  }
+}
+
+extension VValueCopy<$R, $Out> on ObjectCopyWith<$R, V, $Out> {
+  VCopyWith<$R, V, $Out> get $asV =>
+      $base.as((v, t, t2) => _VCopyWithImpl(v, t, t2));
+}
+
+abstract class VCopyWith<$R, $In extends V, $Out>
+    implements ClassCopyWith<$R, $In, $Out> {
+  $R call({int? v});
+  VCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
+}
+
+class _VCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, V, $Out>
+    implements VCopyWith<$R, V, $Out> {
+  _VCopyWithImpl(super.value, super.then, super.then2);
+
+  @override
+  late final ClassMapperBase<V> $mapper = VMapper.ensureInitialized();
+  @override
+  $R call({int? v}) => $apply(FieldCopyWithData({if (v != null) #v: v}));
+  @override
+  V $make(CopyWithData data) => V(data.get(#v, or: $value.v));
+
+  @override
+  VCopyWith<$R2, V, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _VCopyWithImpl($value, $cast, t);
+}
+
 class BMapper extends ClassMapperBase<B> {
   BMapper._();
 
@@ -130,18 +220,15 @@ class BMapper extends ClassMapperBase<B> {
     return _instance!;
   }
 
-  static T _guard<T>(T Function(MapperContainer) fn) {
-    ensureInitialized();
-    return fn(MapperContainer.globals);
-  }
-
   @override
   final String id = 'B';
 
   static V _$v(B v) => v.v;
-  static const Field<B, W> _f$v = Field('v', _$v);
+  static dynamic _arg$v(f) => f<V>();
+  static const Field<B, W> _f$v = Field('v', _$v, arg: _arg$v);
   static V _$v2(B v) => v.v2;
-  static const Field<B, W> _f$v2 = Field('v2', _$v2);
+  static dynamic _arg$v2(f) => f<V>();
+  static const Field<B, W> _f$v2 = Field('v2', _$v2, arg: _arg$v2);
 
   @override
   final Map<Symbol, Field<B, dynamic>> fields = const {
@@ -157,40 +244,40 @@ class BMapper extends ClassMapperBase<B> {
   final Function instantiate = _instantiate;
 
   static B fromMap(Map<String, dynamic> map) {
-    return _guard((c) => c.fromMap<B>(map));
+    return ensureInitialized().decodeMap<B>(map);
   }
 
   static B fromJson(String json) {
-    return _guard((c) => c.fromJson<B>(json));
+    return ensureInitialized().decodeJson<B>(json);
   }
 }
 
 mixin BMappable {
   String toJson() {
-    return BMapper._guard((c) => c.toJson(this as B));
+    return BMapper.ensureInitialized().encodeJson<B>(this as B);
   }
 
   Map<String, dynamic> toMap() {
-    return BMapper._guard((c) => c.toMap(this as B));
+    return BMapper.ensureInitialized().encodeMap<B>(this as B);
   }
 
   BCopyWith<B, B, B> get copyWith =>
       _BCopyWithImpl(this as B, $identity, $identity);
   @override
   String toString() {
-    return BMapper._guard((c) => c.asString(this));
+    return BMapper.ensureInitialized().stringifyValue(this as B);
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (runtimeType == other.runtimeType &&
-            BMapper._guard((c) => c.isEqual(this, other)));
+            BMapper.ensureInitialized().isValueEqual(this as B, other));
   }
 
   @override
   int get hashCode {
-    return BMapper._guard((c) => c.hash(this));
+    return BMapper.ensureInitialized().hashValue(this as B);
   }
 }
 
@@ -234,106 +321,6 @@ class _BCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, B, $Out>
       _BCopyWithImpl($value, $cast, t);
 }
 
-class VMapper extends ClassMapperBase<V> {
-  VMapper._();
-
-  static VMapper? _instance;
-  static VMapper ensureInitialized() {
-    if (_instance == null) {
-      MapperContainer.globals.use(_instance = VMapper._());
-      WMapper.ensureInitialized();
-    }
-    return _instance!;
-  }
-
-  static T _guard<T>(T Function(MapperContainer) fn) {
-    ensureInitialized();
-    return fn(MapperContainer.globals);
-  }
-
-  @override
-  final String id = 'V';
-
-  static int _$v(V v) => v.v;
-  static const Field<V, int> _f$v = Field('v', _$v);
-
-  @override
-  final Map<Symbol, Field<V, dynamic>> fields = const {
-    #v: _f$v,
-  };
-
-  static V _instantiate(DecodingData data) {
-    return V(data.dec(_f$v));
-  }
-
-  @override
-  final Function instantiate = _instantiate;
-
-  static V fromMap(Map<String, dynamic> map) {
-    return _guard((c) => c.fromMap<V>(map));
-  }
-
-  static V fromJson(String json) {
-    return _guard((c) => c.fromJson<V>(json));
-  }
-}
-
-mixin VMappable {
-  String toJson() {
-    return VMapper._guard((c) => c.toJson(this as V));
-  }
-
-  Map<String, dynamic> toMap() {
-    return VMapper._guard((c) => c.toMap(this as V));
-  }
-
-  VCopyWith<V, V, V> get copyWith =>
-      _VCopyWithImpl(this as V, $identity, $identity);
-  @override
-  String toString() {
-    return VMapper._guard((c) => c.asString(this));
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            VMapper._guard((c) => c.isEqual(this, other)));
-  }
-
-  @override
-  int get hashCode {
-    return VMapper._guard((c) => c.hash(this));
-  }
-}
-
-extension VValueCopy<$R, $Out> on ObjectCopyWith<$R, V, $Out> {
-  VCopyWith<$R, V, $Out> get $asV =>
-      $base.as((v, t, t2) => _VCopyWithImpl(v, t, t2));
-}
-
-abstract class VCopyWith<$R, $In extends V, $Out>
-    implements ClassCopyWith<$R, $In, $Out> {
-  $R call({int? v});
-  VCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
-}
-
-class _VCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, V, $Out>
-    implements VCopyWith<$R, V, $Out> {
-  _VCopyWithImpl(super.value, super.then, super.then2);
-
-  @override
-  late final ClassMapperBase<V> $mapper = VMapper.ensureInitialized();
-  @override
-  $R call({int? v}) => $apply(FieldCopyWithData({if (v != null) #v: v}));
-  @override
-  V $make(CopyWithData data) => V(data.get(#v, or: $value.v));
-
-  @override
-  VCopyWith<$R2, V, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
-      _VCopyWithImpl($value, $cast, t);
-}
-
 class WMapper extends ClassMapperBase<W> {
   WMapper._();
 
@@ -344,11 +331,6 @@ class WMapper extends ClassMapperBase<W> {
       VMapper.ensureInitialized();
     }
     return _instance!;
-  }
-
-  static T _guard<T>(T Function(MapperContainer) fn) {
-    ensureInitialized();
-    return fn(MapperContainer.globals);
   }
 
   @override
@@ -370,40 +352,40 @@ class WMapper extends ClassMapperBase<W> {
   final Function instantiate = _instantiate;
 
   static W fromMap(Map<String, dynamic> map) {
-    return _guard((c) => c.fromMap<W>(map));
+    return ensureInitialized().decodeMap<W>(map);
   }
 
   static W fromJson(String json) {
-    return _guard((c) => c.fromJson<W>(json));
+    return ensureInitialized().decodeJson<W>(json);
   }
 }
 
 mixin WMappable {
   String toJson() {
-    return WMapper._guard((c) => c.toJson(this as W));
+    return WMapper.ensureInitialized().encodeJson<W>(this as W);
   }
 
   Map<String, dynamic> toMap() {
-    return WMapper._guard((c) => c.toMap(this as W));
+    return WMapper.ensureInitialized().encodeMap<W>(this as W);
   }
 
   WCopyWith<W, W, W> get copyWith =>
       _WCopyWithImpl(this as W, $identity, $identity);
   @override
   String toString() {
-    return WMapper._guard((c) => c.asString(this));
+    return WMapper.ensureInitialized().stringifyValue(this as W);
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (runtimeType == other.runtimeType &&
-            WMapper._guard((c) => c.isEqual(this, other)));
+            WMapper.ensureInitialized().isValueEqual(this as W, other));
   }
 
   @override
   int get hashCode {
-    return WMapper._guard((c) => c.hash(this));
+    return WMapper.ensureInitialized().hashValue(this as W);
   }
 }
 

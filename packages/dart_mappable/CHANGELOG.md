@@ -1,3 +1,38 @@
+# 4.0.0
+
+- Require `sdk: >=3.0.0`.
+- Added support for **Records**.
+
+  - Fields of a class can now be any record type.
+  - You can annotate toplevel record typedefs:
+  
+    ```dart
+      @MappableRecord()
+      typedef Coordinates = ({double latitude, double longitude});
+    ```
+    
+  For a more detailed usage see the documentation.
+
+# 3.3.1
+
+- Improved migration docs regarding `json_serializable` and the difference of `toJson()`.
+
+# 3.3.0
+
+- Make `DateTime` encoding configurable through `DateTimeMapper.encodingMode`.
+
+# 3.2.0
+
+- Handle bounded nested type parameters in subclasses.
+
+# 3.1.3
+
+- Fixed set equality.
+
+# 3.1.2
+
+- Fixed unexpected type error when decoding `null`.
+
 # 3.1.1
 
 - Fixed supporting expressions in `@MappableClass.includeCustomMappers`.

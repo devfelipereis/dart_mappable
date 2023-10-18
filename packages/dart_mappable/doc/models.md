@@ -10,15 +10,15 @@ part 'model.mapper.dart';
 @MappableClass()
 class Person with PersonMappable {
   
-  final String firstName;
-  final String lastName;
-  final int age;
-  
   const Person({
     required this.firstName, 
     required this.lastName, 
     required this.age,
   });
+
+  final String firstName;
+  final String lastName;
+  final int age;
 
   // optional: links deserialization factories from the generated [PersonMapper] class
   static final fromMap = PersonMapper.fromMap;
@@ -159,6 +159,17 @@ when this happens.*
 
 ***Remember**: dart_mappable will always use the first constructor it sees, but you can use a specific
 constructor using the `@MappableConstructor()` annotation.*
+
+## DateTime
+
+`dart_mappable` comes with a default mapper to serialize `DateTime` values. This works out of the box, but you
+can customize how `DateTime` values are encoded. You can choose between:
+
+- Formatted ISO String
+- Formatted ISO String in UTC Timezone (default)
+- Unix milliseconds-since-epoc integer
+
+To change the mode, set `DateTimeMapper.encodingMode` to any value of the `DateTimeEncoding` enum.
 
 ---
 

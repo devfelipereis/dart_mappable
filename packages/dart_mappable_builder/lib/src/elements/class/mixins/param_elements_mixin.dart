@@ -3,7 +3,6 @@ import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:collection/collection.dart';
 
-import '../../../utils.dart';
 import '../../mapper_element.dart';
 import '../../param/mapper_param_element.dart';
 import '../class_mapper_element.dart';
@@ -15,8 +14,8 @@ mixin ParamElementsMixin on MapperElement<ClassElement> {
   List<ClassMapperElement> get interfaceElements;
   ClassMapperElement? get superElement;
 
-  late List<MapperParamElement> params = () {
-    var params = <MapperParamElement>[];
+  late List<ClassMapperParamElement> params = () {
+    var params = <ClassMapperParamElement>[];
     if (constructor == null) {
       return params;
     }
@@ -42,14 +41,14 @@ mixin ParamElementsMixin on MapperElement<ClassElement> {
     return params;
   }();
 
-  MapperParamElement getParameterConfig(ParameterElement param) {
+  ClassMapperParamElement getParameterConfig(ParameterElement param) {
     var dec = param.declaration;
 
     if (dec is FieldFormalParameterElement) {
       return FieldParamElement(param, dec.field!, getSuperField(dec.field!));
     }
 
-    if (dec is SuperFormalParameterElement) {
+    if (dec is SuperFormalParameterElement && superElement != null) {
       if (dec.superConstructorParameter == null) {
         return UnresolvedParamElement(
           param,
@@ -86,18 +85,12 @@ mixin ParamElementsMixin on MapperElement<ClassElement> {
       return init;
     }
 
-    var getter = element.lookUpGetter(param.name, parent.library);
+    var getter = element.thisType.lookUpGetter2(param.name, parent.library);
     if (getter != null) {
       var getterType = getter.type.returnType;
-      if (getterType == param.type) {
-        return FieldParamElement(
-            param, getter.variable, getSuperField(getter.variable));
-      }
 
-      if (!getterType.isNullable &&
-          param.type.isNullable &&
-          getterType.getDisplayString(withNullability: false) ==
-              param.type.getDisplayString(withNullability: false)) {
+      var s = parent.library.typeSystem;
+      if (s.isAssignableTo(getterType, param.type)) {
         return FieldParamElement(
             param, getter.variable, getSuperField(getter.variable));
       }
@@ -115,7 +108,7 @@ mixin ParamElementsMixin on MapperElement<ClassElement> {
     );
   }
 
-  MapperParamElement? _analyzeInitializers(ParameterElement param) {
+  ClassMapperParamElement? _analyzeInitializers(ParameterElement param) {
     var node = constructorNode;
     if (node is! ConstructorDeclaration || node.initializers.isEmpty) {
       return null;
