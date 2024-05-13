@@ -50,20 +50,20 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
     return 'throw MapperException.unknownEnumValue(value);';
   } 
 
-  String _generateDefaultDecode({String name, dynamic value} values) {
+  String _generateDefaultDecode(List<({String name, dynamic value})> values) {
     return '  @override\n'
         '  ${element.prefixedClassName} decode(dynamic value) {\n'
         '    switch (value) {\n'
-        '      ${values.map((v) => "case ${v.value}: return ${element.prefixedClassName}.${v.key};").join("\n      ")}\n'
+        '      ${values.map((v) => "case ${v.value}: return ${element.prefixedClassName}.${v.name};").join("\n      ")}\n'
         '      default: ${_generateDefaultCase()}\n'
         '    }\n'
         '  }\n\n';
   }
 
-  String _generateDefaultEncode({String name, dynamic value} values) {
+  String _generateDefaultEncode(List<({String name, dynamic value})> values) {
     return '  dynamic encode(${element.prefixedClassName} self) {\n'
         '    switch (self) {\n'
-        '      ${values.map((v) => "case ${element.prefixedClassName}.${v.key}: return ${v.value};").join("\n      ")}\n'
+        '      ${values.map((v) => "case ${element.prefixedClassName}.${v.name}: return ${v.value};").join("\n      ")}\n'
         '    }\n'
         '  }\n';
   }
