@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'custom_discriminator_test.dart';
 
@@ -22,7 +23,7 @@ class AMapper extends ClassMapperBase<A> {
   final String id = 'A';
 
   @override
-  final Map<Symbol, Field<A, dynamic>> fields = const {};
+  final MappableFields<A> fields = const {};
 
   static A _instantiate(DecodingData data) {
     throw MapperException.missingConstructor('A');
@@ -68,7 +69,7 @@ class BMapper extends SubClassMapperBase<B> {
   final String id = 'B';
 
   @override
-  final Map<Symbol, Field<B, dynamic>> fields = const {};
+  final MappableFields<B> fields = const {};
 
   @override
   final String discriminatorKey = 'type';
@@ -111,9 +112,7 @@ mixin BMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            BMapper.ensureInitialized().isValueEqual(this as B, other));
+    return BMapper.ensureInitialized().equalsValue(this as B, other);
   }
 
   @override
@@ -166,7 +165,7 @@ class CMapper extends SubClassMapperBase<C> {
   final String id = 'C';
 
   @override
-  final Map<Symbol, Field<C, dynamic>> fields = const {};
+  final MappableFields<C> fields = const {};
 
   @override
   final String discriminatorKey = 'type';
@@ -209,9 +208,7 @@ mixin CMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            CMapper.ensureInitialized().isValueEqual(this as C, other));
+    return CMapper.ensureInitialized().equalsValue(this as C, other);
   }
 
   @override

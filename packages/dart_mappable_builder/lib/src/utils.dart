@@ -32,8 +32,7 @@ extension GetNode on Element {
   }
 }
 
-AstNode? getAnnotationProperty(
-    AstNode? node, Type annotationType, dynamic property) {
+Annotation? getAnnotation(AstNode? node, Type annotationType) {
   if (node == null) {
     return null;
   }
@@ -45,9 +44,9 @@ AstNode? getAnnotationProperty(
     if (parent is FieldDeclaration) {
       annotations = parent.metadata;
     }
-  } else if (node is FormalParameter) {
+  } else if (node is AnnotatedNode) {
     annotations = node.metadata;
-  } else if (node is Declaration) {
+  } else if (node is FormalParameter) {
     annotations = node.metadata;
   } else if (node is RecordTypeAnnotationField) {
     annotations = node.metadata;
@@ -58,21 +57,41 @@ AstNode? getAnnotationProperty(
     return null;
   }
 
-  for (var annotation in annotations) {
-    if (annotation.name.name == annotationType.toString()) {
-      for (var i = 0; i < annotation.arguments!.arguments.length; i++) {
-        var arg = annotation.arguments!.arguments[i];
-        if (arg is NamedExpression && property is String) {
-          if (arg.name.label.name == property) {
-            return arg.expression;
-          }
-        } else if (property is int && i == property) {
-          return arg;
+  var type = annotationType.toString();
+  return annotations.where((a) => a.name.name == type).firstOrNull;
+}
+
+extension AnnotationProperty on Annotation {
+  AstNode? getPropertyNode(dynamic property) {
+    for (var i = 0; i < arguments!.arguments.length; i++) {
+      var arg = arguments!.arguments[i];
+      if (arg is NamedExpression && property is String) {
+        if (arg.name.label.name == property) {
+          return arg.expression;
         }
+      } else if (property is int && i == property) {
+        return arg;
+      }
+    }
+    return null;
+  }
+}
+
+AstNode? getAnnotationProperty(
+    AstNode? node, Type annotationType, dynamic property) {
+  var annotation = getAnnotation(node, annotationType);
+  if (annotation != null) {
+    for (var i = 0; i < annotation.arguments!.arguments.length; i++) {
+      var arg = annotation.arguments!.arguments[i];
+      if (arg is NamedExpression && property is String) {
+        if (arg.name.label.name == property) {
+          return arg.expression;
+        }
+      } else if (property is int && i == property) {
+        return arg;
       }
     }
   }
-
   return null;
 }
 
@@ -164,4 +183,53 @@ extension ObjectReader on DartObject {
     }
     return result;
   }
+}
+
+Map<String, List<String>> validatedBuildExtensionsFrom(
+  Map? optionsMap,
+  Map<String, List<String>> defaultExtensions,
+) {
+  final extensionsOption = optionsMap?.remove('build_extensions');
+  if (extensionsOption == null) {
+    // defaultExtensions are provided by the builder author, not the end user.
+    // It should be safe to skip validation.
+    return defaultExtensions;
+  }
+
+  if (extensionsOption is! Map) {
+    throw ArgumentError(
+      'Configured build_extensions should be a map from inputs to outputs.',
+    );
+  }
+
+  final result = <String, List<String>>{};
+
+  for (final entry in extensionsOption.entries) {
+    final input = entry.key;
+    if (input is! String || !input.endsWith('.dart')) {
+      throw ArgumentError(
+        'Invalid key in build_extensions option: `$input` '
+        'should be a string ending with `.dart`',
+      );
+    }
+
+    final output = (entry.value is List) ? entry.value as List : [entry.value];
+
+    for (var i = 0; i < output.length; i++) {
+      final o = output[i];
+      if (o is! String || (i == 0 && !o.endsWith('.dart'))) {
+        throw ArgumentError(
+          'Invalid output extension `${entry.value}`. It should be a string '
+          'or a list of strings with the first ending with `.dart`',
+        );
+      }
+    }
+
+    result[input] = output.cast<String>().toList();
+  }
+
+  if (result.isEmpty) {
+    throw ArgumentError('Configured build_extensions must not be empty.');
+  }
+  return result;
 }

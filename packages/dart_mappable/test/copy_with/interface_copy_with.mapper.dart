@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'interface_copy_with.dart';
 
@@ -24,7 +25,7 @@ class AMapper extends ClassMapperBase<A> {
   static const Field<A, num> _f$a = Field('a', _$a);
 
   @override
-  final Map<Symbol, Field<A, dynamic>> fields = const {
+  final MappableFields<A> fields = const {
     #a: _f$a,
   };
 
@@ -62,9 +63,7 @@ mixin AMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            AMapper.ensureInitialized().isValueEqual(this as A, other));
+    return AMapper.ensureInitialized().equalsValue(this as A, other);
   }
 
   @override
@@ -119,7 +118,7 @@ class BMapper extends ClassMapperBase<B> {
   static const Field<B, String> _f$b = Field('b', _$b);
 
   @override
-  final Map<Symbol, Field<B, dynamic>> fields = const {
+  final MappableFields<B> fields = const {
     #b: _f$b,
   };
 
@@ -157,9 +156,7 @@ mixin BMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            BMapper.ensureInitialized().isValueEqual(this as B, other));
+    return BMapper.ensureInitialized().equalsValue(this as B, other);
   }
 
   @override
@@ -216,7 +213,7 @@ class CMapper extends ClassMapperBase<C> {
   static const Field<C, String> _f$b = Field('b', _$b);
 
   @override
-  final Map<Symbol, Field<C, dynamic>> fields = const {
+  final MappableFields<C> fields = const {
     #a: _f$a,
     #b: _f$b,
   };
@@ -255,9 +252,7 @@ mixin CMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            CMapper.ensureInitialized().isValueEqual(this as C, other));
+    return CMapper.ensureInitialized().equalsValue(this as C, other);
   }
 
   @override

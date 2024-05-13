@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'generics_test.dart';
 
@@ -30,7 +31,7 @@ class BoxMapper extends ClassMapperBase<Box> {
       Field('contents', _$contents, arg: _arg$contents);
 
   @override
-  final Map<Symbol, Field<Box, dynamic>> fields = const {
+  final MappableFields<Box> fields = const {
     #size: _f$size,
     #contents: _f$contents,
   };
@@ -69,9 +70,7 @@ mixin BoxMappable<T extends Content> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            BoxMapper.ensureInitialized().isValueEqual(this as Box<T>, other));
+    return BoxMapper.ensureInitialized().equalsValue(this as Box<T>, other);
   }
 
   @override
@@ -135,7 +134,7 @@ class ContentMapper extends ClassMapperBase<Content> {
   final String id = 'Content';
 
   @override
-  final Map<Symbol, Field<Content, dynamic>> fields = const {};
+  final MappableFields<Content> fields = const {};
 
   static Content _instantiate(DecodingData data) {
     return Content();
@@ -173,10 +172,8 @@ mixin ContentMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            ContentMapper.ensureInitialized()
-                .isValueEqual(this as Content, other));
+    return ContentMapper.ensureInitialized()
+        .equalsValue(this as Content, other);
   }
 
   @override
@@ -233,7 +230,7 @@ class ConfettiMapper extends ClassMapperBase<Confetti> {
   static const Field<Confetti, String> _f$color = Field('color', _$color);
 
   @override
-  final Map<Symbol, Field<Confetti, dynamic>> fields = const {
+  final MappableFields<Confetti> fields = const {
     #color: _f$color,
   };
 
@@ -273,10 +270,8 @@ mixin ConfettiMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            ConfettiMapper.ensureInitialized()
-                .isValueEqual(this as Confetti, other));
+    return ConfettiMapper.ensureInitialized()
+        .equalsValue(this as Confetti, other);
   }
 
   @override
@@ -336,7 +331,7 @@ class DataMapper extends ClassMapperBase<Data> {
   static const Field<Data, String> _f$data = Field('data', _$data);
 
   @override
-  final Map<Symbol, Field<Data, dynamic>> fields = const {
+  final MappableFields<Data> fields = const {
     #data: _f$data,
   };
 
@@ -374,9 +369,7 @@ mixin DataMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            DataMapper.ensureInitialized().isValueEqual(this as Data, other));
+    return DataMapper.ensureInitialized().equalsValue(this as Data, other);
   }
 
   @override
@@ -435,7 +428,7 @@ class SingleSettingMapper extends ClassMapperBase<SingleSetting> {
       Field('properties', _$properties, opt: true, arg: _arg$properties);
 
   @override
-  final Map<Symbol, Field<SingleSetting, dynamic>> fields = const {
+  final MappableFields<SingleSetting> fields = const {
     #properties: _f$properties,
   };
 
@@ -477,10 +470,8 @@ mixin SingleSettingMappable<T> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            SingleSettingMapper.ensureInitialized()
-                .isValueEqual(this as SingleSetting<T>, other));
+    return SingleSettingMapper.ensureInitialized()
+        .equalsValue(this as SingleSetting<T>, other);
   }
 
   @override
@@ -554,7 +545,7 @@ class SettingsMapper extends ClassMapperBase<Settings> {
       _f$settings = Field('settings', _$settings, opt: true);
 
   @override
-  final Map<Symbol, Field<Settings, dynamic>> fields = const {
+  final MappableFields<Settings> fields = const {
     #settings: _f$settings,
   };
 
@@ -596,10 +587,8 @@ mixin SettingsMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            SettingsMapper.ensureInitialized()
-                .isValueEqual(this as Settings, other));
+    return SettingsMapper.ensureInitialized()
+        .equalsValue(this as Settings, other);
   }
 
   @override
@@ -656,6 +645,205 @@ class _SettingsCopyWithImpl<$R, $Out>
       _SettingsCopyWithImpl($value, $cast, t);
 }
 
+class AMapper extends ClassMapperBase<A> {
+  AMapper._();
+
+  static AMapper? _instance;
+  static AMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = AMapper._());
+      BMapper.ensureInitialized();
+    }
+    return _instance!;
+  }
+
+  @override
+  final String id = 'A';
+  @override
+  Function get typeFactory => <T>(f) => f<A<T>>();
+
+  static dynamic _$value(A v) => v.value;
+  static dynamic _arg$value<T>(f) => f<T>();
+  static const Field<A, dynamic> _f$value =
+      Field('value', _$value, arg: _arg$value);
+
+  @override
+  final MappableFields<A> fields = const {
+    #value: _f$value,
+  };
+
+  static A<T> _instantiate<T>(DecodingData data) {
+    return A(data.dec(_f$value));
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static A<T> fromMap<T>(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<A<T>>(map);
+  }
+
+  static A<T> fromJson<T>(String json) {
+    return ensureInitialized().decodeJson<A<T>>(json);
+  }
+}
+
+mixin AMappable<T> {
+  String toJson() {
+    return AMapper.ensureInitialized().encodeJson<A<T>>(this as A<T>);
+  }
+
+  Map<String, dynamic> toMap() {
+    return AMapper.ensureInitialized().encodeMap<A<T>>(this as A<T>);
+  }
+
+  ACopyWith<A<T>, A<T>, A<T>, T> get copyWith =>
+      _ACopyWithImpl(this as A<T>, $identity, $identity);
+  @override
+  String toString() {
+    return AMapper.ensureInitialized().stringifyValue(this as A<T>);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return AMapper.ensureInitialized().equalsValue(this as A<T>, other);
+  }
+
+  @override
+  int get hashCode {
+    return AMapper.ensureInitialized().hashValue(this as A<T>);
+  }
+}
+
+extension AValueCopy<$R, $Out, T> on ObjectCopyWith<$R, A<T>, $Out> {
+  ACopyWith<$R, A<T>, $Out, T> get $asA =>
+      $base.as((v, t, t2) => _ACopyWithImpl(v, t, t2));
+}
+
+abstract class ACopyWith<$R, $In extends A<T>, $Out, T>
+    implements ClassCopyWith<$R, $In, $Out> {
+  $R call({T? value});
+  ACopyWith<$R2, $In, $Out2, T> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
+}
+
+class _ACopyWithImpl<$R, $Out, T> extends ClassCopyWithBase<$R, A<T>, $Out>
+    implements ACopyWith<$R, A<T>, $Out, T> {
+  _ACopyWithImpl(super.value, super.then, super.then2);
+
+  @override
+  late final ClassMapperBase<A> $mapper = AMapper.ensureInitialized();
+  @override
+  $R call({T? value}) =>
+      $apply(FieldCopyWithData({if (value != null) #value: value}));
+  @override
+  A<T> $make(CopyWithData data) => A(data.get(#value, or: $value.value));
+
+  @override
+  ACopyWith<$R2, A<T>, $Out2, T> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _ACopyWithImpl($value, $cast, t);
+}
+
+class BMapper extends ClassMapperBase<B> {
+  BMapper._();
+
+  static BMapper? _instance;
+  static BMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = BMapper._());
+      AMapper.ensureInitialized();
+    }
+    return _instance!;
+  }
+
+  @override
+  final String id = 'B';
+
+  static List<String> _$value(B v) => v.value;
+  static const Field<B, List<String>> _f$value = Field('value', _$value);
+
+  @override
+  final MappableFields<B> fields = const {
+    #value: _f$value,
+  };
+
+  static B _instantiate(DecodingData data) {
+    return B(data.dec(_f$value));
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static B fromMap(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<B>(map);
+  }
+
+  static B fromJson(String json) {
+    return ensureInitialized().decodeJson<B>(json);
+  }
+}
+
+mixin BMappable {
+  String toJson() {
+    return BMapper.ensureInitialized().encodeJson<B>(this as B);
+  }
+
+  Map<String, dynamic> toMap() {
+    return BMapper.ensureInitialized().encodeMap<B>(this as B);
+  }
+
+  BCopyWith<B, B, B> get copyWith =>
+      _BCopyWithImpl(this as B, $identity, $identity);
+  @override
+  String toString() {
+    return BMapper.ensureInitialized().stringifyValue(this as B);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return BMapper.ensureInitialized().equalsValue(this as B, other);
+  }
+
+  @override
+  int get hashCode {
+    return BMapper.ensureInitialized().hashValue(this as B);
+  }
+}
+
+extension BValueCopy<$R, $Out> on ObjectCopyWith<$R, B, $Out> {
+  BCopyWith<$R, B, $Out> get $asB =>
+      $base.as((v, t, t2) => _BCopyWithImpl(v, t, t2));
+}
+
+abstract class BCopyWith<$R, $In extends B, $Out>
+    implements ACopyWith<$R, $In, $Out, List<String>> {
+  @override
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get value;
+  @override
+  $R call({List<String>? value});
+  BCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
+}
+
+class _BCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, B, $Out>
+    implements BCopyWith<$R, B, $Out> {
+  _BCopyWithImpl(super.value, super.then, super.then2);
+
+  @override
+  late final ClassMapperBase<B> $mapper = BMapper.ensureInitialized();
+  @override
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get value =>
+      ListCopyWith($value.value, (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(value: v));
+  @override
+  $R call({List<String>? value}) =>
+      $apply(FieldCopyWithData({if (value != null) #value: value}));
+  @override
+  B $make(CopyWithData data) => B(data.get(#value, or: $value.value));
+
+  @override
+  BCopyWith<$R2, B, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _BCopyWithImpl($value, $cast, t);
+}
+
 class AssetMapper extends ClassMapperBase<Asset> {
   AssetMapper._();
 
@@ -678,7 +866,7 @@ class AssetMapper extends ClassMapperBase<Asset> {
       Field('data', _$data, arg: _arg$data);
 
   @override
-  final Map<Symbol, Field<Asset, dynamic>> fields = const {
+  final MappableFields<Asset> fields = const {
     #data: _f$data,
   };
 
@@ -718,10 +906,7 @@ mixin AssetMappable<T> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            AssetMapper.ensureInitialized()
-                .isValueEqual(this as Asset<T>, other));
+    return AssetMapper.ensureInitialized().equalsValue(this as Asset<T>, other);
   }
 
   @override

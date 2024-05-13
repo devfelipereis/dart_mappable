@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'external_types_test.dart';
 
@@ -24,7 +25,7 @@ class PersonMapper extends ClassMapperBase<Person> {
       Field('firstName', _$firstName, key: 'first_name');
 
   @override
-  final Map<Symbol, Field<Person, dynamic>> fields = const {
+  final MappableFields<Person> fields = const {
     #firstName: _f$firstName,
   };
 
@@ -62,10 +63,7 @@ mixin PersonMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            PersonMapper.ensureInitialized()
-                .isValueEqual(this as Person, other));
+    return PersonMapper.ensureInitialized().equalsValue(this as Person, other);
   }
 
   @override
@@ -121,7 +119,7 @@ class CakeMapper extends ClassMapperBase<f.Cake> {
   static const Field<f.Cake, String> _f$type = Field('type', _$type);
 
   @override
-  final Map<Symbol, Field<f.Cake, dynamic>> fields = const {
+  final MappableFields<f.Cake> fields = const {
     #type: _f$type,
   };
 
@@ -201,7 +199,7 @@ class Person2Mapper extends ClassMapperBase<m.Person> {
       Field('firstName', _$firstName, key: 'first_name');
 
   @override
-  final Map<Symbol, Field<m.Person, dynamic>> fields = const {
+  final MappableFields<m.Person> fields = const {
     #firstName: _f$firstName,
   };
 
@@ -285,7 +283,7 @@ class AnimalMapper extends ClassMapperBase<o.Animal> {
   static const Field<o.Animal, String> _f$color = Field('color', _$color);
 
   @override
-  final Map<Symbol, Field<o.Animal, dynamic>> fields = const {
+  final MappableFields<o.Animal> fields = const {
     #color: _f$color,
   };
 
@@ -344,7 +342,7 @@ class PetMapper extends SubClassMapperBase<o.Pet> {
   static const Field<o.Pet, String> _f$color = Field('color', _$color);
 
   @override
-  final Map<Symbol, Field<o.Pet, dynamic>> fields = const {
+  final MappableFields<o.Pet> fields = const {
     #owner: _f$owner,
     #color: _f$color,
   };

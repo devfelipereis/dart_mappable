@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'generics_change_test.dart';
 
@@ -28,7 +29,7 @@ class AMapper extends ClassMapperBase<A> {
   Function get typeFactory => <T>(f) => f<A<T>>();
 
   @override
-  final Map<Symbol, Field<A, dynamic>> fields = const {};
+  final MappableFields<A> fields = const {};
 
   static A<T> _instantiate<T>(DecodingData data) {
     return A();
@@ -64,9 +65,7 @@ mixin AMappable<T> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            AMapper.ensureInitialized().isValueEqual(this as A<T>, other));
+    return AMapper.ensureInitialized().equalsValue(this as A<T>, other);
   }
 
   @override
@@ -120,7 +119,7 @@ class BMapper extends SubClassMapperBase<B> {
   Function get typeFactory => <T>(f) => f<B<T>>();
 
   @override
-  final Map<Symbol, Field<B, dynamic>> fields = const {};
+  final MappableFields<B> fields = const {};
 
   @override
   final String discriminatorKey = 'type';
@@ -163,9 +162,7 @@ mixin BMappable<T> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            BMapper.ensureInitialized().isValueEqual(this as B<T>, other));
+    return BMapper.ensureInitialized().equalsValue(this as B<T>, other);
   }
 
   @override
@@ -221,7 +218,7 @@ class CMapper extends SubClassMapperBase<C> {
   Function get typeFactory => <T extends num>(f) => f<C<T>>();
 
   @override
-  final Map<Symbol, Field<C, dynamic>> fields = const {};
+  final MappableFields<C> fields = const {};
 
   @override
   final String discriminatorKey = 'type';
@@ -264,9 +261,7 @@ mixin CMappable<T extends num> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            CMapper.ensureInitialized().isValueEqual(this as C<T>, other));
+    return CMapper.ensureInitialized().equalsValue(this as C<T>, other);
   }
 
   @override
@@ -325,7 +320,7 @@ class DMapper extends SubClassMapperBase<D> {
   Function get typeFactory => <T, V>(f) => f<D<T, V>>();
 
   @override
-  final Map<Symbol, Field<D, dynamic>> fields = const {};
+  final MappableFields<D> fields = const {};
 
   @override
   final String discriminatorKey = 'type';
@@ -336,7 +331,7 @@ class DMapper extends SubClassMapperBase<D> {
 
   @override
   DecodingContext inherit(DecodingContext context) {
-    return context.inherit(args: [dynamic, context.arg(0)]);
+    return context.inherit(args: () => [dynamic, context.arg(0)]);
   }
 
   static D<T, V> _instantiate<T, V>(DecodingData data) {
@@ -373,9 +368,7 @@ mixin DMappable<T, V> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            DMapper.ensureInitialized().isValueEqual(this as D<T, V>, other));
+    return DMapper.ensureInitialized().equalsValue(this as D<T, V>, other);
   }
 
   @override
@@ -432,7 +425,7 @@ class EMapper extends SubClassMapperBase<E> {
   Function get typeFactory => <T, V>(f) => f<E<T, V>>();
 
   @override
-  final Map<Symbol, Field<E, dynamic>> fields = const {};
+  final MappableFields<E> fields = const {};
 
   @override
   final String discriminatorKey = 'type';
@@ -443,10 +436,11 @@ class EMapper extends SubClassMapperBase<E> {
 
   @override
   DecodingContext inherit(DecodingContext context) {
-    return context.inherit(args: [
-      context.arg(1, [0]),
-      context.arg(0)
-    ]);
+    return context.inherit(
+        args: () => [
+              context.arg(1, [0]),
+              context.arg(0)
+            ]);
   }
 
   static E<T, V> _instantiate<T, V>(DecodingData data) {
@@ -483,9 +477,7 @@ mixin EMappable<T, V> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            EMapper.ensureInitialized().isValueEqual(this as E<T, V>, other));
+    return EMapper.ensureInitialized().equalsValue(this as E<T, V>, other);
   }
 
   @override
@@ -539,7 +531,7 @@ class FMapper extends SubClassMapperBase<F> {
   final String id = 'F';
 
   @override
-  final Map<Symbol, Field<F, dynamic>> fields = const {};
+  final MappableFields<F> fields = const {};
 
   @override
   final String discriminatorKey = 'type';
@@ -550,7 +542,7 @@ class FMapper extends SubClassMapperBase<F> {
 
   @override
   DecodingContext inherit(DecodingContext context) {
-    return context.inherit(args: []);
+    return context.inherit(args: () => []);
   }
 
   static F _instantiate(DecodingData data) {
@@ -587,9 +579,7 @@ mixin FMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            FMapper.ensureInitialized().isValueEqual(this as F, other));
+    return FMapper.ensureInitialized().equalsValue(this as F, other);
   }
 
   @override
@@ -645,7 +635,7 @@ class GMapper extends SubClassMapperBase<G> {
   Function get typeFactory => <T, V extends A<T>>(f) => f<G<T, V>>();
 
   @override
-  final Map<Symbol, Field<G, dynamic>> fields = const {};
+  final MappableFields<G> fields = const {};
 
   @override
   final String discriminatorKey = 'type';
@@ -656,10 +646,11 @@ class GMapper extends SubClassMapperBase<G> {
 
   @override
   DecodingContext inherit(DecodingContext context) {
-    return context.inherit(args: [
-      context.arg(0),
-      context.type(<$A>() => A<$A>, [context.arg(0)])
-    ]);
+    return context.inherit(
+        args: () => [
+              context.arg(0),
+              context.type(<$A>() => A<$A>, [context.arg(0)])
+            ]);
   }
 
   static G<T, V> _instantiate<T, V extends A<T>>(DecodingData data) {
@@ -696,9 +687,7 @@ mixin GMappable<T, V extends A<T>> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            GMapper.ensureInitialized().isValueEqual(this as G<T, V>, other));
+    return GMapper.ensureInitialized().equalsValue(this as G<T, V>, other);
   }
 
   @override
@@ -757,7 +746,7 @@ class HMapper extends SubClassMapperBase<H> {
   Function get typeFactory => <T extends C<num>>(f) => f<H<T>>();
 
   @override
-  final Map<Symbol, Field<H, dynamic>> fields = const {};
+  final MappableFields<H> fields = const {};
 
   @override
   final String discriminatorKey = 'type';
@@ -768,7 +757,7 @@ class HMapper extends SubClassMapperBase<H> {
 
   @override
   DecodingContext inherit(DecodingContext context) {
-    return context.inherit(args: [C<num>]);
+    return context.inherit(args: () => [C<num>]);
   }
 
   static H<T> _instantiate<T extends C<num>>(DecodingData data) {
@@ -805,9 +794,7 @@ mixin HMappable<T extends C<num>> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            HMapper.ensureInitialized().isValueEqual(this as H<T>, other));
+    return HMapper.ensureInitialized().equalsValue(this as H<T>, other);
   }
 
   @override
@@ -867,7 +854,7 @@ class IMapper extends SubClassMapperBase<I> {
       <T extends C<V>, V extends num>(f) => f<I<T, V>>();
 
   @override
-  final Map<Symbol, Field<I, dynamic>> fields = const {};
+  final MappableFields<I> fields = const {};
 
   @override
   final String discriminatorKey = 'type';
@@ -878,10 +865,11 @@ class IMapper extends SubClassMapperBase<I> {
 
   @override
   DecodingContext inherit(DecodingContext context) {
-    return context.inherit(args: [
-      context.type(<$A extends num>() => C<$A>, [context.arg(0)]),
-      context.arg(0)
-    ]);
+    return context.inherit(
+        args: () => [
+              context.type(<$A extends num>() => C<$A>, [context.arg(0)]),
+              context.arg(0)
+            ]);
   }
 
   static I<T, V> _instantiate<T extends C<V>, V extends num>(
@@ -920,9 +908,7 @@ mixin IMappable<T extends C<V>, V extends num> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            IMapper.ensureInitialized().isValueEqual(this as I<T, V>, other));
+    return IMapper.ensureInitialized().equalsValue(this as I<T, V>, other);
   }
 
   @override
@@ -982,7 +968,7 @@ class JMapper extends SubClassMapperBase<J> {
       <T extends C<V>, V extends U, U extends num>(f) => f<J<T, V, U>>();
 
   @override
-  final Map<Symbol, Field<J, dynamic>> fields = const {};
+  final MappableFields<J> fields = const {};
 
   @override
   final String discriminatorKey = 'type';
@@ -993,12 +979,13 @@ class JMapper extends SubClassMapperBase<J> {
 
   @override
   DecodingContext inherit(DecodingContext context) {
-    return context.inherit(args: [
-      context.type(<$A extends $B, $B extends num>() => C<$A>,
-          [context.arg(0), context.arg(1)]),
-      context.arg(0),
-      context.arg(1)
-    ]);
+    return context.inherit(
+        args: () => [
+              context.type(<$A extends $B, $B extends num>() => C<$A>,
+                  [context.arg(0), context.arg(1)]),
+              context.arg(0),
+              context.arg(1)
+            ]);
   }
 
   static J<T, V, U> _instantiate<T extends C<V>, V extends U, U extends num>(
@@ -1040,10 +1027,7 @@ mixin JMappable<T extends C<V>, V extends U, U extends num> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            JMapper.ensureInitialized()
-                .isValueEqual(this as J<T, V, U>, other));
+    return JMapper.ensureInitialized().equalsValue(this as J<T, V, U>, other);
   }
 
   @override

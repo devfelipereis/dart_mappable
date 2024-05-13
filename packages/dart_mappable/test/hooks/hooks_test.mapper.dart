@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'hooks_test.dart';
 
@@ -27,7 +28,7 @@ class GameMapper extends ClassMapperBase<Game> {
           ChainedHook([PlayerHook(), UnmappedPropertiesHook('unmappedProps')]));
 
   @override
-  final Map<Symbol, Field<Game, dynamic>> fields = const {
+  final MappableFields<Game> fields = const {
     #player: _f$player,
   };
 
@@ -67,9 +68,7 @@ mixin GameMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            GameMapper.ensureInitialized().isValueEqual(this as Game, other));
+    return GameMapper.ensureInitialized().equalsValue(this as Game, other);
   }
 
   @override
@@ -128,7 +127,7 @@ class PlayerMapper extends ClassMapperBase<Player> {
   static const Field<Player, String> _f$id = Field('id', _$id);
 
   @override
-  final Map<Symbol, Field<Player, dynamic>> fields = const {
+  final MappableFields<Player> fields = const {
     #id: _f$id,
   };
 
@@ -166,10 +165,7 @@ mixin PlayerMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            PlayerMapper.ensureInitialized()
-                .isValueEqual(this as Player, other));
+    return PlayerMapper.ensureInitialized().equalsValue(this as Player, other);
   }
 
   @override
@@ -230,7 +226,7 @@ class CardGameMapper extends ClassMapperBase<CardGame> {
       ]));
 
   @override
-  final Map<Symbol, Field<CardGame, dynamic>> fields = const {
+  final MappableFields<CardGame> fields = const {
     #player: _f$player,
   };
 
@@ -273,10 +269,8 @@ mixin CardGameMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            CardGameMapper.ensureInitialized()
-                .isValueEqual(this as CardGame, other));
+    return CardGameMapper.ensureInitialized()
+        .equalsValue(this as CardGame, other);
   }
 
   @override

@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'custom_mapper_test.dart';
 
@@ -27,7 +28,7 @@ class TestObjMapper extends ClassMapperBase<TestObj> {
       Field('unmappedProps', _$unmappedProps);
 
   @override
-  final Map<Symbol, Field<TestObj, dynamic>> fields = const {
+  final MappableFields<TestObj> fields = const {
     #x: _f$x,
     #unmappedProps: _f$unmappedProps,
   };
@@ -70,10 +71,8 @@ mixin TestObjMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            TestObjMapper.ensureInitialized()
-                .isValueEqual(this as TestObj, other));
+    return TestObjMapper.ensureInitialized()
+        .equalsValue(this as TestObj, other);
   }
 
   @override

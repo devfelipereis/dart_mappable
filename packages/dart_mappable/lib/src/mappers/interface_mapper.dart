@@ -100,6 +100,8 @@ class DecodingData<T extends Object> {
   V dec<V>(Field f) => f.decode(value, context);
 }
 
+typedef MappableFields<T extends Object> = Map<Symbol, Field<T, dynamic>>;
+
 /// The common mapper interface for class and record mappers.
 ///
 /// See also [ClassMapperBase] and [RecordMapper].
@@ -107,7 +109,7 @@ abstract class InterfaceMapperBase<T extends Object> extends MapperBase<T> {
   const InterfaceMapperBase();
 
   /// The set of fields this interface defines.
-  Map<Symbol, Field<T, dynamic>> get fields;
+  MappableFields<T> get fields;
 
   /// Whether to ignore null values when encoding the fields of this interface.
   bool get ignoreNull => false;
@@ -175,9 +177,7 @@ abstract class InterfaceMapperBase<T extends Object> extends MapperBase<T> {
   }
 
   @protected
-  Object? encode(T value, EncodingContext context) {
-    return encodeFields(value, fields.values, ignoreNull, context);
-  }
+  Object? encode(T value, EncodingContext context);
 
   @protected
   @pragma('vm:prefer-inline')
@@ -186,11 +186,20 @@ abstract class InterfaceMapperBase<T extends Object> extends MapperBase<T> {
       Iterable<Field<T, dynamic>> fields,
       bool ignoreNull,
       EncodingContext context) {
-    return {
-      for (var f in fields)
-        if (f.getter != null && (!ignoreNull || f.get(value) != null))
-          f.key: f.encode(value, context),
-    };
+    bool shallow = context.options?.shallow ?? false;
+    if (shallow) {
+      return {
+        for (var f in fields)
+          if (!ignoreNull || f.get(value) != null) f.key: f.get(value),
+      };
+    }
+    if (ignoreNull) {
+      return {
+        for (var f in fields)
+          if (f.get(value) != null) f.key: f.encode(value, context),
+      };
+    }
+    return {for (var f in fields) f.key: f.encode(value, context)};
   }
 
   V decodeMap<V>(Map<String, dynamic> map) => decodeValue<V>(map);

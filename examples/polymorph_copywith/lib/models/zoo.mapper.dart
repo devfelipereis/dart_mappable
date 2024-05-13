@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'zoo.dart';
 
@@ -28,7 +29,7 @@ class ZooMapper extends ClassMapperBase<Zoo> {
       Field('animals', _$animals, arg: _arg$animals);
 
   @override
-  final Map<Symbol, Field<Zoo, dynamic>> fields = const {
+  final MappableFields<Zoo> fields = const {
     #animals: _f$animals,
   };
 
@@ -66,9 +67,7 @@ mixin ZooMappable<T extends Animal> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            ZooMapper.ensureInitialized().isValueEqual(this as Zoo<T>, other));
+    return ZooMapper.ensureInitialized().equalsValue(this as Zoo<T>, other);
   }
 
   @override

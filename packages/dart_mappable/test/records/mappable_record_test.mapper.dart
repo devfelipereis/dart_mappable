@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'mappable_record_test.dart';
 
@@ -28,7 +29,7 @@ class LocationMapper extends ClassMapperBase<Location> {
       Field('offset', _$offset);
 
   @override
-  final Map<Symbol, Field<Location, dynamic>> fields = const {
+  final MappableFields<Location> fields = const {
     #point: _f$point,
     #offset: _f$offset,
   };
@@ -69,10 +70,8 @@ mixin LocationMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            LocationMapper.ensureInitialized()
-                .isValueEqual(this as Location, other));
+    return LocationMapper.ensureInitialized()
+        .equalsValue(this as Location, other);
   }
 
   @override
@@ -132,7 +131,7 @@ class PointMapper extends RecordMapperBase<Point> {
   static const Field<Point, double> _f$y = Field('y', _$y);
 
   @override
-  final Map<Symbol, Field<Point, dynamic>> fields = const {
+  final MappableFields<Point> fields = const {
     #x: _f$x,
     #y: _f$y,
   };
@@ -221,7 +220,7 @@ class OffsetMapper extends RecordMapperBase<Offset> {
   static const Field<Offset, dynamic> _f$y = Field('y', _$y, arg: _arg$y);
 
   @override
-  final Map<Symbol, Field<Offset, dynamic>> fields = const {
+  final MappableFields<Offset> fields = const {
     #x: _f$x,
     #y: _f$y,
   };

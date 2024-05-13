@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'mixed_mappable_test.dart';
 
@@ -29,7 +30,7 @@ class BaseMapper extends ClassMapperBase<Base> {
       Field('objects', _$objects);
 
   @override
-  final Map<Symbol, Field<Base, dynamic>> fields = const {
+  final MappableFields<Base> fields = const {
     #id: _f$id,
     #name: _f$name,
     #objects: _f$objects,
@@ -89,7 +90,7 @@ class OneMapper extends ClassMapperBase<One> {
       Field('objects', _$objects);
 
   @override
-  final Map<Symbol, Field<One, dynamic>> fields = const {
+  final MappableFields<One> fields = const {
     #id: _f$id,
     #name: _f$name,
     #objects: _f$objects,
@@ -132,9 +133,7 @@ mixin OneMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            OneMapper.ensureInitialized().isValueEqual(this as One, other));
+    return OneMapper.ensureInitialized().equalsValue(this as One, other);
   }
 
   @override
@@ -204,7 +203,7 @@ class TwoMapper extends ClassMapperBase<Two> {
   static const Field<Two, String> _f$id = Field('id', _$id);
 
   @override
-  final Map<Symbol, Field<Two, dynamic>> fields = const {
+  final MappableFields<Two> fields = const {
     #id: _f$id,
   };
 
@@ -242,9 +241,7 @@ mixin TwoMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            TwoMapper.ensureInitialized().isValueEqual(this as Two, other));
+    return TwoMapper.ensureInitialized().equalsValue(this as Two, other);
   }
 
   @override

@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'duplicate_names_test.dart';
 
@@ -30,7 +31,7 @@ class BoxMapper extends ClassMapperBase<Box> {
       Field('contents', _$contents, arg: _arg$contents);
 
   @override
-  final Map<Symbol, Field<Box, dynamic>> fields = const {
+  final MappableFields<Box> fields = const {
     #size: _f$size,
     #contents: _f$contents,
   };
@@ -69,9 +70,7 @@ mixin BoxMappable<T extends Content> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            BoxMapper.ensureInitialized().isValueEqual(this as Box<T>, other));
+    return BoxMapper.ensureInitialized().equalsValue(this as Box<T>, other);
   }
 
   @override
@@ -88,6 +87,7 @@ extension BoxValueCopy<$R, $Out, T extends Content>
 
 abstract class BoxCopyWith<$R, $In extends Box<T>, $Out, T extends Content>
     implements ClassCopyWith<$R, $In, $Out> {
+  ContentCopyWith<$R, Content, T> get contents;
   $R call({int? size, T? contents});
   BoxCopyWith<$R2, $In, $Out2, T> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -99,6 +99,9 @@ class _BoxCopyWithImpl<$R, $Out, T extends Content>
 
   @override
   late final ClassMapperBase<Box> $mapper = BoxMapper.ensureInitialized();
+  @override
+  ContentCopyWith<$R, Content, T> get contents =>
+      $value.contents.copyWith.$chain((v) => call(contents: v));
   @override
   $R call({int? size, T? contents}) => $apply(FieldCopyWithData({
         if (size != null) #size: size,
@@ -131,7 +134,7 @@ class ContentMapper extends ClassMapperBase<Content> {
   static const Field<Content, String> _f$data = Field('data', _$data);
 
   @override
-  final Map<Symbol, Field<Content, dynamic>> fields = const {
+  final MappableFields<Content> fields = const {
     #data: _f$data,
   };
 
@@ -171,10 +174,8 @@ mixin ContentMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            ContentMapper.ensureInitialized()
-                .isValueEqual(this as Content, other));
+    return ContentMapper.ensureInitialized()
+        .equalsValue(this as Content, other);
   }
 
   @override

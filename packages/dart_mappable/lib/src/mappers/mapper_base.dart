@@ -44,7 +44,7 @@ abstract class MapperBase<T extends Object> {
         value,
         DecodingContext(
           container: container,
-          args: type.args,
+          args: () => type.args,
           options: options,
         ),
       ) as V;
@@ -59,28 +59,29 @@ abstract class MapperBase<T extends Object> {
   Object? encodeValue<V>(V value,
       [EncodingOptions? options, MapperContainer? container]) {
     try {
-      Type type = V;
-
       var includeTypeId = options?.includeTypeId;
       includeTypeId ??= this.includeTypeId<V>(value);
-
-      if (includeTypeId) {
-        type = value.runtimeType;
-      }
-
-      var typeArgs = type.args.map((t) => t == UnresolvedType ? dynamic : t);
-
-      var fallback = this.type.base.args;
-      if (typeArgs.length != fallback.length) {
-        typeArgs = fallback;
-      }
 
       var result = this.encoder(
         value as T,
         EncodingContext(
           container: container,
           options: options?.inheritOptions ?? false ? options : null,
-          args: typeArgs.toList(),
+          args: () {
+            Type type = V;
+            if (includeTypeId ?? false) {
+              type = value.runtimeType;
+            }
+
+            var typeArgs =
+                type.args.map((t) => t == UnresolvedType ? dynamic : t);
+
+            var fallback = this.type.base.args;
+            if (typeArgs.length != fallback.length) {
+              typeArgs = fallback;
+            }
+            return typeArgs.toList();
+          },
         ),
       );
 
@@ -107,9 +108,52 @@ abstract class MapperBase<T extends Object> {
     throw MapperException.unsupportedMethod(MapperMethod.equals, type);
   }
 
+  @Deprecated('Upgrade to dart_mappable_builder >= 4.2.2')
+  bool isValueEqual(T value, Object? other, [MapperContainer? container]) {
+    return equalsValue(value, other, container);
+  }
+
+  bool equalsValue(T value, Object? other, [MapperContainer? container]) {
+    if (identical(value, other)) {
+      return true;
+    }
+    try {
+      if (!isFor(other)) return false;
+      var context = MappingContext(
+        container: container,
+        args: () => value.runtimeType.args
+            .map((t) => t == UnresolvedType ? dynamic : t)
+            .toList(),
+      );
+      return equals(value, other as T, context);
+    } catch (e, stacktrace) {
+      Error.throwWithStackTrace(
+        MapperException.chain(MapperMethod.equals, '[$value]', e),
+        stacktrace,
+      );
+    }
+  }
+
   /// The mapping method to calculate the hash of [value].
   int hash(T value, MappingContext context) {
     throw MapperException.unsupportedMethod(MapperMethod.hash, type);
+  }
+
+  int hashValue(T value, [MapperContainer? container]) {
+    try {
+      var context = MappingContext(
+        container: container,
+        args: () => value.runtimeType.args
+            .map((t) => t == UnresolvedType ? dynamic : t)
+            .toList(),
+      );
+      return hash(value, context);
+    } catch (e, stacktrace) {
+      Error.throwWithStackTrace(
+        MapperException.chain(MapperMethod.hash, '[$value]', e),
+        stacktrace,
+      );
+    }
   }
 
   /// The mapping method to get the string representation of [value].
@@ -117,11 +161,39 @@ abstract class MapperBase<T extends Object> {
     throw MapperException.unsupportedMethod(MapperMethod.stringify, type);
   }
 
+  String stringifyValue(T value, [MapperContainer? container]) {
+    try {
+      var context = MappingContext(
+        container: container,
+        args: () => value.runtimeType.args
+            .map((t) => t == UnresolvedType ? dynamic : t)
+            .toList(),
+      );
+      return stringify(value, context);
+    } catch (e, stacktrace) {
+      Error.throwWithStackTrace(
+        MapperException.chain(MapperMethod.stringify,
+            '(Instance of \'${value.runtimeType}\')', e),
+        stacktrace,
+      );
+    }
+  }
+
   /// Checks if the static type [V] matches the dynamic runtime type of [v].
   ///
-  /// Returns `true` if types are different and resolvable.
+  /// Returns `true` if types are different (ignoring nullability) and resolvable.
   static bool checkStaticType<V>(dynamic v) {
-    return v.runtimeType != V.nonNull && v.runtimeType.base != UnresolvedType;
+    // This is optimized to short-circuit when types are equal.
+    return v.runtimeType != V && _checkTypesDiff(v.runtimeType, V);
+  }
+
+  static bool _checkTypesDiff(Type dynamic, Type static) {
+    return dynamic != static.nonNull &&
+        dynamic.base != UnresolvedType &&
+        (dynamic.base != static.base ||
+            dynamic.args.length != static.args.length ||
+            dynamic.args.any((t) =>
+                _checkTypesDiff(t, static.args[dynamic.args.indexOf(t)])));
   }
 
   /// Registers an additional type [T] to be identifiable by the package.

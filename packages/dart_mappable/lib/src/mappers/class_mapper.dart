@@ -136,8 +136,9 @@ abstract class ClassMapperBase<T extends Object>
   /// The set of constructor parameters of this class.
   ///
   /// See [FieldMode] for more.
-  late final List<Field<T, dynamic>> _params =
-      fields.values.where((f) => f.mode != FieldMode.member).toList();
+  late final List<Field<T, dynamic>> _params = fields.values
+      .where((f) => f.mode != FieldMode.member && f.getter != null)
+      .toList();
 
   @override
   T decoder(Object? value, DecodingContext context) {
@@ -223,6 +224,9 @@ abstract class ClassMapperBase<T extends Object>
 
   @override
   bool equals(T value, T other, MappingContext context) {
+    if (value.runtimeType.base != other.runtimeType.base) {
+      return false;
+    }
     return _members.every((f) {
       return context.container.isEqual(f.get(value), f.get(other));
     });

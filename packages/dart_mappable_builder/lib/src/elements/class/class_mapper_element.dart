@@ -1,63 +1,89 @@
-import 'package:analyzer/dart/ast/ast.dart';
-import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:collection/collection.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
 import '../../utils.dart';
+import '../constructor/constructor_mapper_element.dart';
+import '../field/class_mapper_field_element.dart';
 import '../mapper_element.dart';
-import '../param/mapper_field_element.dart';
-import '../param/mapper_param_element.dart';
+import '../param/class_mapper_param_element.dart';
+import 'mixins/inherited_elements_mixin.dart';
 import 'mixins/param_elements_mixin.dart';
 import 'mixins/type_params_mixin.dart';
 
 /// Element interface for all class mappers.
+///
+///
+/// Subtypes are:
+///
+/// - Annotated not in lib: DependentClassMapperElement
+/// - Annotated in lib: TargetClassMapperElement
+///   - As alias: AliasClassMapperElement
+///   - As factory: FactoryConstructorMapperElement
+///
+///
 abstract class ClassMapperElement extends InterfaceMapperElement<ClassElement>
-    with ParamElementsMixin, TypeParamsMixin {
-  ClassMapperElement(super.parent, super.element, super.options);
+    with InheritedElementsMixin, ParamElementsMixin, TypeParamsMixin {
+  ClassMapperElement(super.parent, super.element, super.options,
+      super.annotation, this.constructor);
 
   @override
-  Future<void> init() async {
-    await super.init();
-    constructorNode = await constructor?.getResolvedNode();
-    discriminatorValueCode = await _getDiscriminatorValueCode();
+  final ConstructorMapperElement constructor;
+
+  bool shouldGenerate(int method) {
+    return (generateMethods & method) != 0;
   }
 
   @override
   late final String className = element.name;
 
-  List<ClassMapperElement> subElements = [];
-  @override
-  ClassMapperElement? extendsElement;
-  @override
-  List<ClassMapperElement> interfaceElements = [];
+  late final String uniqueId =
+      (annotation.value?.read('uniqueId')?.toStringValue() ?? className)
+          .replaceAll('\$', '\\\$')
+          .replaceAll("(?<!\\)'", "\\'");
+
+  // --- Generator configuration ---
+
+  late final bool generateMixin = annotation.value != null;
+
+  late final bool generateAsMixin =
+      generateMixin && subElements.every((c) => c.generateAsMixin);
+
+  late final bool hasCallableConstructor = constructor.element != null &&
+      !(isAbstract && constructor.element!.redirectedConstructor == null);
+
+  late final bool isAbstract = element.isAbstract;
+
+  // --- Element configuration ---
 
   @override
-  ClassMapperElement? get superElement =>
-      extendsElement ?? interfaceElements.firstOrNull;
+  late final CaseStyle? caseStyle = super.caseStyle ?? superElement?.caseStyle;
 
-  @override
-  late AstNode? constructorNode;
+  late final bool ignoreNull =
+      annotation.value?.read('ignoreNull')?.toBoolValue() ??
+          options.ignoreNull ??
+          superElement?.ignoreNull ??
+          false;
 
-  late String selfTypeParam = '$prefixedClassName$typeParams';
+  late final int generateMethods =
+      annotation.value?.read('generateMethods')?.toIntValue() ??
+          options.generateMethods ??
+          GenerateMethods.all;
 
-  late Iterable<PropertyInducingElement> allFields = () sync* {
-    yield* extendsElement?.allFields ?? [];
-
-    for (var field in element.accessors) {
-      if (field.isStatic) continue;
-      if (!field.isGetter) continue;
-
-      if (field.isPublic && field.isSynthetic) {
-        yield field.variable;
-      } else if (fieldChecker.hasAnnotationOf(field)) {
-        yield field.variable;
+  late final String? hookForClass = () {
+    var hook = annotation.value?.read('hook');
+    if (hook != null && !hook.isNull) {
+      var node = annotation.annotation?.getPropertyNode('hook');
+      if (node != null) {
+        return node.toSource();
       }
     }
+    return null;
   }();
 
+  // --- Element properties ---
+
   @override
-  late List<ClassMapperFieldElement> fields = () {
+  late final List<ClassMapperFieldElement> fields = () {
     var fields = <Element, ClassMapperFieldElement>{};
 
     for (var p in params) {
@@ -65,7 +91,7 @@ abstract class ClassMapperElement extends InterfaceMapperElement<ClassElement>
           ClassMapperFieldElement(p, p.accessor, this);
     }
 
-    for (var f in allFields) {
+    for (var f in _allFields) {
       if (!fields.containsKey(f) &&
           !fields.keys
               .any((e) => e is PropertyInducingElement && e.name == f.name)) {
@@ -76,97 +102,7 @@ abstract class ClassMapperElement extends InterfaceMapperElement<ClassElement>
     return fields.values.toList();
   }();
 
-  @override
-  DartObject? getAnnotation() =>
-      classChecker.firstAnnotationOf(annotatedElement);
-
-  late String uniqueId =
-      annotation?.read('uniqueId')?.toStringValue() ?? className;
-
-  @override
-  late ConstructorElement? constructor = element.constructors
-          .where((c) => !c.isPrivate && constructorChecker.hasAnnotationOf(c))
-          .firstOrNull ??
-      element.constructors
-          .where((c) => !c.isPrivate && !classChecker.hasAnnotationOf(c))
-          .firstOrNull;
-
-  late bool isDiscriminatingSubclass = () {
-    if (discriminatorKey == null && discriminatorValueCode == null) {
-      return false;
-    }
-    return isSubclass;
-  }();
-
-  late bool isSubclass = () {
-    if (superElement == null) {
-      return false;
-    }
-    return true;
-  }();
-
-  late String? discriminatorKey =
-      annotation?.read('discriminatorKey')?.toStringValue() ??
-          options.discriminatorKey ??
-          superElement?.discriminatorKey;
-
-  late String? discriminatorValueCode;
-
-  Future<String?> _getDiscriminatorValueCode() async {
-    return (await getAnnotationNode(
-            annotatedElement, MappableClass, 'discriminatorValue'))
-        ?.toSource();
-  }
-
-  late String? hookForClass = () {
-    var hook = annotation?.read('hook');
-    if (hook != null && !hook.isNull) {
-      var node = getAnnotationProperty(annotatedNode, MappableClass, 'hook');
-      if (node != null) {
-        return node.toSource();
-      }
-    }
-    return null;
-  }();
-
-  @override
-  // ignore: overridden_fields
-  late final CaseStyle? caseStyle = super.caseStyle ?? superElement?.caseStyle;
-
-  late bool ignoreNull = annotation?.read('ignoreNull')?.toBoolValue() ??
-      options.ignoreNull ??
-      superElement?.ignoreNull ??
-      false;
-
-  late int generateMethods =
-      annotation?.read('generateMethods')?.toIntValue() ??
-          options.generateMethods ??
-          GenerateMethods.all;
-
-  late bool generateMixin = () {
-    return annotation != null && annotatedElement is! ConstructorElement;
-  }();
-
-  List<ClassElement> getSubClasses() {
-    return annotation
-            ?.read('includeSubClasses')
-            ?.toTypeList()
-            ?.map((t) => t.element)
-            .whereType<ClassElement>()
-            .toList() ??
-        [];
-  }
-
-  bool shouldGenerate(int method) {
-    return (generateMethods & method) != 0;
-  }
-
-  late bool hasCallableConstructor = constructor != null &&
-      !(isAbstract && constructor!.redirectedConstructor == null);
-
-  late bool isAbstract = element.isAbstract;
-
-  late List<ClassMapperParamElement> copySafeParams = (() {
+  late final List<ClassMapperParamElement> copySafeParams = (() {
     if (subElements.isEmpty) return params;
 
     var safeParams = <ClassMapperParamElement>[];
@@ -174,8 +110,10 @@ abstract class ClassMapperElement extends InterfaceMapperElement<ClassElement>
     bool isCopySafe(ClassMapperParamElement param) {
       return subElements.every((e) => e.copySafeParams.any((subParam) {
             if (subParam is SuperParamElement &&
-                (subParam.superParameter.parameter == param.parameter ||
-                    subParam.superParameter.accessor == param.accessor)) {
+                (subParam.superParameter.parameter.declaration ==
+                        param.parameter.declaration ||
+                    subParam.superParameter.accessor?.declaration ==
+                        param.accessor?.declaration)) {
               return true;
             }
             if (subParam is FieldParamElement &&
@@ -195,6 +133,18 @@ abstract class ClassMapperElement extends InterfaceMapperElement<ClassElement>
     return safeParams;
   })();
 
-  late bool generateAsMixin =
-      generateMixin && subElements.every((c) => c.generateAsMixin);
+  late final Iterable<PropertyInducingElement> _allFields = () sync* {
+    yield* extendsElement?._allFields ?? [];
+
+    for (var field in element.accessors) {
+      if (field.isStatic) continue;
+      if (!field.isGetter) continue;
+
+      if (field.isPublic && field.isSynthetic) {
+        yield field.variable;
+      } else if (fieldChecker.hasAnnotationOf(field)) {
+        yield field.variable;
+      }
+    }
+  }();
 }

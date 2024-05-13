@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'nested_serialization_test.dart';
 
@@ -79,7 +80,7 @@ class PersonMapper extends ClassMapperBase<Person> {
   static const Field<Person, Car> _f$car = Field('car', _$car, opt: true);
 
   @override
-  final Map<Symbol, Field<Person, dynamic>> fields = const {
+  final MappableFields<Person> fields = const {
     #name: _f$name,
     #age: _f$age,
     #car: _f$car,
@@ -120,10 +121,7 @@ mixin PersonMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            PersonMapper.ensureInitialized()
-                .isValueEqual(this as Person, other));
+    return PersonMapper.ensureInitialized().equalsValue(this as Person, other);
   }
 
   @override
@@ -193,7 +191,7 @@ class CarMapper extends ClassMapperBase<Car> {
       Field('miles', _$miles, mode: FieldMode.member);
 
   @override
-  final Map<Symbol, Field<Car, dynamic>> fields = const {
+  final MappableFields<Car> fields = const {
     #drivenKm: _f$drivenKm,
     #brand: _f$brand,
     #miles: _f$miles,
@@ -233,9 +231,7 @@ mixin CarMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            CarMapper.ensureInitialized().isValueEqual(this as Car, other));
+    return CarMapper.ensureInitialized().equalsValue(this as Car, other);
   }
 
   @override

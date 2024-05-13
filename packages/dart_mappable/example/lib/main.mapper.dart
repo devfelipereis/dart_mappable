@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'main.dart';
 
@@ -51,7 +52,7 @@ class BrandMapper extends EnumMapper<Brand> {
 extension BrandMapperExtension on Brand {
   String toValue() {
     BrandMapper.ensureInitialized();
-    return MapperContainer.globals.toValue(this) as String;
+    return MapperContainer.globals.toValue<Brand>(this) as String;
   }
 }
 
@@ -79,7 +80,7 @@ class PersonMapper extends ClassMapperBase<Person> {
   static const Field<Person, Car> _f$car = Field('car', _$car, opt: true);
 
   @override
-  final Map<Symbol, Field<Person, dynamic>> fields = const {
+  final MappableFields<Person> fields = const {
     #name: _f$name,
     #age: _f$age,
     #car: _f$car,
@@ -120,10 +121,7 @@ mixin PersonMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            PersonMapper.ensureInitialized()
-                .isValueEqual(this as Person, other));
+    return PersonMapper.ensureInitialized().equalsValue(this as Person, other);
   }
 
   @override
@@ -190,7 +188,7 @@ class CarMapper extends ClassMapperBase<Car> {
   static const Field<Car, Brand> _f$brand = Field('brand', _$brand);
 
   @override
-  final Map<Symbol, Field<Car, dynamic>> fields = const {
+  final MappableFields<Car> fields = const {
     #miles: _f$miles,
     #brand: _f$brand,
   };
@@ -229,9 +227,7 @@ mixin CarMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            CarMapper.ensureInitialized().isValueEqual(this as Car, other));
+    return CarMapper.ensureInitialized().equalsValue(this as Car, other);
   }
 
   @override
@@ -293,7 +289,7 @@ class BoxMapper extends ClassMapperBase<Box> {
       Field('content', _$content, arg: _arg$content);
 
   @override
-  final Map<Symbol, Field<Box, dynamic>> fields = const {
+  final MappableFields<Box> fields = const {
     #size: _f$size,
     #content: _f$content,
   };
@@ -332,9 +328,7 @@ mixin BoxMappable<T> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            BoxMapper.ensureInitialized().isValueEqual(this as Box<T>, other));
+    return BoxMapper.ensureInitialized().equalsValue(this as Box<T>, other);
   }
 
   @override
@@ -390,7 +384,7 @@ class ConfettiMapper extends ClassMapperBase<Confetti> {
   static const Field<Confetti, String> _f$color = Field('color', _$color);
 
   @override
-  final Map<Symbol, Field<Confetti, dynamic>> fields = const {
+  final MappableFields<Confetti> fields = const {
     #color: _f$color,
   };
 
@@ -430,10 +424,8 @@ mixin ConfettiMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            ConfettiMapper.ensureInitialized()
-                .isValueEqual(this as Confetti, other));
+    return ConfettiMapper.ensureInitialized()
+        .equalsValue(this as Confetti, other);
   }
 
   @override

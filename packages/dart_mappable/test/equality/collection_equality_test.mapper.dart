@@ -1,9 +1,10 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
-part of 'equality_test.dart';
+part of 'collection_equality_test.dart';
 
 class SetWrapperMapper extends ClassMapperBase<SetWrapper> {
   SetWrapperMapper._();
@@ -24,7 +25,7 @@ class SetWrapperMapper extends ClassMapperBase<SetWrapper> {
       Field('values', _$values);
 
   @override
-  final Map<Symbol, Field<SetWrapper, dynamic>> fields = const {
+  final MappableFields<SetWrapper> fields = const {
     #values: _f$values,
   };
 
@@ -65,10 +66,8 @@ mixin SetWrapperMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            SetWrapperMapper.ensureInitialized()
-                .isValueEqual(this as SetWrapper, other));
+    return SetWrapperMapper.ensureInitialized()
+        .equalsValue(this as SetWrapper, other);
   }
 
   @override
@@ -129,7 +128,7 @@ class ListWrapperMapper extends ClassMapperBase<ListWrapper> {
       Field('values', _$values);
 
   @override
-  final Map<Symbol, Field<ListWrapper, dynamic>> fields = const {
+  final MappableFields<ListWrapper> fields = const {
     #values: _f$values,
   };
 
@@ -170,10 +169,8 @@ mixin ListWrapperMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            ListWrapperMapper.ensureInitialized()
-                .isValueEqual(this as ListWrapper, other));
+    return ListWrapperMapper.ensureInitialized()
+        .equalsValue(this as ListWrapper, other);
   }
 
   @override
@@ -239,7 +236,7 @@ class MapWrapperMapper extends ClassMapperBase<MapWrapper> {
       Field('values', _$values);
 
   @override
-  final Map<Symbol, Field<MapWrapper, dynamic>> fields = const {
+  final MappableFields<MapWrapper> fields = const {
     #values: _f$values,
   };
 
@@ -280,10 +277,8 @@ mixin MapWrapperMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            MapWrapperMapper.ensureInitialized()
-                .isValueEqual(this as MapWrapper, other));
+    return MapWrapperMapper.ensureInitialized()
+        .equalsValue(this as MapWrapper, other);
   }
 
   @override

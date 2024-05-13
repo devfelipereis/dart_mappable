@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'polymorphism_test.dart';
 
@@ -27,7 +28,7 @@ class AnimalMapper extends ClassMapperBase<Animal> {
   static const Field<Animal, String> _f$name = Field('name', _$name);
 
   @override
-  final Map<Symbol, Field<Animal, dynamic>> fields = const {
+  final MappableFields<Animal> fields = const {
     #name: _f$name,
   };
 
@@ -81,7 +82,7 @@ class CatMapper extends SubClassMapperBase<Cat> {
   static const Field<Cat, String> _f$color = Field('color', _$color);
 
   @override
-  final Map<Symbol, Field<Cat, dynamic>> fields = const {
+  final MappableFields<Cat> fields = const {
     #name: _f$name,
     #color: _f$color,
   };
@@ -127,9 +128,7 @@ mixin CatMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            CatMapper.ensureInitialized().isValueEqual(this as Cat, other));
+    return CatMapper.ensureInitialized().equalsValue(this as Cat, other);
   }
 
   @override
@@ -190,7 +189,7 @@ class DogMapper extends SubClassMapperBase<Dog> {
       Field('name', _$name, mode: FieldMode.member);
 
   @override
-  final Map<Symbol, Field<Dog, dynamic>> fields = const {
+  final MappableFields<Dog> fields = const {
     #age: _f$age,
     #name: _f$name,
   };
@@ -236,9 +235,7 @@ mixin DogMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            DogMapper.ensureInitialized().isValueEqual(this as Dog, other));
+    return DogMapper.ensureInitialized().equalsValue(this as Dog, other);
   }
 
   @override
@@ -295,7 +292,7 @@ class NullAnimalMapper extends SubClassMapperBase<NullAnimal> {
   static const Field<NullAnimal, String> _f$name = Field('name', _$name);
 
   @override
-  final Map<Symbol, Field<NullAnimal, dynamic>> fields = const {
+  final MappableFields<NullAnimal> fields = const {
     #name: _f$name,
   };
 
@@ -343,10 +340,8 @@ mixin NullAnimalMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            NullAnimalMapper.ensureInitialized()
-                .isValueEqual(this as NullAnimal, other));
+    return NullAnimalMapper.ensureInitialized()
+        .equalsValue(this as NullAnimal, other);
   }
 
   @override
@@ -410,7 +405,7 @@ class DefaultAnimalMapper extends SubClassMapperBase<DefaultAnimal> {
   static const Field<DefaultAnimal, String> _f$type = Field('type', _$type);
 
   @override
-  final Map<Symbol, Field<DefaultAnimal, dynamic>> fields = const {
+  final MappableFields<DefaultAnimal> fields = const {
     #name: _f$name,
     #type: _f$type,
   };
@@ -460,10 +455,8 @@ mixin DefaultAnimalMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            DefaultAnimalMapper.ensureInitialized()
-                .isValueEqual(this as DefaultAnimal, other));
+    return DefaultAnimalMapper.ensureInitialized()
+        .equalsValue(this as DefaultAnimal, other);
   }
 
   @override
@@ -532,7 +525,7 @@ class ZooMapper extends ClassMapperBase<Zoo> {
       Field('animalsMap', _$animalsMap);
 
   @override
-  final Map<Symbol, Field<Zoo, dynamic>> fields = const {
+  final MappableFields<Zoo> fields = const {
     #animal: _f$animal,
     #animals: _f$animals,
     #animalsMap: _f$animalsMap,
@@ -575,9 +568,7 @@ mixin ZooMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            ZooMapper.ensureInitialized().isValueEqual(this as Zoo, other));
+    return ZooMapper.ensureInitialized().equalsValue(this as Zoo, other);
   }
 
   @override

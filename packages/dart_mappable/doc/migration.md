@@ -34,8 +34,7 @@ It is **recommended** that you adapt any code that previously used the `toJson()
 --- 
 
 Because we recognize that this might be tedious for a larger codebase, we provide a faster migration path by allowing
-a configuration override to change the naming of the generated methods to the `json_serializable` way. This however
-is **not recommended** as a permanent solution, but meant as a temporary workaround to ease the migration path. 
+a configuration override to change the naming of the generated methods to the `json_serializable` way.
 
 To change the naming of the generated methods, add the following to the `build.yaml` file in your project root:
 
@@ -43,6 +42,7 @@ To change the naming of the generated methods, add the following to the `build.y
 global_options:
   dart_mappable_builder:
     options:
+      # ... other dart_mappable options
       renameMethods:
         fromJson: fromJsonString
         toJson: toJsonString
@@ -51,7 +51,26 @@ global_options:
 ```
 
 This generates `Map<String, dynamic> toJson()` instead of `Map<String, dynamic> toMap()` and changes other methods accordingly.
-Again this feature is **not recommended** as a permanent solution and might be removed in a future version.
+
+#### Add compatibility for packages requiring `json_serializable`
+
+By now there are a number of packages on pub.dev that expect the `json_serializable`s version of the `toJson()` method
+when dealing with data classes, for example packages like `retrofit` or `chopper`.
+
+To make your data classes using `dart_mappable` work well with these packages, you need to use the same 
+`renameMethods` config as shown above. Additionally, you need to make sure that the `dart_mappable` code generator runs
+before the other code generators of these packages. To do that, adjust your `build.yaml` to the following:
+
+```yaml
+global_options:
+  dart_mappable_builder:
+    runs_before:
+      # list the generator packages you depend on, e.g.
+      - retrofit_generator
+      - chopper_generator
+    options:
+      # ... other dart_mappable options, including 'renameMethods'
+```
 
 #### Add compatibility for classes using `json_serializable`
 

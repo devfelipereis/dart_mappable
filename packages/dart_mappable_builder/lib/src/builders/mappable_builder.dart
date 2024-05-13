@@ -37,7 +37,7 @@ class MappableBuilder implements Builder {
 
       await Future.wait([
         generateMapperFile(buildStep, group),
-        generateContainerFile(buildStep, group),
+        generateInitFile(buildStep, group),
       ]);
     } catch (e, st) {
       print('An unexpected error occurred.\n'
@@ -50,9 +50,7 @@ class MappableBuilder implements Builder {
   }
 
   @override
-  Map<String, List<String>> get buildExtensions => const {
-        '.dart': ['.mapper.dart', '.init.dart']
-      };
+  Map<String, List<String>> get buildExtensions => options.buildExtensions;
 
   Future<MapperElementGroup> createMapperGroup(BuildStep buildStep) async {
     var entryLib = await buildStep.inputLibrary;
@@ -95,19 +93,24 @@ class MappableBuilder implements Builder {
 
     var output = await Future.wait(generators.map((g) => g.generate()));
 
-    var source = DartFormatter(pageWidth: options.lineLength ?? 80)
-        .format('// coverage:ignore-file\n'
-            '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
-            '// ignore_for_file: type=lint\n'
-            '// ignore_for_file: unused_element\n\n'
-            'part of \'${p.basename(buildStep.inputId.uri.toString())}\';\n\n'
-            '${output.join('\n\n')}\n' //,
-            );
-    var outputId = buildStep.inputId.changeExtension('.mapper.dart');
+    final outputId = buildStep.allowedOutputs.first;
+
+    var libraryPath = p.posix
+        .relative(buildStep.inputId.path, from: p.dirname(outputId.path));
+    var source = DartFormatter(pageWidth: options.lineLength ?? 80).format(
+        '// coverage:ignore-file\n'
+        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+        '// ignore_for_file: type=lint\n'
+        '// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member\n'
+        '// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter\n\n'
+        'part of \'$libraryPath\';\n\n'
+        '${output.join('\n\n')}\n' //,
+        );
+
     await buildStep.writeAsString(outputId, source);
   }
 
-  Future<void> generateContainerFile(
+  Future<void> generateInitFile(
       BuildStep buildStep, MapperElementGroup group) async {
     if (group.options.initializerScope == null) {
       return;
@@ -122,9 +125,12 @@ class MappableBuilder implements Builder {
 
     discovered.sortBy((e) => e.key.source.uri.toString());
 
+    final outputId = buildStep.allowedOutputs.last;
+
     output.write(writeImports(
       buildStep.inputId,
       discovered.map((e) => e.key.source.uri).toList(),
+      p.dirname(outputId.uri.path),
     ));
 
     output.write('void initializeMappers() {\n');
@@ -145,12 +151,11 @@ class MappableBuilder implements Builder {
       '${output.toString()}\n',
     );
 
-    var outputId = buildStep.inputId.changeExtension('.init.dart');
     await buildStep.writeAsString(outputId, source);
   }
 }
 
-String writeImports(AssetId input, List<Uri> imports) {
+String writeImports(AssetId input, List<Uri> imports, String outputDirectory) {
   List<String> package = [], relative = [];
   var prefixes = <String, int?>{};
 
@@ -159,21 +164,14 @@ String writeImports(AssetId input, List<Uri> imports) {
   for (var i = 0; i < imports.length; i++) {
     var import = imports[i];
     if (import.isScheme('asset')) {
-      var relativePath =
-          path.relative(import.path, from: path.dirname(input.uri.path));
+      var relativePath = path.relative(import.path, from: outputDirectory);
 
       relative.add(relativePath);
       prefixes[relativePath] = i;
     } else if (import.isScheme('package') &&
         import.pathSegments.first == input.package &&
         input.pathSegments.first == 'lib') {
-      var libPath =
-          import.replace(pathSegments: import.pathSegments.skip(1)).path;
-
-      var inputPath =
-          input.uri.replace(pathSegments: input.uri.pathSegments.skip(1)).path;
-
-      var relativePath = path.relative(libPath, from: path.dirname(inputPath));
+      var relativePath = path.relative(import.path, from: outputDirectory);
 
       relative.add(relativePath);
       prefixes[relativePath] = i;

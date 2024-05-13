@@ -10,7 +10,7 @@ extension InitializerExtension<T extends TargetClassMapperElement>
         if (_instance == null) {   
     ''');
 
-    var typesConfigs = element.typesConfigs;
+    var typesConfigs = element.customTypes;
     if (typesConfigs.isNotEmpty) {
       for (var t in typesConfigs) {
         output.write('      MapperBase.addType<$t>();\n');
@@ -22,12 +22,12 @@ extension InitializerExtension<T extends TargetClassMapperElement>
 
     if (element.isDiscriminatingSubclass) {
       var s = element.superElement!;
-      var prefix = element.parent.prefixOfElement(s.annotatedElement);
+      var prefix = element.parent.prefixOfElement(s.annotation.element);
       output.write(
           '      $prefix${s.mapperName}.ensureInitialized().addSubMapper(_instance!);\n');
     } else if (element.isSubclass) {
       var s = element.superElement!;
-      var prefix = element.parent.prefixOfElement(s.annotatedElement);
+      var prefix = element.parent.prefixOfElement(s.annotation.element);
       output.write('      $prefix${s.mapperName}.ensureInitialized();\n');
     }
 

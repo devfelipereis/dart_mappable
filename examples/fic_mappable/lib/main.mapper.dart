@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'main.dart';
 
@@ -24,7 +25,7 @@ class AMapper extends ClassMapperBase<A> {
   static const Field<A, IList<B>> _f$list = Field('list', _$list);
 
   @override
-  final Map<Symbol, Field<A, dynamic>> fields = const {
+  final MappableFields<A> fields = const {
     #list: _f$list,
   };
 
@@ -62,9 +63,7 @@ mixin AMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            AMapper.ensureInitialized().isValueEqual(this as A, other));
+    return AMapper.ensureInitialized().equalsValue(this as A, other);
   }
 
   @override
@@ -119,7 +118,7 @@ class BMapper extends ClassMapperBase<B> {
   static const Field<B, String> _f$str = Field('str', _$str);
 
   @override
-  final Map<Symbol, Field<B, dynamic>> fields = const {
+  final MappableFields<B> fields = const {
     #str: _f$str,
   };
 
@@ -157,9 +156,7 @@ mixin BMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            BMapper.ensureInitialized().isValueEqual(this as B, other));
+    return BMapper.ensureInitialized().equalsValue(this as B, other);
   }
 
   @override

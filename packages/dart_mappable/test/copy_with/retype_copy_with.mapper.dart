@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'retype_copy_with.dart';
 
@@ -27,7 +28,7 @@ class AMapper extends ClassMapperBase<A> {
   static const Field<A, V> _f$v2 = Field('v2', _$v2);
 
   @override
-  final Map<Symbol, Field<A, dynamic>> fields = const {
+  final MappableFields<A> fields = const {
     #v: _f$v,
     #v2: _f$v2,
   };
@@ -66,9 +67,7 @@ mixin AMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            AMapper.ensureInitialized().isValueEqual(this as A, other));
+    return AMapper.ensureInitialized().equalsValue(this as A, other);
   }
 
   @override
@@ -131,7 +130,7 @@ class VMapper extends ClassMapperBase<V> {
   static const Field<V, int> _f$v = Field('v', _$v);
 
   @override
-  final Map<Symbol, Field<V, dynamic>> fields = const {
+  final MappableFields<V> fields = const {
     #v: _f$v,
   };
 
@@ -169,9 +168,7 @@ mixin VMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            VMapper.ensureInitialized().isValueEqual(this as V, other));
+    return VMapper.ensureInitialized().equalsValue(this as V, other);
   }
 
   @override
@@ -231,7 +228,7 @@ class BMapper extends ClassMapperBase<B> {
   static const Field<B, W> _f$v2 = Field('v2', _$v2, arg: _arg$v2);
 
   @override
-  final Map<Symbol, Field<B, dynamic>> fields = const {
+  final MappableFields<B> fields = const {
     #v: _f$v,
     #v2: _f$v2,
   };
@@ -270,9 +267,7 @@ mixin BMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            BMapper.ensureInitialized().isValueEqual(this as B, other));
+    return BMapper.ensureInitialized().equalsValue(this as B, other);
   }
 
   @override
@@ -340,7 +335,7 @@ class WMapper extends ClassMapperBase<W> {
   static const Field<W, int> _f$v = Field('v', _$v);
 
   @override
-  final Map<Symbol, Field<W, dynamic>> fields = const {
+  final MappableFields<W> fields = const {
     #v: _f$v,
   };
 
@@ -378,9 +373,7 @@ mixin WMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            WMapper.ensureInitialized().isValueEqual(this as W, other));
+    return WMapper.ensureInitialized().equalsValue(this as W, other);
   }
 
   @override

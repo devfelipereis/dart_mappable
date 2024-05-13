@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'polymorph.dart';
 
@@ -25,7 +26,7 @@ class AnimalBMapper extends ClassMapperBase<AnimalB> {
   static const Field<AnimalB, String> _f$name = Field('name', _$name);
 
   @override
-  final Map<Symbol, Field<AnimalB, dynamic>> fields = const {
+  final MappableFields<AnimalB> fields = const {
     #name: _f$name,
   };
 
@@ -79,7 +80,7 @@ class CatBMapper extends SubClassMapperBase<CatB> {
   static const Field<CatB, String> _f$color = Field('color', _$color);
 
   @override
-  final Map<Symbol, Field<CatB, dynamic>> fields = const {
+  final MappableFields<CatB> fields = const {
     #name: _f$name,
     #color: _f$color,
   };
@@ -125,9 +126,7 @@ mixin CatBMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            CatBMapper.ensureInitialized().isValueEqual(this as CatB, other));
+    return CatBMapper.ensureInitialized().equalsValue(this as CatB, other);
   }
 
   @override
@@ -187,7 +186,7 @@ class DogBMapper extends SubClassMapperBase<DogB> {
   static const Field<DogB, int> _f$age = Field('age', _$age);
 
   @override
-  final Map<Symbol, Field<DogB, dynamic>> fields = const {
+  final MappableFields<DogB> fields = const {
     #name: _f$name,
     #age: _f$age,
   };
@@ -233,9 +232,7 @@ mixin DogBMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            DogBMapper.ensureInitialized().isValueEqual(this as DogB, other));
+    return DogBMapper.ensureInitialized().equalsValue(this as DogB, other);
   }
 
   @override

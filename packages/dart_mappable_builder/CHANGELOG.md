@@ -1,3 +1,36 @@
+# 4.2.3
+
+- Added lint ignores for 'override_on_non_overriding_member'.
+
+# 4.2.2
+
+- Fixed issues with adding unnecessary '__type' property for nullable generics.
+- Improved serialization consistency and equality handling.
+
+# 4.2.1
+
+- Performance improvements.
+
+# 4.2.0
+
+- Added custom typedef for mapping fields to resolve naming conflict.
+- Deprecated creating and linking custom `MapperContainer`s.
+  If you are affected by this see https://github.com/schultek/dart_mappable/issues/159.
+
+# 4.1.0
+
+- Added support for shallow encoding a class:
+  - `MyClassMapper.ensureInitialized().encodeMap<MyClass>(myClass, EncodingOptions(shallow: true))`
+- Correctly escape `$` in class names.
+- Added option to use unordered list equality with iterables:
+  - `IterableMapper.equalityMode = IterableEqualityMode.unordered`
+- Added [`build_extensions`](https://pub.dev/documentation/dart_mappable/latest/topics/Configuration-topic.html#buildextensions) option to builder configuration.
+
+# 4.0.1
+
+- Added support for generic typed parameters for deep copyWith.
+- Added lint ignores for 'unnecessary_cast', 'strict_raw_type' and 'inference_failure_on_untyped_parameter'.
+
 # 4.0.0
 
 - Require `sdk: >=3.0.0`.

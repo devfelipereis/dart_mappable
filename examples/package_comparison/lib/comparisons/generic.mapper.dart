@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'generic.dart';
 
@@ -27,7 +28,7 @@ class BoxCMapper extends ClassMapperBase<BoxC> {
       Field('content', _$content, arg: _arg$content);
 
   @override
-  final Map<Symbol, Field<BoxC, dynamic>> fields = const {
+  final MappableFields<BoxC> fields = const {
     #content: _f$content,
   };
 
@@ -65,10 +66,7 @@ mixin BoxCMappable<T> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            BoxCMapper.ensureInitialized()
-                .isValueEqual(this as BoxC<T>, other));
+    return BoxCMapper.ensureInitialized().equalsValue(this as BoxC<T>, other);
   }
 
   @override
@@ -125,7 +123,7 @@ class ContentCMapper extends ClassMapperBase<ContentC> {
   static const Field<ContentC, String> _f$data = Field('data', _$data);
 
   @override
-  final Map<Symbol, Field<ContentC, dynamic>> fields = const {
+  final MappableFields<ContentC> fields = const {
     #data: _f$data,
   };
 
@@ -165,10 +163,8 @@ mixin ContentCMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            ContentCMapper.ensureInitialized()
-                .isValueEqual(this as ContentC, other));
+    return ContentCMapper.ensureInitialized()
+        .equalsValue(this as ContentC, other);
   }
 
   @override

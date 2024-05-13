@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'multi_poly_test.dart';
 
@@ -24,7 +25,7 @@ class ShepherdMapper extends SubClassMapperBase<Shepherd> {
   static const Field<Shepherd, String> _f$name = Field('name', _$name);
 
   @override
-  final Map<Symbol, Field<Shepherd, dynamic>> fields = const {
+  final MappableFields<Shepherd> fields = const {
     #name: _f$name,
   };
   @override
@@ -73,10 +74,8 @@ mixin ShepherdMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            ShepherdMapper.ensureInitialized()
-                .isValueEqual(this as Shepherd, other));
+    return ShepherdMapper.ensureInitialized()
+        .equalsValue(this as Shepherd, other);
   }
 
   @override
@@ -138,7 +137,7 @@ class DogMapper extends SubClassMapperBase<Dog> {
   static const Field<Dog, String> _f$name = Field('name', _$name);
 
   @override
-  final Map<Symbol, Field<Dog, dynamic>> fields = const {
+  final MappableFields<Dog> fields = const {
     #name: _f$name,
   };
   @override
@@ -185,9 +184,7 @@ mixin DogMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            DogMapper.ensureInitialized().isValueEqual(this as Dog, other));
+    return DogMapper.ensureInitialized().equalsValue(this as Dog, other);
   }
 
   @override
@@ -245,7 +242,7 @@ class AnimalMapper extends ClassMapperBase<Animal> {
   static const Field<Animal, String> _f$name = Field('name', _$name);
 
   @override
-  final Map<Symbol, Field<Animal, dynamic>> fields = const {
+  final MappableFields<Animal> fields = const {
     #name: _f$name,
   };
   @override
@@ -300,7 +297,7 @@ class CatMapper extends SubClassMapperBase<Cat> {
   static const Field<Cat, String> _f$name = Field('name', _$name);
 
   @override
-  final Map<Symbol, Field<Cat, dynamic>> fields = const {
+  final MappableFields<Cat> fields = const {
     #name: _f$name,
   };
   @override
@@ -362,7 +359,7 @@ class SiameseMapper extends SubClassMapperBase<Siamese> {
   static const Field<Siamese, String> _f$name = Field('name', _$name);
 
   @override
-  final Map<Symbol, Field<Siamese, dynamic>> fields = const {
+  final MappableFields<Siamese> fields = const {
     #name: _f$name,
   };
   @override
@@ -411,10 +408,8 @@ mixin SiameseMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            SiameseMapper.ensureInitialized()
-                .isValueEqual(this as Siamese, other));
+    return SiameseMapper.ensureInitialized()
+        .equalsValue(this as Siamese, other);
   }
 
   @override
@@ -473,7 +468,7 @@ class HumanMapper extends ClassMapperBase<Human> {
   static const Field<Human, Cat> _f$cat = Field('cat', _$cat);
 
   @override
-  final Map<Symbol, Field<Human, dynamic>> fields = const {
+  final MappableFields<Human> fields = const {
     #cat: _f$cat,
   };
 
@@ -511,9 +506,7 @@ mixin HumanMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            HumanMapper.ensureInitialized().isValueEqual(this as Human, other));
+    return HumanMapper.ensureInitialized().equalsValue(this as Human, other);
   }
 
   @override

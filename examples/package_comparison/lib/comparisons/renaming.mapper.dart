@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'renaming.dart';
 
@@ -27,7 +28,7 @@ class PersonBMapper extends ClassMapperBase<PersonB> {
       Field('lastName', _$lastName, key: 'surName');
 
   @override
-  final Map<Symbol, Field<PersonB, dynamic>> fields = const {
+  final MappableFields<PersonB> fields = const {
     #firstName: _f$firstName,
     #lastName: _f$lastName,
   };
@@ -69,10 +70,8 @@ mixin PersonBMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            PersonBMapper.ensureInitialized()
-                .isValueEqual(this as PersonB, other));
+    return PersonBMapper.ensureInitialized()
+        .equalsValue(this as PersonB, other);
   }
 
   @override

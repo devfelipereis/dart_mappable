@@ -6,7 +6,7 @@ import 'package:dart_mappable/dart_mappable.dart';
 import '../../mapper_group.dart';
 import '../../utils.dart';
 import '../class/class_mapper_element.dart';
-import 'mapper_param_element.dart';
+import 'class_mapper_param_element.dart';
 
 class CopyParamElement {
   static Iterable<CopyParamElement> collectFrom(
@@ -20,6 +20,10 @@ class CopyParamElement {
       }
 
       ClassMapperElement? resolveElement(Element? e) {
+        if (e is TypeParameterElement && e.bound != null) {
+          return resolveElement(e.bound!.element);
+        }
+
         var classTarget = element.parent.getMapperForElement(e);
 
         if (classTarget is! ClassMapperElement ||
@@ -69,7 +73,7 @@ class CopyParamElement {
 
         if (classConfig != null) {
           var prefixedName =
-              element.parent.prefixOfElement(classConfig.annotatedElement) +
+              element.parent.prefixOfElement(classConfig.annotation.element) +
                   classConfig.uniqueClassName;
 
           yield CopyParamElement(
@@ -110,7 +114,7 @@ class CopyParamElement {
   String get invocationThen => '(v) => call(${param.superName}: v)';
 
   String get subTypeParam => hasSubConfigs
-      ? ', ${parent.prefixedType(p.type, withNullability: false)}'
+      ? ', ${parent.prefixedType(p.type, withNullability: false, resolveBounds: true)}'
       : '';
   String get superTypeParam => hasSubConfigs || hasSuperElement
       ? ', ${parent.prefixedType(p.type, withNullability: false)}'

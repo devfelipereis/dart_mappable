@@ -1,7 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
+// ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
 part of 'copy_with_test.dart';
 
@@ -26,7 +27,7 @@ class PersonMapper extends ClassMapperBase<Person> {
   static const Field<Person, Car> _f$car = Field('car', _$car);
 
   @override
-  final Map<Symbol, Field<Person, dynamic>> fields = const {
+  final MappableFields<Person> fields = const {
     #name: _f$name,
     #car: _f$car,
   };
@@ -65,10 +66,7 @@ mixin PersonMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            PersonMapper.ensureInitialized()
-                .isValueEqual(this as Person, other));
+    return PersonMapper.ensureInitialized().equalsValue(this as Person, other);
   }
 
   @override
@@ -131,7 +129,7 @@ class CarMapper extends ClassMapperBase<Car> {
   static const Field<Car, String> _f$model = Field('model', _$model);
 
   @override
-  final Map<Symbol, Field<Car, dynamic>> fields = const {
+  final MappableFields<Car> fields = const {
     #brand: _f$brand,
     #model: _f$model,
   };
@@ -170,9 +168,7 @@ mixin CarMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            CarMapper.ensureInitialized().isValueEqual(this as Car, other));
+    return CarMapper.ensureInitialized().equalsValue(this as Car, other);
   }
 
   @override
@@ -232,7 +228,7 @@ class BrandMapper extends ClassMapperBase<Brand> {
   static const Field<Brand, dynamic> _f$name = Field('name', _$name);
 
   @override
-  final Map<Symbol, Field<Brand, dynamic>> fields = const {
+  final MappableFields<Brand> fields = const {
     #name: _f$name,
   };
 
@@ -270,9 +266,7 @@ mixin BrandMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            BrandMapper.ensureInitialized().isValueEqual(this as Brand, other));
+    return BrandMapper.ensureInitialized().equalsValue(this as Brand, other);
   }
 
   @override
@@ -333,7 +327,7 @@ class DealershipMapper extends ClassMapperBase<Dealership> {
       Field('salesRep', _$salesRep);
 
   @override
-  final Map<Symbol, Field<Dealership, dynamic>> fields = const {
+  final MappableFields<Dealership> fields = const {
     #cars: _f$cars,
     #salesRep: _f$salesRep,
   };
@@ -375,10 +369,8 @@ mixin DealershipMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            DealershipMapper.ensureInitialized()
-                .isValueEqual(this as Dealership, other));
+    return DealershipMapper.ensureInitialized()
+        .equalsValue(this as Dealership, other);
   }
 
   @override
@@ -460,7 +452,7 @@ class ItemListMapper extends ClassMapperBase<ItemList> {
       Field('items', _$items, arg: _arg$items);
 
   @override
-  final Map<Symbol, Field<ItemList, dynamic>> fields = const {
+  final MappableFields<ItemList> fields = const {
     #items: _f$items,
   };
 
@@ -515,7 +507,7 @@ class BrandListMapper extends SubClassMapperBase<BrandList> {
       Field('items', _$items, key: 'brands');
 
   @override
-  final Map<Symbol, Field<BrandList, dynamic>> fields = const {
+  final MappableFields<BrandList> fields = const {
     #items: _f$items,
   };
 
@@ -528,7 +520,7 @@ class BrandListMapper extends SubClassMapperBase<BrandList> {
 
   @override
   DecodingContext inherit(DecodingContext context) {
-    return context.inherit(args: []);
+    return context.inherit(args: () => []);
   }
 
   static BrandList _instantiate(DecodingData data) {
@@ -568,10 +560,8 @@ mixin BrandListMappable {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            BrandListMapper.ensureInitialized()
-                .isValueEqual(this as BrandList, other));
+    return BrandListMapper.ensureInitialized()
+        .equalsValue(this as BrandList, other);
   }
 
   @override
@@ -644,7 +634,7 @@ class NamedItemListMapper extends SubClassMapperBase<NamedItemList> {
       Field('items', _$items, arg: _arg$items);
 
   @override
-  final Map<Symbol, Field<NamedItemList, dynamic>> fields = const {
+  final MappableFields<NamedItemList> fields = const {
     #name: _f$name,
     #items: _f$items,
   };
@@ -694,10 +684,8 @@ mixin NamedItemListMappable<T> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            NamedItemListMapper.ensureInitialized()
-                .isValueEqual(this as NamedItemList<T>, other));
+    return NamedItemListMapper.ensureInitialized()
+        .equalsValue(this as NamedItemList<T>, other);
   }
 
   @override
@@ -776,7 +764,7 @@ class KeyedItemListMapper extends SubClassMapperBase<KeyedItemList> {
       Field('items', _$items, arg: _arg$items);
 
   @override
-  final Map<Symbol, Field<KeyedItemList, dynamic>> fields = const {
+  final MappableFields<KeyedItemList> fields = const {
     #key: _f$key,
     #items: _f$items,
   };
@@ -790,7 +778,7 @@ class KeyedItemListMapper extends SubClassMapperBase<KeyedItemList> {
 
   @override
   DecodingContext inherit(DecodingContext context) {
-    return context.inherit(args: [dynamic, context.arg(0)]);
+    return context.inherit(args: () => [dynamic, context.arg(0)]);
   }
 
   static KeyedItemList<K, T> _instantiate<K, T>(DecodingData data) {
@@ -832,10 +820,8 @@ mixin KeyedItemListMappable<K, T> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            KeyedItemListMapper.ensureInitialized()
-                .isValueEqual(this as KeyedItemList<K, T>, other));
+    return KeyedItemListMapper.ensureInitialized()
+        .equalsValue(this as KeyedItemList<K, T>, other);
   }
 
   @override
@@ -913,7 +899,7 @@ class ComparableItemListMapper extends SubClassMapperBase<ComparableItemList> {
       Field('items', _$items, arg: _arg$items);
 
   @override
-  final Map<Symbol, Field<ComparableItemList, dynamic>> fields = const {
+  final MappableFields<ComparableItemList> fields = const {
     #items: _f$items,
   };
 
@@ -966,10 +952,8 @@ mixin ComparableItemListMappable<T extends Comparable<dynamic>> {
 
   @override
   bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            ComparableItemListMapper.ensureInitialized()
-                .isValueEqual(this as ComparableItemList<T>, other));
+    return ComparableItemListMapper.ensureInitialized()
+        .equalsValue(this as ComparableItemList<T>, other);
   }
 
   @override

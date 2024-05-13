@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
@@ -8,12 +10,23 @@ import 'package:type_plus/type_plus.dart' hide typeOf;
 
 import '../dart_mappable.dart';
 
+const _containerIssueLink =
+    'https://github.com/schultek/dart_mappable/issues/159';
+const _containerDeprecationMessage =
+    'If you are using this check out the following issue for discussion: $_containerIssueLink. '
+    'May be removed in a future version.';
+
 /// Additional options to be passed to [MapperContainer.toValue].
 ///
 /// {@category Generics}
 /// {@category Mapper Container}
 class EncodingOptions {
-  EncodingOptions({this.includeTypeId, this.inheritOptions = true, this.data});
+  EncodingOptions({
+    this.includeTypeId,
+    this.inheritOptions = true,
+    this.shallow,
+    this.data,
+  });
 
   /// Whether to include the type id of the encoding object.
   ///
@@ -27,14 +40,19 @@ class EncodingOptions {
   /// like for encoding fields of a class.
   final bool inheritOptions;
 
+  /// Whether to encode nested objects or just one level deep.
+  final bool? shallow;
+
   /// Custom data object passed to the mapper.
   final Object? data;
 
   EncodingOptions copyWith({Object? data}) {
     return EncodingOptions(
-        includeTypeId: includeTypeId,
-        inheritOptions: inheritOptions,
-        data: data ?? this.data);
+      includeTypeId: includeTypeId,
+      inheritOptions: inheritOptions,
+      shallow: shallow,
+      data: data ?? this.data,
+    );
   }
 }
 
@@ -65,6 +83,7 @@ class DecodingOptions {
 /// {@category Mapper Container}
 @sealed
 abstract class MapperContainer {
+  @Deprecated(_containerDeprecationMessage)
   factory MapperContainer({
     Set<MapperBase>? mappers,
     Set<MapperContainer>? linked,
@@ -75,6 +94,9 @@ abstract class MapperContainer {
   /// including all primitives, List, Set, Map and DateTime.
   ///
   /// All other container will automatically be linked to this container.
+  @Deprecated(
+      'Use `MapperContainer.globals` instead. See $_containerIssueLink. '
+      'May be removed in a future version.')
   static final MapperContainer defaults = _MapperContainerBase._({
     PrimitiveMapper<Object>((v) => v, dynamic),
     PrimitiveMapper<Object>((v) => v, Object),
@@ -160,9 +182,11 @@ abstract class MapperContainer {
   List<MapperBase> getAll();
 
   /// Links another container to this container.
+  @Deprecated(_containerDeprecationMessage)
   void link(MapperContainer container);
 
   /// Links a list of containers to this container.
+  @Deprecated(_containerDeprecationMessage)
   void linkAll(Iterable<MapperContainer> containers);
 }
 
@@ -456,7 +480,7 @@ class _MapperContainerBase implements MapperContainer, TypeProvider {
     }
     var mapper = _mapperFor(value);
     if (mapper != null) {
-      return mapper.isValueEqual(value, other, this);
+      return mapper.equalsValue(value, other, this);
     } else {
       return value == other;
     }
@@ -498,11 +522,17 @@ class _MapperContainerBase implements MapperContainer, TypeProvider {
     var mapper = _mapperFor(value);
     if (mapper != null) {
       try {
-        var typeArgs = value.runtimeType.args
-            .map((t) => t == UnresolvedType ? dynamic : t)
-            .toList();
         return fn(
-            mapper, value, MappingContext(container: this, args: typeArgs));
+            mapper,
+            value,
+            MappingContext(
+              container: this,
+              args: () {
+                return value.runtimeType.args
+                    .map((t) => t == UnresolvedType ? dynamic : t)
+                    .toList();
+              },
+            ));
       } catch (e, stacktrace) {
         Error.throwWithStackTrace(
           MapperException.chain(method, hint(), e),
