@@ -41,8 +41,6 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
           }
         }
       ''';
-
-      
   }
 
   String _generateDefaultCase() {
@@ -52,7 +50,7 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
     return 'throw MapperException.unknownEnumValue(value);';
   } 
 
-  String _generateDefaultDecode(List<MapEntry<String, dynamic>> values) {
+  String _generateDefaultDecode({String name, dynamic value} values) {
     return '  @override\n'
         '  ${element.prefixedClassName} decode(dynamic value) {\n'
         '    switch (value) {\n'
@@ -62,7 +60,7 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
         '  }\n\n';
   }
 
-  String _generateDefaultEncode(List<MapEntry<String, dynamic>> values) {
+  String _generateDefaultEncode({String name, dynamic value} values) {
     return '  dynamic encode(${element.prefixedClassName} self) {\n'
         '    switch (self) {\n'
         '      ${values.map((v) => "case ${element.prefixedClassName}.${v.key}: return ${v.value};").join("\n      ")}\n'
