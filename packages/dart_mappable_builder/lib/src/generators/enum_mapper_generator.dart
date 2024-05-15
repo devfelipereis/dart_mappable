@@ -17,7 +17,7 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
         ? _generateEncodeByCustomProperty()
         : _generateDefaultEncode(element.values);
 
-    return '''
+    return ''
         'class ${element.mapperName} extends EnumMapper<${element.prefixedClassName}> {\n'
         '  ${element.mapperName}._();\n'
         '  static ${element.mapperName}? _instance;\n'
@@ -34,13 +34,12 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
         '  $decode '
         '  $encode '
         '}\n\n'
-        extension ${element.mapperName}Extension on ${element.prefixedClassName} {
-          ${element.hasAllStringValues ? 'String' : 'dynamic'} toValue() {
-            ${element.mapperName}.ensureInitialized();
-            return MapperContainer.globals.toValue<${element.prefixedClassName}>(this)${element.hasAllStringValues ? ' as String' : ''};
-          }
-        }
-      ''';
+        'extension ${element.mapperName}Extension on ${element.prefixedClassName} {\n'
+        '  ${element.hasAllStringValues ? 'String' : 'dynamic'} toValue() {\n'
+        '  ${element.mapperName}.ensureInitialized();\n'
+        '    return MapperContainer.globals.toValue<${element.prefixedClassName}>(this)${element.hasAllStringValues ? ' as String' : ''};\n'
+        '  }\n'
+        '}';
   }
 
   String _generateDefaultCase() {
@@ -48,7 +47,7 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
       return 'return ${element.prefixedClassName}.values[${element.defaultValue}];';
     }
     return 'throw MapperException.unknownEnumValue(value);';
-  } 
+  }
 
   String _generateDefaultDecode(List<({String name, dynamic value})> values) {
     return '  @override\n'
@@ -80,5 +79,4 @@ class EnumMapperGenerator extends MapperGenerator<TargetEnumMapperElement> {
         '    return ${element.prefixedClassName}.values.firstWhere((element) => element.${element.customProperty} == value);\n'
         '  }\n\n';
   }
-
 }
